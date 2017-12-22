@@ -14,16 +14,10 @@ namespace Auth.FWT.Data.Identity
 {
     public class ApplicationUserStore
         : IUserStore<User, int>,
-        IUserPasswordStore<User, int>,
         IUserRoleStore<User, int>,
         IQueryableUserStore<User, int>,
-        IUserEmailStore<User, int>,
         IUserSecurityStampStore<User, int>,
-        IUserLoginStore<User, int>,
-        IUserClaimStore<User, int>,
-        IUserPhoneNumberStore<User, int>,
-        IUserTwoFactorStore<User, int>,
-        IUserLockoutStore<User, int>
+        IUserClaimStore<User, int>
     {
         private readonly IEntitiesContext _dbContext;
 
@@ -167,11 +161,6 @@ namespace Auth.FWT.Data.Identity
             return null;
         }
 
-        public virtual Task<User> FindByEmailAsync(string email)
-        {
-            return GeUserAggregateAsync(u => u.Email.ToUpper() == email.ToUpper());
-        }
-
         public virtual Task<User> FindByIdAsync(int userId)
         {
             return GeUserAggregateAsync(u => u.Id.Equals(userId));
@@ -180,16 +169,6 @@ namespace Auth.FWT.Data.Identity
         public virtual Task<User> FindByNameAsync(string userName)
         {
             return GeUserAggregateAsync(u => u.UserName.ToUpper() == userName.ToUpper());
-        }
-
-        public virtual Task<int> GetAccessFailedCountAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.AccessFailedCount);
         }
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(User user)
@@ -201,26 +180,6 @@ namespace Auth.FWT.Data.Identity
 
             await EnsureClaimsLoaded(user);
             return user.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
-        }
-
-        public virtual Task<string> GetEmailAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.Email);
-        }
-
-        public virtual Task<bool> GetEmailConfirmedAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.EmailConfirmed);
         }
 
         public virtual Task<bool> GetLockoutEnabledAsync(User user)
@@ -246,47 +205,6 @@ namespace Auth.FWT.Data.Identity
                     : new DateTimeOffset());
         }
 
-        public virtual async Task<IList<UserLoginInfo>> GetLoginsAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            await EnsureLoginsLoaded(user);
-            return user.Logins.Select(l => new UserLoginInfo(l.LoginProvider, l.ProviderKey)).ToList();
-        }
-
-        public virtual Task<string> GetPasswordHashAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.PasswordHash);
-        }
-
-        public virtual Task<string> GetPhoneNumberAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.PhoneNumber);
-        }
-
-        public virtual Task<bool> GetPhoneNumberConfirmedAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.PhoneNumberConfirmed);
-        }
-
         public virtual async Task<IList<string>> GetRolesAsync(User user)
         {
             if (user == null)
@@ -306,32 +224,6 @@ namespace Auth.FWT.Data.Identity
             }
 
             return Task.FromResult(user.SecurityStamp);
-        }
-
-        public virtual Task<bool> GetTwoFactorEnabledAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            return Task.FromResult(user.TwoFactorEnabled);
-        }
-
-        public virtual Task<bool> HasPasswordAsync(User user)
-        {
-            return Task.FromResult(user.PasswordHash != null);
-        }
-
-        public virtual Task<int> IncrementAccessFailedCountAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.AccessFailedCount++;
-            return Task.FromResult(user.AccessFailedCount);
         }
 
         public virtual async Task<bool> IsInRoleAsync(User user, string roleName)
@@ -405,70 +297,6 @@ namespace Auth.FWT.Data.Identity
             }
         }
 
-        public virtual async Task RemoveLoginAsync(User user, UserLoginInfo login)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            if (login == null)
-            {
-                throw new ArgumentNullException("login");
-            }
-
-            UserLogin entry;
-            var provider = login.LoginProvider;
-            var key = login.ProviderKey;
-            if (AreLoginsLoaded(user))
-            {
-                entry = user.Logins.SingleOrDefault(ul => ul.LoginProvider == provider && ul.ProviderKey == key);
-            }
-            else
-            {
-                var userId = user.Id;
-                entry = await _dbContext.Set<UserLogin, int>().SingleOrDefaultAsync(ul => ul.LoginProvider == provider && ul.ProviderKey == key && ul.UserId.Equals(userId));
-            }
-
-            if (entry != null)
-            {
-                _dbContext.Set<UserLogin, int>().Remove(entry);
-            }
-        }
-
-        public virtual Task ResetAccessFailedCountAsync(User user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.AccessFailedCount = 0;
-            return Task.FromResult(0);
-        }
-
-        public virtual Task SetEmailAsync(User user, string email)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.Email = email;
-            return Task.FromResult(0);
-        }
-
-        public virtual Task SetEmailConfirmedAsync(User user, bool confirmed)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.EmailConfirmed = confirmed;
-            return Task.FromResult(0);
-        }
-
         public virtual Task SetLockoutEnabledAsync(User user, bool enabled)
         {
             if (user == null)
@@ -491,39 +319,6 @@ namespace Auth.FWT.Data.Identity
             return Task.FromResult(0);
         }
 
-        public virtual Task SetPasswordHashAsync(User user, string passwordHash)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.PasswordHash = passwordHash;
-            return Task.FromResult(0);
-        }
-
-        public virtual Task SetPhoneNumberAsync(User user, string phoneNumber)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.PhoneNumber = phoneNumber;
-            return Task.FromResult(0);
-        }
-
-        public virtual Task SetPhoneNumberConfirmedAsync(User user, bool confirmed)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.PhoneNumberConfirmed = confirmed;
-            return Task.FromResult(0);
-        }
-
         public virtual Task SetSecurityStampAsync(User user, string stamp)
         {
             if (user == null)
@@ -532,17 +327,6 @@ namespace Auth.FWT.Data.Identity
             }
 
             user.SecurityStamp = stamp;
-            return Task.FromResult(0);
-        }
-
-        public virtual Task SetTwoFactorEnabledAsync(User user, bool enabled)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-
-            user.TwoFactorEnabled = enabled;
             return Task.FromResult(0);
         }
 
@@ -573,7 +357,6 @@ namespace Auth.FWT.Data.Identity
             if (user != null)
             {
                 await EnsureClaimsLoaded(user);
-                await EnsureLoginsLoaded(user);
                 await EnsureRolesLoaded(user);
             }
 
@@ -585,11 +368,6 @@ namespace Auth.FWT.Data.Identity
             return _dbContext.IsCollectionLoaded<User, int, UserClaim>(user, x => x.Claims);
         }
 
-        private bool AreLoginsLoaded(User user)
-        {
-            return _dbContext.IsCollectionLoaded<User, int, UserLogin>(user, x => x.Logins);
-        }
-
         private async Task EnsureClaimsLoaded(User user)
         {
             if (!AreClaimsLoaded(user))
@@ -597,16 +375,6 @@ namespace Auth.FWT.Data.Identity
                 var userId = user.Id;
                 await _dbContext.Set<UserClaim, int>().Where(uc => uc.UserId.Equals(userId)).LoadAsync();
                 _dbContext.CollectionLoaded<User, int, UserRole>(user, x => x.Roles);
-            }
-        }
-
-        private async Task EnsureLoginsLoaded(User user)
-        {
-            if (!AreLoginsLoaded(user))
-            {
-                var userId = user.Id;
-                await _dbContext.Set<UserClaim, int>().Where(uc => uc.UserId.Equals(userId)).LoadAsync();
-                _dbContext.CollectionLoaded<User, int, UserLogin>(user, x => x.Logins);
             }
         }
 

@@ -8,7 +8,6 @@ namespace Auth.FWT.Data.Base.Configuration
     {
         public UserConfiguration()
         {
-            Property(x => x.PasswordHash).HasColumnType(ParametersName.Varchar).HasMaxLength(48);
             Property(x => x.SecurityStamp).HasColumnType(ParametersName.Varchar).HasMaxLength(36);
         }
     }
