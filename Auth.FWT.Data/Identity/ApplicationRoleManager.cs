@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Auth.FWT.Core.DomainModels.Identity;
 using Auth.FWT.Core.Identity;
+using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {

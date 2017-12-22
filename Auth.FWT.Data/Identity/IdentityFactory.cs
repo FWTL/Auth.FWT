@@ -1,6 +1,6 @@
 using System;
-using Microsoft.AspNet.Identity;
 using Auth.FWT.Core.DomainModels.Identity;
+using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin.Security;
 using Auth.FWT.Core.DomainModels.Identity;
 using Auth.FWT.Core.Identity;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 
 namespace Auth.FWT.Data.Identity
 {

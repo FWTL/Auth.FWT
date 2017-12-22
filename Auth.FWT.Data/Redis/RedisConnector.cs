@@ -1,6 +1,6 @@
 using System;
-using StackExchange.Redis;
 using Auth.FWT.Core;
+using StackExchange.Redis;
 
 namespace Auth.FWT.Data.Redis
 {

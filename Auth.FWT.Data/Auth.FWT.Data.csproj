@@ -148,8 +148,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.7.10.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.7.10\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.7.11.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.7.11\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -187,7 +187,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Auth.FWT.Infrastructure\Auth.FWT.Infrastructure.csproj">
       <Project>{1BCACCE6-43CE-F2DE-3B26-75460EB06BD2}</Project>
-      <Name>{Auth.FWT}.Infrastructure</Name>
+      <Name>Auth.FWT.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

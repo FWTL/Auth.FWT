@@ -1,5 +1,5 @@
-using StackExchange.Redis;
 using Auth.FWT.Core.Services.Cache;
+using StackExchange.Redis;
 
 namespace Auth.FWT.Data.Redis
 {

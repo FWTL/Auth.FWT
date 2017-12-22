@@ -3,9 +3,9 @@ namespace Auth.FWT.Data.Migrations
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using System.Linq;
-    using FactoryGirlCore;
     using Auth.FWT.Core.DomainModels.Identity;
     using Auth.FWT.Core.Helpers;
+    using FactoryGirlCore;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Auth.FWT.Data.AppContext>
     {

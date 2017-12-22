@@ -1,5 +1,5 @@
-using Microsoft.AspNet.Identity;
 using Auth.FWT.Core.Helpers;
+using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {
