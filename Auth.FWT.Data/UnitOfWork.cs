@@ -20,6 +20,14 @@ namespace Auth.FWT.Data
             _context = context;
         }
 
+        public IRepository<TelegramSession, int> TelegramSessionRepository
+        {
+            get
+            {
+                return Repository<TelegramSession, int>();
+            }
+        }
+
         public void BeginTransaction()
         {
             _context.BeginTransaction();

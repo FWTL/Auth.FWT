@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.DomainModels;
+using Auth.FWT.Core.DomainModels.Identity;
 
 namespace Auth.FWT.Core.Data
 {
@@ -24,5 +25,9 @@ namespace Auth.FWT.Core.Data
         Task<int> SaveChangesAsync();
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+        IRepository<TelegramSession, int> TelegramSessionRepository { get; }
+
+        IRepository<User, int> UserRepository { get; }
     }
 }
