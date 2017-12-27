@@ -23,5 +23,9 @@ namespace Auth.FWT.Core.DomainModels.Identity
         public string SecurityStamp { get; set; }
 
         public string UserName { get; set; }
+
+        public int? TelegramSessionId { get; set; }
+
+        public virtual TelegramSession TelegramSession { get; set; }
     }
 }

@@ -94,6 +94,7 @@
     <Compile Include="DomainModels\Identity\UserClaim.cs" />
     <Compile Include="DomainModels\Identity\UserLogin.cs" />
     <Compile Include="DomainModels\Identity\UserRole.cs" />
+    <Compile Include="DomainModels\TelegramSession.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
