@@ -25,6 +25,7 @@ namespace Auth.FWT.API.Bootstrapper
                 context.Response.Headers.Remove("Server");
                 return next.Invoke();
             });
+
             app.UseStageMarker(PipelineStage.PostAcquireState);
         }
     }

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.DomainModels;
+using Auth.FWT.Core.DomainModels.Identity;
 
 namespace Auth.FWT.Data
 {
@@ -25,6 +26,14 @@ namespace Auth.FWT.Data
             get
             {
                 return Repository<TelegramSession, int>();
+            }
+        }
+
+        public IRepository<User, int> UserRepository
+        {
+            get
+            {
+                return Repository<User, int>();
             }
         }
 

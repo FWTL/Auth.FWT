@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.Interception;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using Auth.FWT.Core.DomainModels;
 using Auth.FWT.Data.Base.Configuration;
 using Auth.FWT.Data.Conventions;
+using Auth.FWT.Infrastructure.Logging;
 
 namespace Auth.FWT.Data
 {
@@ -30,7 +32,7 @@ namespace Auth.FWT.Data
         public AppContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
-            ////DbInterception.Add(new NLogCommandInterceptor());
+            DbInterception.Add(new NLogCommandInterceptor());
             Configuration.LazyLoadingEnabled = false;
             Configuration.AutoDetectChangesEnabled = false;
             Configuration.ValidateOnSaveEnabled = false;

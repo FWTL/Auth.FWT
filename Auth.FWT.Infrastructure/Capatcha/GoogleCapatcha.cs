@@ -31,8 +31,7 @@ namespace Auth.FWT.Infrastructure.Captcha
             }
             catch (Exception ex)
             {
-                _logger.Log(ex);
-
+                _logger.Fatal(ex);
                 return false;
             }
         }

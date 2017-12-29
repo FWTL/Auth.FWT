@@ -38,7 +38,7 @@ namespace Auth.FWT.API.Filters
             sb.AppendLine();
             sb.Append(filterContext.Exception);
 
-            _logger.Log(sb.ToString());
+            _logger.Error(sb.ToString());
         }
     }
 }

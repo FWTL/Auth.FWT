@@ -14,4 +14,4 @@
 
 $("#input_apiKey").on("change keyup paste", function () {
     addApiKeyAuthorization();
-})
+});

@@ -21,19 +21,64 @@ namespace Auth.FWT.Infrastructure.Logging
             }
         }
 
-        public void Log(Exception ex)
+        public void Debug(string message, params object[] args)
         {
-            LazyNLogger.Value.Error(ex);
+            LazyNLogger.Value.Debug(message, args);
         }
 
-        public void Log(string message)
+        public void Debug(Exception exception, string message = null, params object[] args)
         {
-            LazyNLogger.Value.Info(message);
+            LazyNLogger.Value.Debug(exception, message, args);
         }
 
-        public void LogTrace(string message)
+        public void Error(string message, params object[] args)
         {
-            LazyNLogger.Value.Trace(message);
+            LazyNLogger.Value.Error(message, args);
+        }
+
+        public void Error(Exception exception, string message = null, params object[] args)
+        {
+            LazyNLogger.Value.Error(exception, message, args);
+        }
+
+        public void Fatal(string message, params object[] args)
+        {
+            LazyNLogger.Value.Fatal(message, args);
+        }
+
+        public void Fatal(Exception exception, string message = null, params object[] args)
+        {
+            LazyNLogger.Value.Fatal(exception, message, args);
+        }
+
+        public void Info(string message, params object[] args)
+        {
+            LazyNLogger.Value.Info(message, args);
+        }
+
+        public void Info(Exception exception, string message = null, params object[] args)
+        {
+            LazyNLogger.Value.Info(exception, message, args);
+        }
+
+        public void Trace(string message, params object[] args)
+        {
+            LazyNLogger.Value.Trace(message, args);
+        }
+
+        public void Trace(Exception exception, string message = null, params object[] args)
+        {
+            LazyNLogger.Value.Trace(message, args);
+        }
+
+        public void Warn(string message, params object[] args)
+        {
+            LazyNLogger.Value.Warn(message, args);
+        }
+
+        public void Warn(Exception exception, string message = null, params object[] args)
+        {
+            LazyNLogger.Value.Warn(exception, message, args);
         }
     }
 }
