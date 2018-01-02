@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Auth.FWT.Core.DomainModels.Identity;
+using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity

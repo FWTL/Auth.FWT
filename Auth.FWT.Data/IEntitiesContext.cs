@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Auth.FWT.Core.DomainModels;
+using Auth.FWT.Domain.Entities;
 
 namespace Auth.FWT.Data
 {

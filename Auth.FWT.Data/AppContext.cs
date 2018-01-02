@@ -9,9 +9,9 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Auth.FWT.Core.DomainModels;
 using Auth.FWT.Data.Base.Configuration;
 using Auth.FWT.Data.Conventions;
+using Auth.FWT.Domain.Entities;
 using Auth.FWT.Infrastructure.Logging;
 
 namespace Auth.FWT.Data
@@ -53,10 +53,10 @@ namespace Auth.FWT.Data
         }
 
         public void CollectionLoaded<TEntity, TKey, TElement>(TEntity entity, Expression<Func<TEntity, System.Collections.Generic.ICollection<TElement>>> navigationProperty)
-            where TEntity : Core.DomainModels.BaseEntity<TKey>
+            where TEntity : BaseEntity<TKey>
             where TElement : class
         {
-            this.Entry<TEntity>(entity).Collection(navigationProperty).IsLoaded = true;
+            Entry(entity).Collection(navigationProperty).IsLoaded = true;
         }
 
         public int Commit()
@@ -86,10 +86,10 @@ namespace Auth.FWT.Data
         }
 
         public bool IsCollectionLoaded<TEntity, TKey, TElement>(TEntity entity, Expression<Func<TEntity, System.Collections.Generic.ICollection<TElement>>> navigationProperty)
-            where TEntity : Core.DomainModels.BaseEntity<TKey>
+            where TEntity : BaseEntity<TKey>
             where TElement : class
         {
-            var result = this.Entry<TEntity>(entity).Collection(navigationProperty).IsLoaded;
+            var result = Entry(entity).Collection(navigationProperty).IsLoaded;
             return result;
         }
 

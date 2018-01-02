@@ -197,6 +197,10 @@
       <Project>{0ED2E479-2353-59A2-C8FB-880112959A8C}</Project>
       <Name>Auth.FWT.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Auth.FWT.Domain\Auth.FWT.Domain.csproj">
+      <Project>{373414ac-a012-45ac-9cef-545c9ff6d528}</Project>
+      <Name>Auth.FWT.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Auth.FWT.Infrastructure\Auth.FWT.Infrastructure.csproj">
       <Project>{1BCACCE6-43CE-F2DE-3B26-75460EB06BD2}</Project>
       <Name>Auth.FWT.Infrastructure</Name>

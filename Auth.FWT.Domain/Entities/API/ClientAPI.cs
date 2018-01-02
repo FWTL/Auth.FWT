@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using static Auth.FWT.Domain.Enums.Enum;
 
-namespace Auth.FWT.Core.DomainModels.API
+namespace Auth.FWT.Domain.Entities.API
 {
     public class ClientAPI : BaseEntity<string>
     {
@@ -8,7 +9,7 @@ namespace Auth.FWT.Core.DomainModels.API
 
         public string AllowedOrigin { get; set; }
 
-        public Auth.FWT.Core.Enums.Enum.ApplicationType ApplicationType { get; set; }
+        public ApplicationType ApplicationType { get; set; }
 
         public string Name { get; set; }
 

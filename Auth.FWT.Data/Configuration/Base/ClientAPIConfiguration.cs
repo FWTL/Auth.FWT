@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
-using Auth.FWT.Core.DomainModels.API;
+using Auth.FWT.Domain.Entities.API;
 
 namespace Auth.FWT.Data.Base.Configuration
 {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
 
-namespace Auth.FWT.Core.DomainModels.Identity
+namespace Auth.FWT.Domain.Entities.Identity
 {
     public class User : BaseEntity<int>, IUser<int>
     {

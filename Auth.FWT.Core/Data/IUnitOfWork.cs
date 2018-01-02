@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Auth.FWT.Core.DomainModels;
-using Auth.FWT.Core.DomainModels.Identity;
+using Auth.FWT.Domain.Entities;
+using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Core.Data
 {

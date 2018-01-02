@@ -1,6 +1,6 @@
 using System;
 
-namespace Auth.FWT.Core.DomainModels.API
+namespace Auth.FWT.Domain.Entities.API
 {
     public class RefreshToken : BaseEntity<string>
     {

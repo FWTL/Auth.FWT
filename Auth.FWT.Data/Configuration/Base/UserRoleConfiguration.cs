@@ -1,5 +1,5 @@
 using System.Data.Entity.ModelConfiguration;
-using Auth.FWT.Core.DomainModels.Identity;
+using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Data.Base.Configuration
 {

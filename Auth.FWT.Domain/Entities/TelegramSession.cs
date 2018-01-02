@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Auth.FWT.Core.DomainModels.Identity;
+using Auth.FWT.Domain.Entities.Identity;
 
-namespace Auth.FWT.Core.DomainModels
+namespace Auth.FWT.Domain.Entities
 {
     public class TelegramSession : BaseEntity<int>
     {

@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FWT.API", "Auth.FWT.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FWT.Tests", "Auth.FWT.Tests\Auth.FWT.Tests.csproj", "{74D8CB60-7870-4FE3-B362-1E839A44FEA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FWT.Domain", "Auth.FWT.Domain\Auth.FWT.Domain.csproj", "{373414AC-A012-45AC-9CEF-545C9FF6D528}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{74D8CB60-7870-4FE3-B362-1E839A44FEA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74D8CB60-7870-4FE3-B362-1E839A44FEA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74D8CB60-7870-4FE3-B362-1E839A44FEA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{373414AC-A012-45AC-9CEF-545C9FF6D528}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{373414AC-A012-45AC-9CEF-545C9FF6D528}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{373414AC-A012-45AC-9CEF-545C9FF6D528}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{373414AC-A012-45AC-9CEF-545C9FF6D528}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

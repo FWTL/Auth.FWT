@@ -1,6 +1,6 @@
 using System;
 
-namespace Auth.FWT.Core.DomainModels
+namespace Auth.FWT.Domain.Entities
 {
     public abstract class BaseEntity<TKey>
     {

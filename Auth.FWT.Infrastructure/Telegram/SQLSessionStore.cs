@@ -1,7 +1,7 @@
 ﻿using System;
 using Auth.FWT.Core.Data;
-using Auth.FWT.Core.DomainModels;
-using Auth.FWT.Core.DomainModels.Identity;
+using Auth.FWT.Domain.Entities;
+using Auth.FWT.Domain.Entities.Identity;
 using TLSharp.Core;
 
 namespace Auth.FWT.Infrastructure.Telegram

@@ -1,4 +1,4 @@
-namespace Auth.FWT.Core.DomainModels.Identity
+namespace Auth.FWT.Domain.Entities.Identity
 {
     public partial class UserClaim : BaseEntity<int>
     {
