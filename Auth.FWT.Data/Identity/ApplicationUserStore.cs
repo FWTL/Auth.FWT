@@ -35,7 +35,7 @@ namespace Auth.FWT.Data.Identity
 
         public IQueryable<User> Users
         {
-            get { return _dbContext.Set<User, int>().Where(x => x.IsDeleted == false); }
+            get { return _dbContext.Set<User, int>(); }
         }
 
         public virtual Task AddClaimAsync(User user, Claim claim)
@@ -114,10 +114,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentNullException("user");
             }
 
-            user.IsDeleted = true;
-            user.DeleteDateUTC = DateTime.UtcNow;
-
-            _dbContext.SetAsModified<User, int>(user);
+            _dbContext.SetAsDeleted<User, int>(user);
             await SaveChanges();
         }
 

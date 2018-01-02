@@ -26,59 +26,20 @@ namespace Auth.FWT.Data
             _dbEntitySet = _context.Set<TEntity, TKey>();
         }
 
-        public void BatchDelete(Expression<Func<TEntity, bool>> predicate, bool hardDelete = false)
+        public void BatchDelete(Expression<Func<TEntity, bool>> predicate)
         {
-            if (hardDelete)
-            {
-                _dbEntitySet.Where(predicate).Where(x => x.IsDeleted == false).Update(x => new TEntity { IsDeleted = true, DeleteDateUTC = DateTime.UtcNow });
-            }
-            else
-            {
-                _dbEntitySet.Where(predicate).Where(x => x.IsDeleted == false).Where(predicate).Delete();
-            }
-        }
-
-        public void BatchDelete<TOrder>(Expression<Func<TEntity, bool>> predicate, OrderBy direction, Expression<Func<TEntity, TOrder>> orderBy, int take) where TOrder : IComparable
-        {
-            BulkOperation<TOrder>(predicate, x => new TEntity { IsDeleted = true, DeleteDateUTC = DateTime.UtcNow }, direction, orderBy, take);
-        }
-
-        public void BatchUpdate(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> update, params Expression<Func<TEntity, object>>[] includeProperties)
-        {
-            var query = IncludeProperties(includeProperties);
-            query.Where(x => x.IsDeleted == false).Update(update);
-        }
-
-        public void BatchUpdate<TOrder>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateStatement, OrderBy direction, Expression<Func<TEntity, TOrder>> orderBy, int take) where TOrder : IComparable
-        {
-            BulkOperation(predicate, updateStatement, direction, orderBy, take);
+            _dbEntitySet.Where(predicate).Delete();
         }
 
         public void Delete(TEntity entity, bool isHardDelete)
         {
-            if (!isHardDelete)
-            {
-                entity.IsDeleted = true;
-                entity.DeleteDateUTC = DateTime.UtcNow;
-                UpdateColumns(entity, () => entity.IsDeleted, () => entity.DeleteDateUTC);
-            }
-            else
-            {
-                _context.SetAsDeleted<TEntity, TKey>(entity);
-            }
+            _context.SetAsDeleted<TEntity, TKey>(entity);
         }
 
         public Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate, bool isHardDelete)
         {
-            var query = _dbEntitySet.Where(predicate).Where(x => x.IsDeleted == false && (object)x.Id == (object)id);
-            if (isHardDelete)
-            {
-                query.Delete();
-            }
-            else
-            {
-                query.Update(x => new TEntity { IsDeleted = true, DeleteDateUTC = DateTime.UtcNow });
-            }
+            var query = _dbEntitySet.Where(predicate).Where(x => (object)x.Id == (object)id);
+            query.Delete();
 
             return Task.FromResult(0);
         }
@@ -107,12 +68,12 @@ namespace Auth.FWT.Data
             _disposed = true;
         }
 
-        public IEnumerable<TEntity> FindBy(System.Linq.Expressions.Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)
         {
-            return _dbEntitySet.AsNoTracking().Where(predicate).Where(x => x.IsDeleted == false);
+            return _dbEntitySet.Where(predicate);
         }
 
-        public IEnumerable<TEntity> GetAllIncluding(params System.Linq.Expressions.Expression<Func<TEntity, object>>[] includeProperties)
+        public IEnumerable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             var entities = IncludeProperties(includeProperties);
             return entities;
@@ -120,7 +81,7 @@ namespace Auth.FWT.Data
 
         public TEntity GetSingle(TKey id)
         {
-            return _dbEntitySet.AsNoTracking().Where(x => x.IsDeleted == false && (object)x.Id == (object)id).FirstOrDefault();
+            return _dbEntitySet.Where(x => (object)x.Id == (object)id).FirstOrDefault();
         }
 
         public void IgnoreColumns(TEntity entity, params Expression<Action>[] @params)
@@ -133,14 +94,9 @@ namespace Auth.FWT.Data
             _context.SetAsAdded<TEntity, TKey>(entity);
         }
 
-        public IQueryable<TEntity> Query(bool includeDeleted = false)
+        public IQueryable<TEntity> Query()
         {
-            if (includeDeleted)
-            {
-                return _dbEntitySet;
-            }
-
-            return _dbEntitySet.Where(x => x.IsDeleted == false);
+            return _dbEntitySet;
         }
 
         public void Update(TEntity entity)
@@ -153,45 +109,12 @@ namespace Auth.FWT.Data
             _context.UpdateEntityProperties<TEntity, TKey>(entity, @params);
         }
 
-        private void BulkOperation<TOrder>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateStatement, OrderBy direction, Expression<Func<TEntity, TOrder>> orderBy, int take) where TOrder : IComparable
-        {
-            var query = _dbEntitySet.Where(predicate).Where(x => x.IsDeleted == false);
-            if (orderBy != null)
-            {
-                if (direction == OrderBy.Ascending)
-                {
-                    query = query.OrderBy(orderBy);
-                }
-                else
-                {
-                    query = query.OrderByDescending(orderBy);
-                }
-            }
-
-            if (take > 0)
-            {
-                query = query.Take(take);
-            }
-
-            query.Update(updateStatement);
-        }
-
-        private IQueryable<TEntity> FilterQuery(Expression<Func<TEntity, TKey>> keySelector, Expression<Func<TEntity, bool>> predicate, OrderBy orderBy, Expression<Func<TEntity, object>>[] includeProperties)
-        {
-            var entities = IncludeProperties(includeProperties);
-            entities = (predicate != null) ? entities.Where(predicate) : entities;
-            entities = (orderBy == OrderBy.Ascending)
-                ? entities.OrderBy(keySelector)
-                : entities.OrderByDescending(keySelector);
-            return entities.Where(x => x.IsDeleted == false);
-        }
-
         private IQueryable<TEntity> IncludeProperties(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             IQueryable<TEntity> entities = _dbEntitySet;
             foreach (var includeProperty in includeProperties)
             {
-                entities = entities.Include(includeProperty).Where(x => x.IsDeleted == false);
+                entities = entities.Include(includeProperty);
             }
 
             return entities;
