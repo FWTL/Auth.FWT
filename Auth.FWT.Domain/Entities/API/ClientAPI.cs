@@ -5,7 +5,7 @@ namespace Auth.FWT.Domain.Entities.API
 {
     public class ClientAPI : BaseEntity<string>
     {
-        public bool Active { get; set; }
+        public bool IsActive { get; set; }
 
         public string AllowedOrigin { get; set; }
 
