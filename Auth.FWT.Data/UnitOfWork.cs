@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Domain.Entities;
+using Auth.FWT.Domain.Entities.API;
 using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Data
@@ -34,6 +35,22 @@ namespace Auth.FWT.Data
             get
             {
                 return Repository<User, int>();
+            }
+        }
+
+        public IRepository<ClientAPI, string> ClientAPIRepository
+        {
+            get
+            {
+                return Repository<ClientAPI, string>();
+            }
+        }
+
+        public IRepository<RefreshToken, string> RefreshTokenRepository
+        {
+            get
+            {
+                return Repository<RefreshToken, string>();
             }
         }
 

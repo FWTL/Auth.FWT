@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Domain.Entities;
+using Auth.FWT.Domain.Entities.API;
 using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Core.Data
@@ -29,5 +30,9 @@ namespace Auth.FWT.Core.Data
         IRepository<TelegramSession, int> TelegramSessionRepository { get; }
 
         IRepository<User, int> UserRepository { get; }
+
+        IRepository<RefreshToken, string> RefreshTokenRepository { get; }
+
+        IRepository<ClientAPI, string> ClientAPIRepository { get; }
     }
 }

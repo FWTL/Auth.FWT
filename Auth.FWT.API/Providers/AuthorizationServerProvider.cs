@@ -1,8 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Helpers;
+using Auth.FWT.Data;
 using Auth.FWT.Domain.Entities.API;
+using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using static Auth.FWT.Domain.Enums.Enum;
@@ -11,14 +16,18 @@ namespace Auth.FWT.API.Providers
 {
     public class AuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
+        private IUnitOfWork _unitOfWork;
+
         public AuthorizationServerProvider()
         {
+            _unitOfWork = new UnitOfWork(new AppContext());
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
+            var unitOfWork = new UnitOfWork(new Data.AppContext());
 
+            var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
             if (allowedOrigin == null)
             {
                 allowedOrigin = "*";
@@ -26,7 +35,13 @@ namespace Auth.FWT.API.Providers
 
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
 
-            //Find user
+            User user = await unitOfWork.UserRepository.Query().Where(x => x.LockoutEnabled).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                return;
+            }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
 
@@ -58,14 +73,14 @@ namespace Auth.FWT.API.Providers
         {
             string clientId = string.Empty;
             string clientSecret = string.Empty;
-            ClientAPI client = null;
 
             if (!context.TryGetBasicCredentials(out clientId, out clientSecret))
             {
                 context.TryGetFormCredentials(out clientId, out clientSecret);
             }
 
-            ///Find client
+            var unitOfWork = new UnitOfWork(new AppContext());
+            ClientAPI client = unitOfWork.ClientAPIRepository.GetSingle(context.ClientId);
 
             if (client == null)
             {
