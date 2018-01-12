@@ -10,11 +10,11 @@ namespace Auth.FWT.Data.Identity
 {
     public class ApplicationRoleManager : IApplicationRoleManager
     {
-        private readonly RoleManager<UserRole, byte> _roleManager;
+        private readonly RoleManager<UserRole, int> _roleManager;
 
         private bool _disposed;
 
-        public ApplicationRoleManager(RoleManager<UserRole, byte> roleManager)
+        public ApplicationRoleManager(RoleManager<UserRole, int> roleManager)
         {
             _roleManager = roleManager;
         }

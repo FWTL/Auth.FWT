@@ -3,7 +3,7 @@ using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Domain.Entities.Identity
 {
-    public class UserRole : BaseEntity<byte>, IRole<byte>
+    public class UserRole : BaseEntity<int>, IRole<int>
     {
         public string Name { get; set; }
 

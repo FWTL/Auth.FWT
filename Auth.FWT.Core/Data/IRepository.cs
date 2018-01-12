@@ -13,9 +13,9 @@ namespace Auth.FWT.Core.Data
     {
         void BatchDelete(Expression<Func<TEntity, bool>> predicate);
 
-        void Delete(TEntity entity, bool isHardDelete = false);
+        void Delete(TEntity entity);
 
-        Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate, bool isHardDelete = false);
+        Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate);
 
         void Detach(ICollection<TEntity> collection);
 

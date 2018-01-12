@@ -34,5 +34,9 @@ namespace Auth.FWT.Core.Data
         IRepository<RefreshToken, string> RefreshTokenRepository { get; }
 
         IRepository<ClientAPI, string> ClientAPIRepository { get; }
+
+        IRepository<UserRole, int> RoleRepository { get; }
+
+        IRepository<RoleClaim, int> RoleClaimRepository { get; }
     }
 }

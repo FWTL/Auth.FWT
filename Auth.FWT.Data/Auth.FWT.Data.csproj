@@ -174,25 +174,9 @@
     <Compile Include="Identity\IdentityFactory.cs" />
     <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="IEntitiesContext.cs" />
-    <Compile Include="Migrations\201712221643336_Init.cs" />
-    <Compile Include="Migrations\201712221643336_Init.Designer.cs">
-      <DependentUpon>201712221643336_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712271114385_Add-Table-TelegramSession.cs" />
-    <Compile Include="Migrations\201712271114385_Add-Table-TelegramSession.Designer.cs">
-      <DependentUpon>201712271114385_Add-Table-TelegramSession.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201801021445043_Remove_Soft_Deletes.cs" />
-    <Compile Include="Migrations\201801021445043_Remove_Soft_Deletes.Designer.cs">
-      <DependentUpon>201801021445043_Remove_Soft_Deletes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201801031201220_Change_column_name_ClientAPI.cs" />
-    <Compile Include="Migrations\201801031201220_Change_column_name_ClientAPI.Designer.cs">
-      <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201801121200437_Role_Claims.cs" />
-    <Compile Include="Migrations\201801121200437_Role_Claims.Designer.cs">
-      <DependentUpon>201801121200437_Role_Claims.cs</DependentUpon>
+    <Compile Include="Migrations\201801121409391_init.cs" />
+    <Compile Include="Migrations\201801121409391_init.Designer.cs">
+      <DependentUpon>201801121409391_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -219,20 +203,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201712221643336_Init.resx">
-      <DependentUpon>201712221643336_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712271114385_Add-Table-TelegramSession.resx">
-      <DependentUpon>201712271114385_Add-Table-TelegramSession.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801021445043_Remove_Soft_Deletes.resx">
-      <DependentUpon>201801021445043_Remove_Soft_Deletes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801031201220_Change_column_name_ClientAPI.resx">
-      <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801121200437_Role_Claims.resx">
-      <DependentUpon>201801121200437_Role_Claims.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201801121409391_init.resx">
+      <DependentUpon>201801121409391_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

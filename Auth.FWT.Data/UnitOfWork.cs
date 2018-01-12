@@ -54,6 +54,22 @@ namespace Auth.FWT.Data
             }
         }
 
+        public IRepository<UserRole, int> RoleRepository
+        {
+            get
+            {
+                return Repository<UserRole, int>();
+            }
+        }
+
+        public IRepository<RoleClaim, int> RoleClaimRepository
+        {
+            get
+            {
+                return Repository<RoleClaim, int>();
+            }
+        }
+
         public void BeginTransaction()
         {
             _context.BeginTransaction();

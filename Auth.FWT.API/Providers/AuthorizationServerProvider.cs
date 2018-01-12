@@ -44,6 +44,7 @@ namespace Auth.FWT.API.Providers
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+            //Add claims here
 
             var props = new AuthenticationProperties(new Dictionary<string, string>
                 {

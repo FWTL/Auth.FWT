@@ -31,12 +31,12 @@ namespace Auth.FWT.Data
             _dbEntitySet.Where(predicate).Delete();
         }
 
-        public void Delete(TEntity entity, bool isHardDelete)
+        public void Delete(TEntity entity)
         {
             _context.SetAsDeleted<TEntity, TKey>(entity);
         }
 
-        public Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate, bool isHardDelete)
+        public Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate)
         {
             var query = _dbEntitySet.Where(predicate).Where(x => (object)x.Id == (object)id);
             query.Delete();

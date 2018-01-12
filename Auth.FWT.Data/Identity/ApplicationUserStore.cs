@@ -87,7 +87,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentException("Can't be empty", "roleName");
             }
 
-            var roleEntity = await _dbContext.Set<UserRole, byte>().SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
+            var roleEntity = await _dbContext.Set<UserRole, int>().SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
             if (roleEntity == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Role not found", roleName));
@@ -281,7 +281,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentException("Can't be empty", "roleName");
             }
 
-            var roleEntity = await _dbContext.Set<UserRole, byte>().SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
+            var roleEntity = await _dbContext.Set<UserRole, int>().SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
             if (roleEntity != null)
             {
                 var roleId = roleEntity.Id;
@@ -289,7 +289,7 @@ namespace Auth.FWT.Data.Identity
                 var userRole = await _dbContext.Set<User, int>().Where(x => x.Id == user.Id).Include(x => x.Roles).SelectMany(x => x.Roles).Where(x => x.Name == roleName).FirstOrDefaultAsync();
                 if (userRole != null)
                 {
-                    _dbContext.Set<UserRole, byte>().Remove(userRole);
+                    _dbContext.Set<UserRole, int>().Remove(userRole);
                 }
             }
         }

@@ -8,6 +8,6 @@
 
         public virtual UserRole Role { get; set; }
 
-        public byte RoleId { get; set; }
+        public int RoleId { get; set; }
     }
 }

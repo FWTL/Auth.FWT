@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Domain.Entities.API;
+using Auth.FWT.Domain.Entities.Identity;
 using InquirerCS;
 using static Auth.FWT.Domain.Enums.Enum;
 
@@ -25,7 +27,97 @@ namespace Auth.Manage
             Question.Menu()
                 .AddOption("Create New Client", () => CreateNewClient())
                 .AddOption("Set Client Status", () => SetClientActiveStatus())
+                .AddOption("Add Role", () => AddRole())
+                .AddOption("Remove Role", () => RemoveRole())
+                .AddOption("Add Role Claim", () => AddRoleClaim())
+                .AddOption("Remove Role Claim", () => RemoveRoleClaim())
             .Prompt();
+        }
+
+        private void RemoveRoleClaim()
+        {
+            UserRole role = null;
+            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+
+            Question.Ask()
+            .Then(() =>
+            {
+                Question.List("Chose", roles).WithConvertToString(x => x.Name).Then(answer =>
+                {
+                    role = answer;
+                });
+            })
+            .Then(() =>
+            {
+                var claims = _unitOfWork.RoleClaimRepository.GetAllIncluding();
+
+                Question.Checkbox("Chose", claims).WithConvertToString(x => x.ClaimValue).Then(answer =>
+                {
+                    foreach (var claim in answer)
+                    {
+                        _unitOfWork.RoleClaimRepository.Delete(claim);
+                    }
+
+                    _unitOfWork.SaveChanges();
+                });
+            }).Go();
+        }
+
+        private void AddRoleClaim()
+        {
+            UserRole role = null;
+            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+
+            Question.Ask()
+            .Then(() =>
+            {
+                Question.List("Chose", roles).WithConvertToString(x => x.Name).Then(answer =>
+                {
+                    role = answer;
+                });
+            })
+            .Then(() =>
+            {
+                Question.Input("Name").Then(answer =>
+                {
+                    _unitOfWork.RoleClaimRepository.Insert(new RoleClaim()
+                    {
+                        RoleId = role.Id,
+                        ClaimType = "Permission",
+                        ClaimValue = answer,
+                    });
+                    _unitOfWork.SaveChanges();
+                });
+            }).Go();
+        }
+
+        private void RemoveRole()
+        {
+            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+            Question.Checkbox("Remove", roles).WithConvertToString(x => x.Name).Then(answer =>
+             {
+                 _unitOfWork.BeginTransaction();
+                 foreach (var role in answer)
+                 {
+                     _unitOfWork.RoleClaimRepository.BatchDelete(rc => rc.RoleId == role.Id);
+                     _unitOfWork.RoleRepository.BatchDelete(r => r.Id == role.Id);
+                 }
+                 _unitOfWork.Commit();
+             });
+        }
+
+        private void AddRole()
+        {
+            var role = new UserRole();
+
+            Question.Ask()
+            .Then(() => { Question.Input("Name").Then(answer => role.Name = answer); })
+            .Then(() =>
+            {
+                _unitOfWork.RoleRepository.Insert(role);
+                _unitOfWork.SaveChanges();
+            })
+            .Go();
         }
 
         private void SetClientActiveStatus()
@@ -75,6 +167,8 @@ namespace Auth.Manage
                 _unitOfWork.SaveChanges();
             })
             .Go();
+
+            Menu();
         }
     }
 }

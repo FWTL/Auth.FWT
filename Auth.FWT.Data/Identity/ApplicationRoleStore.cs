@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {
-    public class ApplicationRoleStore : IRoleStore<UserRole, byte>, IQueryableRoleStore<UserRole, byte>, IRoleClaimStore<UserRole, byte>
+    public class ApplicationRoleStore : IRoleStore<UserRole, int>, IQueryableRoleStore<UserRole, int>, IRoleClaimStore<UserRole, int>
     {
         private readonly IEntitiesContext _dbContext;
 
@@ -23,7 +23,7 @@ namespace Auth.FWT.Data.Identity
 
         public IQueryable<UserRole> Roles
         {
-            get { return _dbContext.Set<UserRole, byte>().AsQueryable(); }
+            get { return _dbContext.Set<UserRole, int>().AsQueryable(); }
         }
 
         public virtual Task AddClaimAsync(UserRole role, Claim claim)
@@ -86,7 +86,7 @@ namespace Auth.FWT.Data.Identity
 
         private bool AreClaimsLoaded(UserRole role)
         {
-            return _dbContext.IsCollectionLoaded<UserRole, byte, RoleClaim>(role, x => x.Claims);
+            return _dbContext.IsCollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
         }
 
         private async Task EnsureClaimsLoaded(UserRole role)
@@ -95,7 +95,7 @@ namespace Auth.FWT.Data.Identity
             {
                 var roleId = role.Id;
                 await _dbContext.Set<RoleClaim, int>().Where(uc => uc.RoleId.Equals(roleId)).LoadAsync();
-                _dbContext.CollectionLoaded<UserRole, byte, RoleClaim>(role, x => x.Claims);
+                _dbContext.CollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentNullException("role");
             }
 
-            _dbContext.SetAsAdded<UserRole, byte>(role);
+            _dbContext.SetAsAdded<UserRole, int>(role);
             return _dbContext.SaveChangesAsync();
         }
 
@@ -117,7 +117,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentNullException("role");
             }
 
-            _dbContext.SetAsDeleted<UserRole, byte>(role);
+            _dbContext.SetAsDeleted<UserRole, int>(role);
             return _dbContext.SaveChangesAsync();
         }
 
@@ -140,14 +140,14 @@ namespace Auth.FWT.Data.Identity
             _disposed = true;
         }
 
-        public Task<UserRole> FindByIdAsync(byte roleId)
+        public Task<UserRole> FindByIdAsync(int roleId)
         {
-            return _dbContext.Set<UserRole, byte>().FirstOrDefaultAsync(x => x.Id == roleId);
+            return _dbContext.Set<UserRole, int>().FirstOrDefaultAsync(x => x.Id == roleId);
         }
 
         public Task<UserRole> FindByNameAsync(string roleName)
         {
-            return _dbContext.Set<UserRole, byte>().FirstOrDefaultAsync(r => r.Name == roleName);
+            return _dbContext.Set<UserRole, int>().FirstOrDefaultAsync(r => r.Name == roleName);
         }
 
         public Task UpdateAsync(UserRole role)
@@ -157,7 +157,7 @@ namespace Auth.FWT.Data.Identity
                 throw new ArgumentNullException("role");
             }
 
-            _dbContext.SetAsModified<UserRole, byte>(role);
+            _dbContext.SetAsModified<UserRole, int>(role);
             return _dbContext.SaveChangesAsync();
         }
     }
