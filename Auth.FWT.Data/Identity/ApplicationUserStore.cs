@@ -371,7 +371,7 @@ namespace Auth.FWT.Data.Identity
             {
                 var userId = user.Id;
                 await _dbContext.Set<UserClaim, int>().Where(uc => uc.UserId.Equals(userId)).LoadAsync();
-                _dbContext.CollectionLoaded<User, int, UserRole>(user, x => x.Roles);
+                _dbContext.CollectionLoaded<User, int, UserClaim>(user, x => x.Claims);
             }
         }
 

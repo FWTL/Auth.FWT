@@ -126,6 +126,7 @@
     <Compile Include="Identity\ApplicationExternalLoginInfo.cs" />
     <Compile Include="Identity\IApplicationRoleManager.cs" />
     <Compile Include="Identity\IApplicationUserManager.cs" />
+    <Compile Include="Identity\IRoleClaimStore.cs" />
     <Compile Include="Identity\SignInStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IUserProvider.cs" />

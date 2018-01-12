@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Identity;
 using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {
-    public class ApplicationRoleStore : IRoleStore<UserRole, byte>, IQueryableRoleStore<UserRole, byte>
+    public class ApplicationRoleStore : IRoleStore<UserRole, byte>, IQueryableRoleStore<UserRole, byte>, IRoleClaimStore<UserRole, byte>
     {
         private readonly IEntitiesContext _dbContext;
 
@@ -21,6 +24,79 @@ namespace Auth.FWT.Data.Identity
         public IQueryable<UserRole> Roles
         {
             get { return _dbContext.Set<UserRole, byte>().AsQueryable(); }
+        }
+
+        public virtual Task AddClaimAsync(UserRole role, Claim claim)
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException("roleClaim");
+            }
+
+            _dbContext.Set<RoleClaim, int>().Add(new RoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
+            return Task.FromResult(0);
+        }
+
+        public virtual async Task RemoveClaimAsync(UserRole role, Claim claim)
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
+
+            IEnumerable<RoleClaim> claims;
+            var claimValue = claim.Value;
+            var claimType = claim.Type;
+            if (AreClaimsLoaded(role))
+            {
+                claims = role.Claims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType).ToList();
+            }
+            else
+            {
+                var roleId = role.Id;
+                claims = await _dbContext.Set<RoleClaim, int>().Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType && uc.RoleId.Equals(role)).ToListAsync();
+            }
+
+            foreach (var c in claims)
+            {
+                _dbContext.Set<RoleClaim, int>().Remove(c);
+            }
+        }
+
+        public virtual async Task<IList<Claim>> GetClaimsAsync(UserRole role)
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            await EnsureClaimsLoaded(role);
+            return role.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+        }
+
+        private bool AreClaimsLoaded(UserRole role)
+        {
+            return _dbContext.IsCollectionLoaded<UserRole, byte, RoleClaim>(role, x => x.Claims);
+        }
+
+        private async Task EnsureClaimsLoaded(UserRole role)
+        {
+            if (!AreClaimsLoaded(role))
+            {
+                var roleId = role.Id;
+                await _dbContext.Set<RoleClaim, int>().Where(uc => uc.RoleId.Equals(roleId)).LoadAsync();
+                _dbContext.CollectionLoaded<UserRole, byte, RoleClaim>(role, x => x.Claims);
+            }
         }
 
         public virtual Task CreateAsync(UserRole role)

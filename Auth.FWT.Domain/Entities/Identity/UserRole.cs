@@ -8,5 +8,7 @@ namespace Auth.FWT.Domain.Entities.Identity
         public string Name { get; set; }
 
         public virtual ICollection<User> Users { get; set; }
+
+        public virtual ICollection<RoleClaim> Claims { get; set; }
     }
 }

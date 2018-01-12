@@ -190,6 +190,10 @@
     <Compile Include="Migrations\201801031201220_Change_column_name_ClientAPI.Designer.cs">
       <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801121200437_Role_Claims.cs" />
+    <Compile Include="Migrations\201801121200437_Role_Claims.Designer.cs">
+      <DependentUpon>201801121200437_Role_Claims.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Redis\RedisClient.cs" />
@@ -226,6 +230,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801031201220_Change_column_name_ClientAPI.resx">
       <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801121200437_Role_Claims.resx">
+      <DependentUpon>201801121200437_Role_Claims.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
