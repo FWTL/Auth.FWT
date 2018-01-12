@@ -4,12 +4,6 @@ namespace Auth.FWT.Core.Enums
 {
     public static class Enum
     {
-        public enum ApplicationType
-        {
-            JavaScript = 0,
-            NativeConfidential = 1
-        }
-
         public enum UserRole
         {
             Admin = 1,
