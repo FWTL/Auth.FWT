@@ -75,8 +75,6 @@ namespace Auth.Manage
                 _unitOfWork.SaveChanges();
             })
             .Go();
-
-            SetClientActiveStatus();
         }
     }
 }
