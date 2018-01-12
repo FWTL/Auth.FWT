@@ -1,7 +1,9 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Reflection;
 using System.Web;
 using System.Web.Http;
+using Auth.FWT.API.Providers;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Services.Dapper;
@@ -14,6 +16,8 @@ using Autofac.Integration.WebApi;
 using FluentValidation;
 using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
+using Microsoft.Owin;
+using Microsoft.Owin.Security.OAuth;
 using Rws.Web.Core.CQRS;
 
 namespace Auth.FWT.API
@@ -34,7 +38,7 @@ namespace Auth.FWT.API
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICommandHandler<>)).InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICommandHandler<,>)).InstancePerRequest();
 
-            builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest().InstancePerDependency();
+            builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(IQueryHandler<,>)).InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(AbstractValidator<>)).InstancePerRequest();
 
@@ -46,7 +50,7 @@ namespace Auth.FWT.API
 
             builder.Register<IEntitiesContext>(b =>
             {
-                var context = new AppContext("name=AppContext");
+                var context = new Data.AppContext("name=AppContext");
                 return context;
             }).InstancePerRequest();
 

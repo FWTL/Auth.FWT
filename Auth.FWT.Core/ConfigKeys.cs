@@ -16,6 +16,16 @@ namespace Auth.FWT.Core
             get { return Setting("Captcha"); }
         }
 
+        public static int TelegramApiId
+        {
+            get { return Setting<int>("ApiId"); }
+        }
+
+        public static string TelegramApiHash
+        {
+            get { return Setting("ApiHash"); }
+        }
+
         public static string ConnectionString
         {
             get

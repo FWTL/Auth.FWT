@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using Auth.FWT.Domain.Entities;
 using FactoryGirlCore;
 
 namespace Auth.FWT.Data.Migrations
@@ -58,7 +59,7 @@ namespace Auth.FWT.Data.Migrations
             ////}
         }
 
-        private void InsertFakeData<TEntity, TKey, TFactory>(AppContext context, int count = 1, string name = "") where TEntity : Core.DomainModels.BaseEntity<TKey> where TFactory : IDefinable
+        private void InsertFakeData<TEntity, TKey, TFactory>(AppContext context, int count = 1, string name = "") where TEntity : BaseEntity<TKey> where TFactory : IDefinable
         {
             FactoryGirl.ClearFactoryDefinitions();
             FactoryGirl.Initialize(typeof(TFactory));

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Auth.FWT.Core.DomainModels;
+using Auth.FWT.Domain.Entities;
 
 namespace Auth.FWT.Core.Data
 {
@@ -11,13 +11,7 @@ namespace Auth.FWT.Core.Data
         where TEntity : BaseEntity<TKey>
         where TKey : IComparable
     {
-        void BatchDelete(Expression<Func<TEntity, bool>> predicate, bool hardDelete = false);
-
-        void BatchDelete<TOrder>(Expression<Func<TEntity, bool>> predicate, OrderBy direction, Expression<Func<TEntity, TOrder>> orderBy = null, int take = 0) where TOrder : IComparable;
-
-        void BatchUpdate(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> update, params Expression<Func<TEntity, object>>[] includeProperties);
-
-        void BatchUpdate<TOrder>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateStatement, OrderBy direction, Expression<Func<TEntity, TOrder>> orderBy, int take) where TOrder : IComparable;
+        void BatchDelete(Expression<Func<TEntity, bool>> predicate);
 
         void Delete(TEntity entity, bool isHardDelete = false);
 
@@ -35,7 +29,7 @@ namespace Auth.FWT.Core.Data
 
         void Insert(TEntity entity);
 
-        IQueryable<TEntity> Query(bool includeDeleted = false);
+        IQueryable<TEntity> Query();
 
         void Update(TEntity entity);
 

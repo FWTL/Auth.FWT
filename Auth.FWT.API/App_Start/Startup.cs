@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Net.Http.Formatting;
+using System.Web.Http;
 using Auth.FWT.API.App_Start;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
@@ -25,6 +27,7 @@ namespace Auth.FWT.API.Bootstrapper
                 context.Response.Headers.Remove("Server");
                 return next.Invoke();
             });
+
             app.UseStageMarker(PipelineStage.PostAcquireState);
         }
     }
