@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Domain.Entities.API;
 using Auth.FWT.Domain.Entities.Identity;
@@ -20,18 +19,18 @@ namespace Auth.Manage
         public void Run()
         {
             Menu();
+            Inquirer.Go();
         }
 
         public void Menu()
         {
-            Question.Menu()
+            Inquirer.Prompt(Question.Menu()
                 .AddOption("Create New Client", () => CreateNewClient())
                 .AddOption("Set Client Status", () => SetClientActiveStatus())
                 .AddOption("Add Role", () => AddRole())
                 .AddOption("Remove Role", () => RemoveRole())
                 .AddOption("Add Role Claim", () => AddRoleClaim())
-                .AddOption("Remove Role Claim", () => RemoveRoleClaim())
-            .Prompt();
+                .AddOption("Remove Role Claim", () => RemoveRoleClaim()));
         }
 
         private void RemoveRoleClaim()
@@ -39,28 +38,21 @@ namespace Auth.Manage
             UserRole role = null;
             var roles = _unitOfWork.RoleRepository.GetAllIncluding();
 
-            Question.Ask()
-            .Then(() =>
-            {
-                Question.List("Chose", roles).WithConvertToString(x => x.Name).Then(answer =>
-                {
-                    role = answer;
-                });
-            })
-            .Then(() =>
+            Inquirer.Prompt(Question.List("Chose", roles).WithConvertToString(x => x.Name)).Bind(() => role);
+            Inquirer.Prompt(() =>
             {
                 var claims = _unitOfWork.RoleClaimRepository.GetAllIncluding();
-
-                Question.Checkbox("Chose", claims).WithConvertToString(x => x.ClaimValue).Then(answer =>
+                return Question.Checkbox("Chose", claims).WithConvertToString(x => x.ClaimValue);
+            }).Then(answers =>
+            {
+                foreach (var claim in answers)
                 {
-                    foreach (var claim in answer)
-                    {
-                        _unitOfWork.RoleClaimRepository.Delete(claim);
-                    }
+                    _unitOfWork.RoleClaimRepository.Delete(claim);
+                }
 
-                    _unitOfWork.SaveChanges();
-                });
-            }).Go();
+                _unitOfWork.SaveChanges();
+                Menu();
+            });
         }
 
         private void AddRoleClaim()
@@ -68,67 +60,60 @@ namespace Auth.Manage
             UserRole role = null;
             var roles = _unitOfWork.RoleRepository.GetAllIncluding();
 
-            Question.Ask()
-            .Then(() =>
+            Inquirer.Prompt(Question.List("Chose", roles).WithConvertToString(x => x.Name)).Bind(() => role);
+            Inquirer.Prompt(Question.Input("Name")).Then(answer =>
             {
-                Question.List("Chose", roles).WithConvertToString(x => x.Name).Then(answer =>
+                _unitOfWork.RoleClaimRepository.Insert(new RoleClaim()
                 {
-                    role = answer;
+                    RoleId = role.Id,
+                    ClaimType = "Permission",
+                    ClaimValue = answer,
                 });
-            })
-            .Then(() =>
-            {
-                Question.Input("Name").Then(answer =>
-                {
-                    _unitOfWork.RoleClaimRepository.Insert(new RoleClaim()
-                    {
-                        RoleId = role.Id,
-                        ClaimType = "Permission",
-                        ClaimValue = answer,
-                    });
-                    _unitOfWork.SaveChanges();
-                });
-            }).Go();
+                _unitOfWork.SaveChanges();
+                Menu();
+            });
         }
 
         private void RemoveRole()
         {
-            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
-            Question.Checkbox("Remove", roles).WithConvertToString(x => x.Name).Then(answer =>
-             {
-                 _unitOfWork.BeginTransaction();
-                 foreach (var role in answer)
-                 {
-                     _unitOfWork.RoleClaimRepository.BatchDelete(rc => rc.RoleId == role.Id);
-                     _unitOfWork.RoleRepository.BatchDelete(r => r.Id == role.Id);
-                 }
-                 _unitOfWork.Commit();
-             });
+            Inquirer.Prompt(() =>
+            {
+                var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+                return Question.Checkbox("Remove", roles).WithConvertToString(x => x.Name);
+            }).Then(answers =>
+            {
+                _unitOfWork.BeginTransaction();
+                foreach (var role in answers)
+                {
+                    _unitOfWork.RoleClaimRepository.BatchDelete(rc => rc.RoleId == role.Id);
+                    _unitOfWork.RoleRepository.BatchDelete(r => r.Id == role.Id);
+                }
+                _unitOfWork.Commit();
+                Menu();
+            });
         }
 
         private void AddRole()
         {
             var role = new UserRole();
-
-            Question.Ask()
-            .Then(() => { Question.Input("Name").Then(answer => role.Name = answer); })
-            .Then(() =>
+            Inquirer.Prompt(Question.Input("Name")).Then(answer =>
             {
+                role.Name = answer;
                 _unitOfWork.RoleRepository.Insert(role);
                 _unitOfWork.SaveChanges();
-            })
-            .Go();
+                Menu();
+            });
         }
 
         private void SetClientActiveStatus()
         {
             var clients = _unitOfWork.ClientAPIRepository.GetAllIncluding().ToList();
 
-            Question.Checkbox("Alter", clients)
+            Inquirer.Prompt(Question.Checkbox("Alter", clients)
             .Page(10)
             .WithDefaultValue(item => { return clients.Where(c => c.IsActive).Any(c => c.Id == item.Id); })
             .WithConfirmation()
-            .WithConvertToString(item => { return $"{item.Name}"; }).Then(answer =>
+            .WithConvertToString(item => { return $"{item.Name}"; })).Then(answer =>
             {
                 var toDiactivate = clients.Where(c => c.IsActive).Where(c => !answer.Any(a => a.Id == c.Id)).ToList();
                 toDiactivate.ForEach(item =>
@@ -145,30 +130,26 @@ namespace Auth.Manage
                 });
 
                 _unitOfWork.SaveChanges();
+                Menu();
             });
         }
 
         private void CreateNewClient()
         {
             var client = new ClientAPI();
-
-            Question.Ask()
-            .Then(() => { Question.Input("Id").Then(answer => client.Id = answer); })
-            .Then(() => { Question.Input("Name").WithDefaultValue(client.Id).Then(answer => client.Name = answer); })
-            .Then(() => { Question.Input("Allowed Origin").WithDefaultValue("*").Then(answer => client.AllowedOrigin = answer); })
-            .Then(() => { Question.Input<int>("Refresh Token Lifetime (hours)").WithValidation(answer => answer > 0, "answer > 0").Then(answer => client.RefreshTokenLifeTime = answer * 60); })
-            .Then(() => { Question.Confirm("Is Active").Then(answer => client.IsActive = answer); })
-            .Then(() =>
+            Inquirer.Prompt(Question.Input("Id")).Bind(() => client.Id);
+            Inquirer.Prompt(() => Question.Input("Name").WithDefaultValue(client.Id)).Bind(() => client.Name);
+            Inquirer.Prompt(Question.Input("Allowed Origin")).Bind(() => client.AllowedOrigin);
+            Inquirer.Prompt(Question.Input<int>("Refresh Token Lifetime (hours)")).Then(answer => client.RefreshTokenLifeTime = answer * 60);
+            Inquirer.Prompt(Question.Confirm("Is Active")).Then(answer =>
             {
                 client.ApplicationType = ApplicationType.JavaScript;
                 client.Secret = "";
 
                 _unitOfWork.ClientAPIRepository.Insert(client);
                 _unitOfWork.SaveChanges();
-            })
-            .Go();
-
-            Menu();
+                Menu();
+            });
         }
     }
 }

@@ -157,8 +157,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Capatcha\GoogleCapatcha.cs" />
-    <Compile Include="Capatcha\Response.cs" />
     <Compile Include="Logging\NLogCommandInterceptor.cs" />
     <Compile Include="Logging\NLogLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

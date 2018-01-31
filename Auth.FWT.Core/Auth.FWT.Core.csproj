@@ -132,7 +132,6 @@
     <Compile Include="Providers\IUserProvider.cs" />
     <Compile Include="Services\Api\IApiKeyGenerator.cs" />
     <Compile Include="Services\Cache\IRedisClient.cs" />
-    <Compile Include="Services\Captcha\ICaptchaService.cs" />
     <Compile Include="Services\Dapper\IDapperConnector.cs" />
     <Compile Include="Services\Logging\ILogger.cs" />
     <Compile Include="Services\Telegram\IAppTelegramClient.cs" />
