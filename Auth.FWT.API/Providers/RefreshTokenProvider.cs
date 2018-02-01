@@ -66,7 +66,6 @@ namespace Auth.FWT.API.Providers
 
             if (refreshToken != null)
             {
-                //Get protectedTicket from refreshToken class
                 context.DeserializeTicket(refreshToken.ProtectedTicket);
                 unitOfWork.RefreshTokenRepository.Delete(refreshToken);
                 await unitOfWork.SaveChangesAsync();

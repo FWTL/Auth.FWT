@@ -15,11 +15,15 @@ namespace Auth.FWT.API.Filters
                 .ActionDescriptor.GetCustomAttributes<AuthorizeAttribute>();
 
             if (!authorizeAttributes.Any())
+            {
                 return;
+            }
 
             // Initialize the operation.security property
             if (operation.security == null)
+            {
                 operation.security = new List<IDictionary<string, IEnumerable<string>>>();
+            }
 
             // Add the appropriate security definition to the operation
             var oAuthRequirements = new Dictionary<string, IEnumerable<string>>

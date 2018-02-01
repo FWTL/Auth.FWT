@@ -21,7 +21,6 @@ namespace Auth.FWT.API
                 })
             .EnableSwaggerUi(c =>
             {
-                c.EnableOAuth2Support("swagger", null, null, null);
             });
         }
     }
