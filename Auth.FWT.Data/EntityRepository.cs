@@ -84,6 +84,11 @@ namespace Auth.FWT.Data
             return _dbEntitySet.Where(x => (object)x.Id == (object)id).FirstOrDefault();
         }
 
+        public async Task<TEntity> GetSingleAsync(TKey id)
+        {
+            return await _dbEntitySet.Where(x => (object)x.Id == (object)id).FirstOrDefaultAsync();
+        }
+
         public void IgnoreColumns(TEntity entity, params Expression<Action>[] @params)
         {
             _context.IgnoreUpdateEntityProperties<TEntity, TKey>(entity, @params);

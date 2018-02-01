@@ -25,6 +25,8 @@ namespace Auth.FWT.Core.Data
 
         TEntity GetSingle(TKey id);
 
+        Task<TEntity> GetSingleAsync(TKey id);
+
         void IgnoreColumns(TEntity entity, params Expression<Action>[] @params);
 
         void Insert(TEntity entity);

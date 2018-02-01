@@ -25,6 +25,7 @@ namespace Auth.FWT.API.Controllers.Login
         }
 
         [HttpGet]
+        [Authorize]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
         public string TelegramCode(string phoneNumber)
         {

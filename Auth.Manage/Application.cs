@@ -143,6 +143,7 @@ namespace Auth.Manage
             Inquirer.Prompt(Question.Input<int>("Refresh Token Lifetime (hours)")).Then(answer => client.RefreshTokenLifeTime = answer * 60);
             Inquirer.Prompt(Question.Confirm("Is Active")).Then(answer =>
             {
+                client.IsActive = answer;
                 client.ApplicationType = ApplicationType.JavaScript;
                 client.Secret = "";
 

@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
 using Auth.FWT.Domain.Entities.API;
@@ -16,16 +15,33 @@ namespace Auth.FWT.API.Providers
 {
     public class AuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
-        private IUnitOfWork _unitOfWork;
-
         public AuthorizationServerProvider()
         {
-            _unitOfWork = new UnitOfWork(new AppContext());
+        }
+
+        public override Task GrantRefreshToken(OAuthGrantRefreshTokenContext context)
+        {
+            var originalClient = context.Ticket.Properties.Dictionary["as:client_id"];
+            var currentClient = context.ClientId;
+
+            if (originalClient != currentClient)
+            {
+                context.SetError("invalid_clientId", "Refresh token is issued to a different clientId.");
+                return Task.FromResult<object>(null);
+            }
+
+            // Change auth ticket for refresh token requests
+            var newIdentity = new ClaimsIdentity(context.Ticket.Identity);
+
+            var newTicket = new AuthenticationTicket(newIdentity, context.Ticket.Properties);
+            context.Validated(newTicket);
+
+            return Task.FromResult<object>(null);
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var unitOfWork = new UnitOfWork(new Data.AppContext());
+            var unitOfWork = new UnitOfWork(new AppContext());
 
             var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
             if (allowedOrigin == null)
@@ -44,7 +60,17 @@ namespace Auth.FWT.API.Providers
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-            //Add claims here
+            identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
+
+            foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
+            {
+                identity.AddClaim(new Claim(claim.ClaimType, claim.ClaimValue));
+            }
+
+            foreach (UserClaim claim in user.Claims)
+            {
+                identity.AddClaim(new Claim(claim.ClaimType, claim.ClaimValue));
+            }
 
             var props = new AuthenticationProperties(new Dictionary<string, string>
                 {

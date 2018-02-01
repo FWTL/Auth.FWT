@@ -4,6 +4,7 @@ using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
 using Auth.FWT.Domain.Entities.API;
 using Microsoft.Owin.Security.Infrastructure;
+using NodaTime;
 
 namespace Auth.FWT.API.Providers
 {
@@ -53,9 +54,23 @@ namespace Auth.FWT.API.Providers
             throw new NotImplementedException();
         }
 
-        public Task ReceiveAsync(AuthenticationTokenReceiveContext context)
+        public async Task ReceiveAsync(AuthenticationTokenReceiveContext context)
         {
-            throw new NotImplementedException();
+            var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
+            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
+
+            string hashedTokenId = HashHelper.GetHash(context.Token);
+
+            var unitOfWork = new UnitOfWork(new Data.AppContext());
+            RefreshToken refreshToken = await unitOfWork.RefreshTokenRepository.GetSingleAsync(hashedTokenId);
+
+            if (refreshToken != null)
+            {
+                //Get protectedTicket from refreshToken class
+                context.DeserializeTicket(refreshToken.ProtectedTicket);
+                unitOfWork.RefreshTokenRepository.Delete(refreshToken);
+                await unitOfWork.SaveChangesAsync();
+            }
         }
     }
 }
