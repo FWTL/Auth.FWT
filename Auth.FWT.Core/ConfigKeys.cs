@@ -6,24 +6,14 @@ namespace Auth.FWT.Core
 {
     public static class ConfigKeys
     {
-        public static string Captcha
-        {
-            get { return Setting("Captcha"); }
-        }
-
-        public static string RedisConnectionString
-        {
-            get { return Setting("Captcha"); }
-        }
-
         public static int TelegramApiId
         {
-            get { return Setting<int>("ApiId"); }
+            get { return Setting<int>("TelegramApiId"); }
         }
 
         public static string TelegramApiHash
         {
-            get { return Setting("ApiHash"); }
+            get { return Setting("TelegramApiHash"); }
         }
 
         public static string ConnectionString
@@ -33,6 +23,8 @@ namespace Auth.FWT.Core
                 return ConfigurationManager.ConnectionStrings["AppContext"].ConnectionString;
             }
         }
+
+        public static string RedisConnectionString { get; set; }
 
         private static T Setting<T>(string name) where T : struct
         {

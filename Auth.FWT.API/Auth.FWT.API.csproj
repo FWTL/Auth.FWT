@@ -209,6 +209,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="appSettings.config" />
     <Content Include="Global.asax" />
     <Content Include="SwaggerExtensions\DefaultAPIKey.js" />
     <Content Include="Web.config" />
@@ -222,9 +223,8 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
-    <Compile Include="Controllers\Get TelegramCode\GetTelegramCodeQuery.cs" />
-    <Compile Include="Controllers\Get TelegramCode\GetTelegramCodeQueryValidator.cs" />
-    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\Account\SendCode.cs" />
+    <Compile Include="Controllers\Account\AccountController.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
@@ -244,7 +244,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="appSettings.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -254,9 +253,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Controllers\Post Login\" />
     <Folder Include="SwaggerExtensions\Examples\" />
-    <Folder Include="Telegram\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Auth.FWT.Core\Auth.FWT.Core.csproj">

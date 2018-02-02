@@ -17,6 +17,7 @@ namespace Auth.FWT.API.Bootstrapper
             var container = IocConfig.RegisterDependencies();
             app.UseAutofacMiddleware(container);
             app.UseAutofacWebApi(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalConfiguration.Configuration.Filters);
 
             MapperConfig.Configure();
             SwaggerConfig.Register();

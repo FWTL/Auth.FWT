@@ -134,7 +134,6 @@
     <Compile Include="Services\Cache\IRedisClient.cs" />
     <Compile Include="Services\Dapper\IDapperConnector.cs" />
     <Compile Include="Services\Logging\ILogger.cs" />
-    <Compile Include="Services\Telegram\IAppTelegramClient.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

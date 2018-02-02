@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Reflection;
 using System.Web;
 using System.Web.Http;
-using Auth.FWT.API.Providers;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Services.Dapper;
@@ -11,14 +9,14 @@ using Auth.FWT.CQRS;
 using Auth.FWT.Data;
 using Auth.FWT.Data.Dapper;
 using Auth.FWT.Infrastructure.Logging;
+using Auth.FWT.Infrastructure.Telegram;
 using Autofac;
 using Autofac.Integration.WebApi;
 using FluentValidation;
 using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.OAuth;
 using Rws.Web.Core.CQRS;
+using TLSharp.Core;
 
 namespace Auth.FWT.API
 {
@@ -60,6 +58,16 @@ namespace Auth.FWT.API
             {
                 HttpRequestMessage httpRequestMessage = HttpContext.Current.Items["MS_HttpRequestMessage"] as HttpRequestMessage;
                 return new UserProvider(httpRequestMessage);
+            }).InstancePerRequest();
+
+            builder.RegisterType<SQLSessionStore>().As<ISessionStore>().InstancePerRequest();
+
+            builder.Register(b =>
+            {
+                var userProvider = b.Resolve<IUserProvider>();
+                var client = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, new FakeSessionStore(), userProvider.IsAuthenticated ? userProvider?.CurrentUserId.ToString() : null);
+
+                return client;
             }).InstancePerRequest();
 
             _container = builder.Build();

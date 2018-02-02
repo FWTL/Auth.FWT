@@ -16,6 +16,14 @@ namespace GitGud.API.Providers
             _request = request;
         }
 
+        public bool IsAuthenticated
+        {
+            get
+            {
+                return _request.GetRequestContext().Principal.Identity.IsAuthenticated;
+            }
+        }
+
         public int CurrentUserId
         {
             get
