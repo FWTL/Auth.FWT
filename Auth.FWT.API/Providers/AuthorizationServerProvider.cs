@@ -3,12 +3,15 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
 using Auth.FWT.Domain.Entities.API;
 using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
+using TLSharp.Core;
 using static Auth.FWT.Domain.Enums.Enum;
 
 namespace Auth.FWT.API.Providers
@@ -50,6 +53,13 @@ namespace Auth.FWT.API.Providers
             }
 
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
+
+            var sqlStore = new SQLSessionStore(unitOfWork);
+            var telegramClient = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, sqlStore, null);
+            await telegramClient.ConnectAsync();
+
+            string hash = await unitOfWork.TelegramCodeRepository.Query().Where(tc => tc.Id == HashHelper.GetHash(context.UserName)).Select(tc => tc.CodeHash).FirstOrDefaultAsync();
+            await telegramClient.MakeAuthAsync(context.UserName, hash, context.Password);
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.LockoutEnabled).FirstOrDefaultAsync();
 

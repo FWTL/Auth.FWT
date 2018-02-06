@@ -22,6 +22,15 @@ namespace Auth.FWT.Data
             _context = context;
         }
 
+        public IRepository<TelegramCode, string> TelegramCodeRepository
+        {
+            get
+
+            {
+                return Repository<TelegramCode, string>();
+            }
+        }
+
         public IRepository<TelegramSession, int> TelegramSessionRepository
         {
             get

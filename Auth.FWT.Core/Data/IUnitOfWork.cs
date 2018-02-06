@@ -38,5 +38,7 @@ namespace Auth.FWT.Core.Data
         IRepository<UserRole, int> RoleRepository { get; }
 
         IRepository<RoleClaim, int> RoleClaimRepository { get; }
+
+        IRepository<TelegramCode, string> TelegramCodeRepository { get; }
     }
 }

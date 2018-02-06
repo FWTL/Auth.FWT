@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Auth.FWT.Data.Base.Configuration;
 using Auth.FWT.Data.Conventions;
 using Auth.FWT.Domain.Entities;
+using Auth.FWT.Domain.Entities.Identity;
 using Auth.FWT.Infrastructure.Logging;
 
 namespace Auth.FWT.Data
@@ -173,7 +174,9 @@ namespace Auth.FWT.Data
             base.Dispose(disposing);
         }
 
-        ////public DbSet<Hotel> Hotel { get; set; }
+        public DbSet<TelegramSession> TelegramSessions { get; set; }
+        public DbSet<TelegramCode> TelegramCodes { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -197,7 +200,7 @@ namespace Auth.FWT.Data
 
         private DbEntityEntry GetDbEntityEntrySafely<TEntity, TKey>(TEntity entity, EntityState state) where TEntity : BaseEntity<TKey>
         {
-            var dbEntityEntry = Entry<TEntity>(entity);
+            var dbEntityEntry = Entry(entity);
             if (state == EntityState.Added)
             {
                 return dbEntityEntry;

@@ -55,6 +55,7 @@
     <Compile Include="Entities\BaseEntity.cs" />
     <Compile Include="Entities\Identity\AppClaims.cs" />
     <Compile Include="Entities\Identity\RoleClaim.cs" />
+    <Compile Include="Entities\TelegramCode.cs" />
     <Compile Include="Entities\Identity\User.cs" />
     <Compile Include="Entities\Identity\UserClaim.cs" />
     <Compile Include="Entities\Identity\UserLogin.cs" />
