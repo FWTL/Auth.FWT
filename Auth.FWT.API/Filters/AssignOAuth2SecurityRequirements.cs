@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Auth.FWT.Core.Extensions;
 using Swashbuckle.Swagger;
 
 namespace Auth.FWT.API.Filters
@@ -20,7 +21,7 @@ namespace Auth.FWT.API.Filters
             }
 
             // Initialize the operation.security property
-            if (operation.security == null)
+            if (operation.security.IsNull())
             {
                 operation.security = new List<IDictionary<string, IEnumerable<string>>>();
             }

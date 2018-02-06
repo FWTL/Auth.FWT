@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
@@ -40,12 +41,12 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task AddClaimAsync(User user, Claim claim)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
 
-            if (claim == null)
+            if (claim.IsNull())
             {
                 throw new ArgumentNullException("claim");
             }
@@ -56,12 +57,12 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task AddLoginAsync(User user, UserLoginInfo login)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
 
-            if (login == null)
+            if (login.IsNull())
             {
                 throw new ArgumentNullException("login");
             }
@@ -77,7 +78,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task AddToRoleAsync(User user, string roleName)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -88,7 +89,7 @@ namespace Auth.FWT.Data.Identity
             }
 
             var roleEntity = await _dbContext.Set<UserRole, int>().SingleOrDefaultAsync(r => r.Name.ToUpper() == roleName.ToUpper());
-            if (roleEntity == null)
+            if (roleEntity.IsNull())
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Role not found", roleName));
             }
@@ -98,7 +99,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task CreateAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -109,7 +110,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task DeleteAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -140,7 +141,7 @@ namespace Auth.FWT.Data.Identity
         //// IUserLogin implementation
         public virtual async Task<User> FindAsync(UserLoginInfo login)
         {
-            if (login == null)
+            if (login.IsNull())
             {
                 throw new ArgumentNullException("login");
             }
@@ -170,7 +171,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -181,7 +182,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task<bool> GetLockoutEnabledAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -191,7 +192,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task<DateTimeOffset> GetLockoutEndDateAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -204,7 +205,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task<IList<string>> GetRolesAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -215,7 +216,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task<string> GetSecurityStampAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -225,7 +226,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task<bool> IsInRoleAsync(User user, string roleName)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -240,12 +241,12 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task RemoveClaimAsync(User user, Claim claim)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
 
-            if (claim == null)
+            if (claim.IsNull())
             {
                 throw new ArgumentNullException("claim");
             }
@@ -271,7 +272,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task RemoveFromRoleAsync(User user, string roleName)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -296,7 +297,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task SetLockoutEnabledAsync(User user, bool enabled)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -307,7 +308,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task SetLockoutEndDateAsync(User user, DateTimeOffset lockoutEnd)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -318,7 +319,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task SetSecurityStampAsync(User user, string stamp)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -329,7 +330,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task UpdateAsync(User user)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user");
             }
@@ -426,7 +427,7 @@ namespace Auth.FWT.Data.Identity
                     return false;
                 }
                 //// left side of Equals() should be an access to User.Id
-                if (callExpression.Object == null
+                if (callExpression.Object.IsNull()
                     || callExpression.Object.NodeType != ExpressionType.MemberAccess
                     || ((MemberExpression)callExpression.Object).Member != UserIdMemberInfo)
                 {

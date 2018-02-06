@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Domain.Entities;
 using Auth.FWT.Domain.Entities.API;
 using Auth.FWT.Domain.Entities.Identity;
@@ -121,7 +122,7 @@ namespace Auth.FWT.Data
             where TEntity : BaseEntity<TKey>
             where TKey : IComparable
         {
-            if (_repositories == null)
+            if (_repositories.IsNull())
             {
                 _repositories = new Hashtable();
             }

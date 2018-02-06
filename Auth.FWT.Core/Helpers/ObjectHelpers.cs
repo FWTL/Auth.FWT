@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Auth.FWT.Core.Extensions;
 
 namespace Auth.FWT.Core.Helpers
 {
@@ -9,7 +10,7 @@ namespace Auth.FWT.Core.Helpers
         {
             MemberExpression body = exp.Body as MemberExpression;
 
-            if (body == null)
+            if (body.IsNull())
             {
                 UnaryExpression ubody = (UnaryExpression)exp.Body;
                 body = ubody.Operand as MemberExpression;

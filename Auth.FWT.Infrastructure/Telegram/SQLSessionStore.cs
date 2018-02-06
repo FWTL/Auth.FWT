@@ -24,7 +24,7 @@ namespace Auth.FWT.Infrastructure.Telegram
                 currentUser = _unitOfWork.UserRepository.GetSingle(sessionUserId.To<int>());
             }
 
-            if (currentUser == null)
+            if (currentUser.IsNull())
             {
                 return null;
             }

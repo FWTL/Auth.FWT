@@ -30,7 +30,7 @@ namespace Auth.FWT.Core
         {
             string value = ConfigurationManager.AppSettings[name];
 
-            if (value == null)
+            if (value.IsNull())
             {
                 throw new Exception(string.Format("Could not find setting '{0}',", name));
             }
@@ -42,7 +42,7 @@ namespace Auth.FWT.Core
         {
             string value = ConfigurationManager.AppSettings[name];
 
-            if (value == null)
+            if (value.IsNull())
             {
                 throw new Exception(string.Format("Could not find setting '{0}',", name));
             }

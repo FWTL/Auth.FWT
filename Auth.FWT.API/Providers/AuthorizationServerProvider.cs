@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Auth.FWT.Core;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
 using Auth.FWT.Domain.Entities.API;
@@ -47,7 +48,7 @@ namespace Auth.FWT.API.Providers
             var unitOfWork = new UnitOfWork(new AppContext());
 
             var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
-            if (allowedOrigin == null)
+            if (allowedOrigin.IsNull())
             {
                 allowedOrigin = "*";
             }
@@ -63,7 +64,7 @@ namespace Auth.FWT.API.Providers
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.LockoutEnabled).FirstOrDefaultAsync();
 
-            if (user == null)
+            if (user.IsNull())
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
@@ -85,7 +86,7 @@ namespace Auth.FWT.API.Providers
             var props = new AuthenticationProperties(new Dictionary<string, string>
                 {
                     {
-                        "as:client_id", (context.ClientId == null) ? string.Empty : context.ClientId
+                        "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
                     },
                     {
                         "userName", context.UserName
@@ -119,7 +120,7 @@ namespace Auth.FWT.API.Providers
             var unitOfWork = new UnitOfWork(new AppContext());
             ClientAPI client = unitOfWork.ClientAPIRepository.GetSingle(context.ClientId);
 
-            if (client == null)
+            if (client.IsNull())
             {
                 context.SetError("invalid_clientId", string.Format("Client '{0}' is not registered in the system.", context.ClientId));
                 return Task.FromResult<object>(null);

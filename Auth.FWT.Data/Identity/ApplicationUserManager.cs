@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Identity;
 using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
@@ -53,7 +54,7 @@ namespace Auth.FWT.Data.Identity
         public async Task<SignInStatus> CanSignInPasswordAsync(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
-            if (user == null)
+            if (user.IsNull())
             {
                 return SignInStatus.Failure;
             }
@@ -84,7 +85,7 @@ namespace Auth.FWT.Data.Identity
 
         public Task<bool> CheckPasswordAsync(User user, string password)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user is null");
             }
@@ -140,7 +141,7 @@ namespace Auth.FWT.Data.Identity
         public async Task<SignInStatus> ExternalSignIn(ApplicationExternalLoginInfo loginInfo, bool isPersistent)
         {
             var user = await FindAsync(loginInfo.Login).ConfigureAwait(false);
-            if (user == null)
+            if (user.IsNull())
             {
                 return SignInStatus.Failure;
             }
@@ -218,7 +219,7 @@ namespace Auth.FWT.Data.Identity
 
         public async Task SignInAsync(User user, bool isPersistent, bool rememberBrowser)
         {
-            if (user == null)
+            if (user.IsNull())
             {
                 throw new ArgumentNullException("user is null");
             }
@@ -241,7 +242,7 @@ namespace Auth.FWT.Data.Identity
         public async Task<SignInStatus> SignInPasswordAsync(string email, string password, bool isPersistent, bool rememberBrowser)
         {
             var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
-            if (user == null)
+            if (user.IsNull())
             {
                 return SignInStatus.Failure;
             }

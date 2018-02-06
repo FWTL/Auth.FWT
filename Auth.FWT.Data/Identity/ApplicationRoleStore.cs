@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Identity;
 using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
@@ -28,12 +29,12 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task AddClaimAsync(UserRole role, Claim claim)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
 
-            if (claim == null)
+            if (claim.IsNull())
             {
                 throw new ArgumentNullException("roleClaim");
             }
@@ -44,12 +45,12 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task RemoveClaimAsync(UserRole role, Claim claim)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
 
-            if (claim == null)
+            if (claim.IsNull())
             {
                 throw new ArgumentNullException("claim");
             }
@@ -75,7 +76,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual async Task<IList<Claim>> GetClaimsAsync(UserRole role)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
@@ -101,7 +102,7 @@ namespace Auth.FWT.Data.Identity
 
         public virtual Task CreateAsync(UserRole role)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
@@ -112,7 +113,7 @@ namespace Auth.FWT.Data.Identity
 
         public Task DeleteAsync(UserRole role)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
@@ -152,7 +153,7 @@ namespace Auth.FWT.Data.Identity
 
         public Task UpdateAsync(UserRole role)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("role");
             }
