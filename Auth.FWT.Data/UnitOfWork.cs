@@ -3,9 +3,10 @@ using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
-using Auth.FWT.Domain.Entities;
-using Auth.FWT.Domain.Entities.API;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Entities.API;
+using Auth.FWT.Core.Entities.Identity;
+using Auth.FWT.Core.Extensions;
 
 namespace Auth.FWT.Data
 {
@@ -22,22 +23,6 @@ namespace Auth.FWT.Data
             _context = context;
         }
 
-        public IRepository<TelegramSession, int> TelegramSessionRepository
-        {
-            get
-            {
-                return Repository<TelegramSession, int>();
-            }
-        }
-
-        public IRepository<User, int> UserRepository
-        {
-            get
-            {
-                return Repository<User, int>();
-            }
-        }
-
         public IRepository<ClientAPI, string> ClientAPIRepository
         {
             get
@@ -51,6 +36,47 @@ namespace Auth.FWT.Data
             get
             {
                 return Repository<RefreshToken, string>();
+            }
+        }
+
+        public IRepository<RoleClaim, int> RoleClaimRepository
+        {
+            get
+            {
+                return Repository<RoleClaim, int>();
+            }
+        }
+
+        public IRepository<UserRole, int> RoleRepository
+        {
+            get
+            {
+                return Repository<UserRole, int>();
+            }
+        }
+
+        public IRepository<TelegramCode, string> TelegramCodeRepository
+        {
+            get
+
+            {
+                return Repository<TelegramCode, string>();
+            }
+        }
+
+        public IRepository<TelegramSession, int> TelegramSessionRepository
+        {
+            get
+            {
+                return Repository<TelegramSession, int>();
+            }
+        }
+
+        public IRepository<User, int> UserRepository
+        {
+            get
+            {
+                return Repository<User, int>();
             }
         }
 
@@ -96,7 +122,7 @@ namespace Auth.FWT.Data
             where TEntity : BaseEntity<TKey>
             where TKey : IComparable
         {
-            if (_repositories == null)
+            if (_repositories.IsNull())
             {
                 _repositories = new Hashtable();
             }

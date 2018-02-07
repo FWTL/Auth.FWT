@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Auth.FWT.Domain.Entities;
+using Auth.FWT.Core.Entities;
 
 namespace Auth.FWT.Core.Data
 {
@@ -13,9 +13,9 @@ namespace Auth.FWT.Core.Data
     {
         void BatchDelete(Expression<Func<TEntity, bool>> predicate);
 
-        void Delete(TEntity entity, bool isHardDelete = false);
+        void Delete(TEntity entity);
 
-        Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate, bool isHardDelete = false);
+        Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate);
 
         void Detach(ICollection<TEntity> collection);
 
@@ -24,6 +24,8 @@ namespace Auth.FWT.Core.Data
         IEnumerable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] includeProperties);
 
         TEntity GetSingle(TKey id);
+
+        Task<TEntity> GetSingleAsync(TKey id);
 
         void IgnoreColumns(TEntity entity, params Expression<Action>[] @params);
 

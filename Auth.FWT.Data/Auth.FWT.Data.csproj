@@ -174,21 +174,13 @@
     <Compile Include="Identity\IdentityFactory.cs" />
     <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="IEntitiesContext.cs" />
-    <Compile Include="Migrations\201712221643336_Init.cs" />
-    <Compile Include="Migrations\201712221643336_Init.Designer.cs">
-      <DependentUpon>201712221643336_Init.cs</DependentUpon>
+    <Compile Include="Migrations\201801121409391_init.cs" />
+    <Compile Include="Migrations\201801121409391_init.Designer.cs">
+      <DependentUpon>201801121409391_init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201712271114385_Add-Table-TelegramSession.cs" />
-    <Compile Include="Migrations\201712271114385_Add-Table-TelegramSession.Designer.cs">
-      <DependentUpon>201712271114385_Add-Table-TelegramSession.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201801021445043_Remove_Soft_Deletes.cs" />
-    <Compile Include="Migrations\201801021445043_Remove_Soft_Deletes.Designer.cs">
-      <DependentUpon>201801021445043_Remove_Soft_Deletes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201801031201220_Change_column_name_ClientAPI.cs" />
-    <Compile Include="Migrations\201801031201220_Change_column_name_ClientAPI.Designer.cs">
-      <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
+    <Compile Include="Migrations\201802071103570_telegramcodehash.cs" />
+    <Compile Include="Migrations\201802071103570_telegramcodehash.Designer.cs">
+      <DependentUpon>201802071103570_telegramcodehash.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -201,10 +193,6 @@
       <Project>{0ED2E479-2353-59A2-C8FB-880112959A8C}</Project>
       <Name>Auth.FWT.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Auth.FWT.Domain\Auth.FWT.Domain.csproj">
-      <Project>{373414ac-a012-45ac-9cef-545c9ff6d528}</Project>
-      <Name>Auth.FWT.Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Auth.FWT.Infrastructure\Auth.FWT.Infrastructure.csproj">
       <Project>{1BCACCE6-43CE-F2DE-3B26-75460EB06BD2}</Project>
       <Name>Auth.FWT.Infrastructure</Name>
@@ -215,17 +203,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201712221643336_Init.resx">
-      <DependentUpon>201712221643336_Init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201801121409391_init.resx">
+      <DependentUpon>201801121409391_init.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712271114385_Add-Table-TelegramSession.resx">
-      <DependentUpon>201712271114385_Add-Table-TelegramSession.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801021445043_Remove_Soft_Deletes.resx">
-      <DependentUpon>201801021445043_Remove_Soft_Deletes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801031201220_Change_column_name_ClientAPI.resx">
-      <DependentUpon>201801031201220_Change_column_name_ClientAPI.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802071103570_telegramcodehash.resx">
+      <DependentUpon>201802071103570_telegramcodehash.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

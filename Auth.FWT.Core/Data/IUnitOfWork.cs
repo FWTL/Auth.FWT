@@ -1,14 +1,28 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Auth.FWT.Domain.Entities;
-using Auth.FWT.Domain.Entities.API;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Entities.API;
+using Auth.FWT.Core.Entities.Identity;
 
 namespace Auth.FWT.Core.Data
 {
     public interface IUnitOfWork : IDisposable
     {
+        IRepository<ClientAPI, string> ClientAPIRepository { get; }
+
+        IRepository<RefreshToken, string> RefreshTokenRepository { get; }
+
+        IRepository<RoleClaim, int> RoleClaimRepository { get; }
+
+        IRepository<UserRole, int> RoleRepository { get; }
+
+        IRepository<TelegramCode, string> TelegramCodeRepository { get; }
+
+        IRepository<TelegramSession, int> TelegramSessionRepository { get; }
+
+        IRepository<User, int> UserRepository { get; }
+
         void BeginTransaction();
 
         int Commit();
@@ -26,13 +40,5 @@ namespace Auth.FWT.Core.Data
         Task<int> SaveChangesAsync();
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-
-        IRepository<TelegramSession, int> TelegramSessionRepository { get; }
-
-        IRepository<User, int> UserRepository { get; }
-
-        IRepository<RefreshToken, string> RefreshTokenRepository { get; }
-
-        IRepository<ClientAPI, string> ClientAPIRepository { get; }
     }
 }

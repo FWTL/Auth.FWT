@@ -48,11 +48,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TLSharp.Core">
+      <HintPath>..\..\TLSharp\TLSharp.Core\bin\Debug\TLSharp.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\API\ClientAPI.cs" />
     <Compile Include="Entities\API\RefreshToken.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
+    <Compile Include="Entities\Identity\AppClaims.cs" />
+    <Compile Include="Entities\Identity\RoleClaim.cs" />
+    <Compile Include="Entities\TelegramCode.cs" />
     <Compile Include="Entities\Identity\User.cs" />
     <Compile Include="Entities\Identity\UserClaim.cs" />
     <Compile Include="Entities\Identity\UserLogin.cs" />

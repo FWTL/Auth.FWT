@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
-using Auth.FWT.Domain.Entities;
+using System.Linq;
+using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Entities.Identity;
 using FactoryGirlCore;
 
 namespace Auth.FWT.Data.Migrations
@@ -19,44 +21,42 @@ namespace Auth.FWT.Data.Migrations
             ////    System.Diagnostics.Debugger.Launch();
             ////}
 
-            ////if (context.Set<UserRole, byte>().Any(x => x.Name == "Admin") == false)
-            ////{
-            ////    var adminRole = new UserRole()
-            ////    {
-            ////        Id = 1,
-            ////        Name = "Admin",
-            ////    };
-            ////    context.Set<UserRole, byte>().Add(adminRole);
-            ////    context.SaveChanges();
-            ////}
+            if (!context.Set<UserRole, int>().Any(ur => ur.Name == "swagger"))
+            {
+                var swaggerRole = new UserRole()
+                {
+                    Name = "swagger"
+                };
 
-            ////if (context.Set<UserRole, byte>().Any(x => x.Name == "User") == false)
-            ////{
-            ////    var userRole = new UserRole()
-            ////    {
-            ////        Id = 2,
-            ////        Name = "User",
-            ////    };
-            ////    context.Set<UserRole, byte>().Add(userRole);
-            ////    context.SaveChanges();
-            ////}
+                context.Set<UserRole, int>().Add(swaggerRole);
+                context.SaveChanges();
+            }
 
-            ////if (context.Set<User, int>().Any(x => x.Email == "a@g.pl") == false)
-            ////{
-            ////    var admin = new User()
-            ////    {
-            ////        Email = "a@g.pl",
-            ////        EmailConfirmed = true,
-            ////        PasswordHash = PasswordHelper.CreateHash("123"),
-            ////        SecurityStamp = "123",
-            ////        UserName = "Andrzej Go�aszewski",
-            ////    };
+            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.SWAGGER_READ))
+            {
+                var swaggerRead = new RoleClaim()
+                {
+                    ClaimType = AppClaims.SWAGGER_READ,
+                    ClaimValue = AppClaims.SWAGGER_READ,
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == "swagger").Id
+                };
 
-            ////    var adminRole = context.Set<UserRole, byte>().Where(x => x.Name == "Admin").FirstOrDefault();
-            ////    admin.Roles.Add(adminRole);
-            ////    context.Set<User, int>().Add(admin);
-            ////    context.SaveChanges();
-            ////}
+                context.Set<RoleClaim, int>().Add(swaggerRead);
+                context.SaveChanges();
+            }
+
+            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.SWAGGER_WRITE))
+            {
+                var swaggerRead = new RoleClaim()
+                {
+                    ClaimType = AppClaims.SWAGGER_WRITE,
+                    ClaimValue = AppClaims.SWAGGER_WRITE,
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == "swagger").Id
+                };
+
+                context.Set<RoleClaim, int>().Add(swaggerRead);
+                context.SaveChanges();
+            }
         }
 
         private void InsertFakeData<TEntity, TKey, TFactory>(AppContext context, int count = 1, string name = "") where TEntity : BaseEntity<TKey> where TFactory : IDefinable

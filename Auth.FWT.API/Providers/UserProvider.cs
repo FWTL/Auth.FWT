@@ -24,5 +24,13 @@ namespace GitGud.API.Providers
                 return principal.Claims.Where(c => c.Type == ClaimTypes.UserData).Single().Value.To<int>();
             }
         }
+
+        public bool IsAuthenticated
+        {
+            get
+            {
+                return _request.GetRequestContext().Principal.Identity.IsAuthenticated;
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
-using Auth.FWT.Domain.Entities;
+using Auth.FWT.Core.Entities;
 using Z.EntityFramework.Plus;
 
 namespace Auth.FWT.Data
@@ -31,12 +31,12 @@ namespace Auth.FWT.Data
             _dbEntitySet.Where(predicate).Delete();
         }
 
-        public void Delete(TEntity entity, bool isHardDelete)
+        public void Delete(TEntity entity)
         {
             _context.SetAsDeleted<TEntity, TKey>(entity);
         }
 
-        public Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate, bool isHardDelete)
+        public Task Delete(TKey id, Expression<Func<TEntity, bool>> predicate)
         {
             var query = _dbEntitySet.Where(predicate).Where(x => (object)x.Id == (object)id);
             query.Delete();
@@ -82,6 +82,11 @@ namespace Auth.FWT.Data
         public TEntity GetSingle(TKey id)
         {
             return _dbEntitySet.Where(x => (object)x.Id == (object)id).FirstOrDefault();
+        }
+
+        public async Task<TEntity> GetSingleAsync(TKey id)
+        {
+            return await _dbEntitySet.Where(x => (object)x.Id == (object)id).FirstOrDefaultAsync();
         }
 
         public void IgnoreColumns(TEntity entity, params Expression<Action>[] @params)

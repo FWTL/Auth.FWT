@@ -6,12 +6,6 @@ namespace Auth.Manage
 {
     internal class Program
     {
-        private static void Main(string[] args)
-        {
-            IContainer _container = ConfigureContainer(new ContainerBuilder()).Build();
-            _container.Resolve<IApplication>().Run();
-        }
-
         internal static ContainerBuilder ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterGeneric(typeof(EntityRepository<,>)).As(typeof(IRepository<,>));
@@ -25,6 +19,12 @@ namespace Auth.Manage
 
             builder.RegisterType<Application>().As<IApplication>();
             return builder;
+        }
+
+        private static void Main(string[] args)
+        {
+            IContainer _container = ConfigureContainer(new ContainerBuilder()).Build();
+            _container.Resolve<IApplication>().Run();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Data.Entity.ModelConfiguration;
+using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Helpers.Const;
-using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Data.Base.Configuration
 {

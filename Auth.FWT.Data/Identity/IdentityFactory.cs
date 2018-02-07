@@ -1,14 +1,14 @@
 using System;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {
     public class IdentityFactory
     {
-        public static RoleManager<UserRole, byte> CreateRoleManager(IEntitiesContext context)
+        public static RoleManager<UserRole, int> CreateRoleManager(IEntitiesContext context)
         {
-            var manager = new RoleManager<UserRole, byte>(new ApplicationRoleStore(context));
+            var manager = new RoleManager<UserRole, int>(new ApplicationRoleStore(context));
             return manager;
         }
 

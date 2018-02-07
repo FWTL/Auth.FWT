@@ -46,8 +46,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="InquirerCS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Inquirer\Source\Inquirer\bin\Debug\InquirerCS.dll</HintPath>
+      <HintPath>..\packages\Inquirer.cs.3.0.0\lib\InquirerCS.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -81,10 +81,6 @@
     <ProjectReference Include="..\Auth.FWT.Data\Auth.FWT.Data.csproj">
       <Project>{876A790E-8B16-7F15-C15C-403770183ADE}</Project>
       <Name>Auth.FWT.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Auth.FWT.Domain\Auth.FWT.Domain.csproj">
-      <Project>{373414ac-a012-45ac-9cef-545c9ff6d528}</Project>
-      <Name>Auth.FWT.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

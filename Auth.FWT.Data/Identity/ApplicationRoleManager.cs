@@ -2,26 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Entities.Identity;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Identity;
-using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
 {
     public class ApplicationRoleManager : IApplicationRoleManager
     {
-        private readonly RoleManager<UserRole, byte> _roleManager;
+        private readonly RoleManager<UserRole, int> _roleManager;
 
         private bool _disposed;
 
-        public ApplicationRoleManager(RoleManager<UserRole, byte> roleManager)
+        public ApplicationRoleManager(RoleManager<UserRole, int> roleManager)
         {
             _roleManager = roleManager;
         }
 
         public async Task<IEnumerable<string>> CreateAsync(UserRole role)
         {
-            if (role == null)
+            if (role.IsNull())
             {
                 throw new ArgumentNullException("Role is null");
             }
@@ -38,7 +39,7 @@ namespace Auth.FWT.Data.Identity
         public async Task<IEnumerable<string>> DeleteAsync(byte roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
-            if (role == null)
+            if (role.IsNull())
             {
                 return new List<string>() { "Role not exists" };
             }

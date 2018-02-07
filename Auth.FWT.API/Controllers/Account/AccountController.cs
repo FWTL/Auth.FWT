@@ -1,34 +1,38 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Auth.FWT.API.Models;
 using Auth.FWT.CQRS;
 using Swashbuckle.Swagger.Annotations;
 
-namespace Auth.FWT.API.Controllers.Login
+namespace Auth.FWT.API.Controllers.Account
 {
-    public class LoginController : ApiController
+    public class AccountController : ApiController
     {
         private ICommandDispatcher _commandDispatcher;
+
         private IQueryDispatcher _queryDispatcher;
 
-        public LoginController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
+        public AccountController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
         {
             _commandDispatcher = commandDispatcher;
             _queryDispatcher = queryDispatcher;
         }
 
         [HttpPost]
+        [Route("api/account/login")]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
-        public bool Login(string phoneNumber, string code)
+        public async Task Login(string phoneNumber)
         {
-            return false;
+            await _commandDispatcher.Dispatch(new SendCode.Command(phoneNumber));
         }
 
-        [HttpGet]
+        [HttpPost]
+        [Route("api/account/sendcode")]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
-        public string TelegramCode(string phoneNumber)
+        public async Task SendCode(string phoneNumber)
         {
-            return null;
+            await _commandDispatcher.Dispatch(new SendCode.Command(phoneNumber));
         }
     }
 }

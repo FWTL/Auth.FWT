@@ -6,26 +6,6 @@ namespace Auth.FWT.Core
 {
     public static class ConfigKeys
     {
-        public static string Captcha
-        {
-            get { return Setting("Captcha"); }
-        }
-
-        public static string RedisConnectionString
-        {
-            get { return Setting("Captcha"); }
-        }
-
-        public static int TelegramApiId
-        {
-            get { return Setting<int>("ApiId"); }
-        }
-
-        public static string TelegramApiHash
-        {
-            get { return Setting("ApiHash"); }
-        }
-
         public static string ConnectionString
         {
             get
@@ -34,11 +14,23 @@ namespace Auth.FWT.Core
             }
         }
 
+        public static string RedisConnectionString { get; set; }
+
+        public static string TelegramApiHash
+        {
+            get { return Setting("TelegramApiHash"); }
+        }
+
+        public static int TelegramApiId
+        {
+            get { return Setting<int>("TelegramApiId"); }
+        }
+
         private static T Setting<T>(string name) where T : struct
         {
             string value = ConfigurationManager.AppSettings[name];
 
-            if (value == null)
+            if (value.IsNull())
             {
                 throw new Exception(string.Format("Could not find setting '{0}',", name));
             }
@@ -50,7 +42,7 @@ namespace Auth.FWT.Core
         {
             string value = ConfigurationManager.AppSettings[name];
 
-            if (value == null)
+            if (value.IsNull())
             {
                 throw new Exception(string.Format("Could not find setting '{0}',", name));
             }
