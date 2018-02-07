@@ -1,0 +1,37 @@
+version: '{build}'
+
+init:
+    - ps: |
+            If ($Env:APPVEYOR_REPO_TAG_NAME -match "-"){
+              Set-AppveyorBuildVariable -Name "IsPreRelease" -Value True
+            }
+            Else{
+              Set-AppveyorBuildVariable -Name "IsPreRelease" -Value False
+            }
+
+branches:
+  only:
+  - master
+
+build:
+  verbosity: minimal
+
+cache:
+  - packages -> **\packages.config
+  
+platform: Any CPU
+configuration: Release
+
+pull_requests:
+  do_not_increment_build_number: true
+
+before_build:
+  - nuget restore Auth.FWT.sln
+
+notifications:
+- provider: Email
+  to:
+  - agolaszewski@agme.info
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: false
