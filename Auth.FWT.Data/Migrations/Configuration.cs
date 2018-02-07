@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
-using Auth.FWT.Domain.Entities;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Entities.Identity;
 using FactoryGirlCore;
 
 namespace Auth.FWT.Data.Migrations

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Identity;
-using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 

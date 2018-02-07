@@ -82,10 +82,6 @@
       <Project>{876A790E-8B16-7F15-C15C-403770183ADE}</Project>
       <Name>Auth.FWT.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Auth.FWT.Domain\Auth.FWT.Domain.csproj">
-      <Project>{373414ac-a012-45ac-9cef-545c9ff6d528}</Project>
-      <Name>Auth.FWT.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,13 +1,11 @@
-﻿using System.Linq;
-using System.Net.Http.Formatting;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Auth.FWT.API.App_Start;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;
 
-[assembly: OwinStartup("api", typeof(Auth.FWT.API.Bootstrapper.Startup))]
 
+[assembly: OwinStartup("api", typeof(Auth.FWT.API.Bootstrapper.Startup))]
 namespace Auth.FWT.API.Bootstrapper
 {
     public partial class Startup

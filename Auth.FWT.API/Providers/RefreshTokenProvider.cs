@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
-using Auth.FWT.Domain.Entities.API;
 using Microsoft.Owin.Security.Infrastructure;
-using NodaTime;
 
 namespace Auth.FWT.API.Providers
 {

@@ -3,10 +3,10 @@ using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
+using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Entities.API;
+using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
-using Auth.FWT.Domain.Entities;
-using Auth.FWT.Domain.Entities.API;
-using Auth.FWT.Domain.Entities.Identity;
 
 namespace Auth.FWT.Data
 {
@@ -21,6 +21,38 @@ namespace Auth.FWT.Data
         public UnitOfWork(IEntitiesContext context)
         {
             _context = context;
+        }
+
+        public IRepository<ClientAPI, string> ClientAPIRepository
+        {
+            get
+            {
+                return Repository<ClientAPI, string>();
+            }
+        }
+
+        public IRepository<RefreshToken, string> RefreshTokenRepository
+        {
+            get
+            {
+                return Repository<RefreshToken, string>();
+            }
+        }
+
+        public IRepository<RoleClaim, int> RoleClaimRepository
+        {
+            get
+            {
+                return Repository<RoleClaim, int>();
+            }
+        }
+
+        public IRepository<UserRole, int> RoleRepository
+        {
+            get
+            {
+                return Repository<UserRole, int>();
+            }
         }
 
         public IRepository<TelegramCode, string> TelegramCodeRepository
@@ -45,38 +77,6 @@ namespace Auth.FWT.Data
             get
             {
                 return Repository<User, int>();
-            }
-        }
-
-        public IRepository<ClientAPI, string> ClientAPIRepository
-        {
-            get
-            {
-                return Repository<ClientAPI, string>();
-            }
-        }
-
-        public IRepository<RefreshToken, string> RefreshTokenRepository
-        {
-            get
-            {
-                return Repository<RefreshToken, string>();
-            }
-        }
-
-        public IRepository<UserRole, int> RoleRepository
-        {
-            get
-            {
-                return Repository<UserRole, int>();
-            }
-        }
-
-        public IRepository<RoleClaim, int> RoleClaimRepository
-        {
-            get
-            {
-                return Repository<RoleClaim, int>();
             }
         }
 

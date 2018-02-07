@@ -2,18 +2,20 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core;
+using Auth.FWT.Core.Entities.API;
+using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Data;
-using Auth.FWT.Domain.Entities.API;
-using Auth.FWT.Domain.Entities.Identity;
 using Auth.FWT.Infrastructure.Telegram;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using TLSharp.Core;
-using static Auth.FWT.Domain.Enums.Enum;
+using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.FWT.API.Providers
 {
@@ -55,18 +57,40 @@ namespace Auth.FWT.API.Providers
 
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
 
+            IFormCollection form = await context.Request.ReadFormAsync();
+            string phoneNumber = HashHelper.GetHash($"+{Regex.Match(form["phoneNumber"], @"\d+").Value}");
+            string code = form["code"];
+
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                context.SetError("invalid_grant", "The phoneNumber is empty");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                context.SetError("invalid_grant", "The code is empty");
+                return;
+            }
+
             var sqlStore = new SQLSessionStore(unitOfWork);
             var telegramClient = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, sqlStore, null);
             await telegramClient.ConnectAsync();
 
-            string hash = await unitOfWork.TelegramCodeRepository.Query().Where(tc => tc.Id == HashHelper.GetHash(context.UserName)).Select(tc => tc.CodeHash).FirstOrDefaultAsync();
-            await telegramClient.MakeAuthAsync(context.UserName, hash, context.Password);
+            string hash = await unitOfWork.TelegramCodeRepository.Query().Where(tc => tc.Id == phoneNumber).Select(tc => tc.CodeHash).FirstOrDefaultAsync();
+            if (string.IsNullOrWhiteSpace(hash))
+            {
+                context.SetError("invalid_code", "Request for new code");
+                return;
+            }
+
+            await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.LockoutEnabled).FirstOrDefaultAsync();
 
             if (user.IsNull())
             {
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
+                context.SetError("invalid_grant", "The phone number or code is incorrect.");
                 return;
             }
 

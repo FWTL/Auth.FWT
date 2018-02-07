@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
-using Auth.FWT.Domain.Entities;
+using Auth.FWT.Core.Entities;
 using Z.EntityFramework.Plus;
 
 namespace Auth.FWT.Data

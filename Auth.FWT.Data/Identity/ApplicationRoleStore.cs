@@ -4,9 +4,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Identity;
-using Auth.FWT.Domain.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity
@@ -41,63 +41,6 @@ namespace Auth.FWT.Data.Identity
 
             _dbContext.Set<RoleClaim, int>().Add(new RoleClaim { RoleId = role.Id, ClaimType = claim.Type, ClaimValue = claim.Value });
             return Task.FromResult(0);
-        }
-
-        public virtual async Task RemoveClaimAsync(UserRole role, Claim claim)
-        {
-            if (role.IsNull())
-            {
-                throw new ArgumentNullException("role");
-            }
-
-            if (claim.IsNull())
-            {
-                throw new ArgumentNullException("claim");
-            }
-
-            IEnumerable<RoleClaim> claims;
-            var claimValue = claim.Value;
-            var claimType = claim.Type;
-            if (AreClaimsLoaded(role))
-            {
-                claims = role.Claims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType).ToList();
-            }
-            else
-            {
-                var roleId = role.Id;
-                claims = await _dbContext.Set<RoleClaim, int>().Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType && uc.RoleId.Equals(role)).ToListAsync();
-            }
-
-            foreach (var c in claims)
-            {
-                _dbContext.Set<RoleClaim, int>().Remove(c);
-            }
-        }
-
-        public virtual async Task<IList<Claim>> GetClaimsAsync(UserRole role)
-        {
-            if (role.IsNull())
-            {
-                throw new ArgumentNullException("role");
-            }
-
-            await EnsureClaimsLoaded(role);
-            return role.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
-        }
-
-        private bool AreClaimsLoaded(UserRole role)
-        {
-            return _dbContext.IsCollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
-        }
-
-        private async Task EnsureClaimsLoaded(UserRole role)
-        {
-            if (!AreClaimsLoaded(role))
-            {
-                var roleId = role.Id;
-                await _dbContext.Set<RoleClaim, int>().Where(uc => uc.RoleId.Equals(roleId)).LoadAsync();
-                _dbContext.CollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
-            }
         }
 
         public virtual Task CreateAsync(UserRole role)
@@ -151,6 +94,48 @@ namespace Auth.FWT.Data.Identity
             return _dbContext.Set<UserRole, int>().FirstOrDefaultAsync(r => r.Name == roleName);
         }
 
+        public virtual async Task<IList<Claim>> GetClaimsAsync(UserRole role)
+        {
+            if (role.IsNull())
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            await EnsureClaimsLoaded(role);
+            return role.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
+        }
+
+        public virtual async Task RemoveClaimAsync(UserRole role, Claim claim)
+        {
+            if (role.IsNull())
+            {
+                throw new ArgumentNullException("role");
+            }
+
+            if (claim.IsNull())
+            {
+                throw new ArgumentNullException("claim");
+            }
+
+            IEnumerable<RoleClaim> claims;
+            var claimValue = claim.Value;
+            var claimType = claim.Type;
+            if (AreClaimsLoaded(role))
+            {
+                claims = role.Claims.Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType).ToList();
+            }
+            else
+            {
+                var roleId = role.Id;
+                claims = await _dbContext.Set<RoleClaim, int>().Where(uc => uc.ClaimValue == claimValue && uc.ClaimType == claimType && uc.RoleId.Equals(role)).ToListAsync();
+            }
+
+            foreach (var c in claims)
+            {
+                _dbContext.Set<RoleClaim, int>().Remove(c);
+            }
+        }
+
         public Task UpdateAsync(UserRole role)
         {
             if (role.IsNull())
@@ -160,6 +145,21 @@ namespace Auth.FWT.Data.Identity
 
             _dbContext.SetAsModified<UserRole, int>(role);
             return _dbContext.SaveChangesAsync();
+        }
+
+        private bool AreClaimsLoaded(UserRole role)
+        {
+            return _dbContext.IsCollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
+        }
+
+        private async Task EnsureClaimsLoaded(UserRole role)
+        {
+            if (!AreClaimsLoaded(role))
+            {
+                var roleId = role.Id;
+                await _dbContext.Set<RoleClaim, int>().Where(uc => uc.RoleId.Equals(roleId)).LoadAsync();
+                _dbContext.CollectionLoaded<UserRole, int, RoleClaim>(role, x => x.Claims);
+            }
         }
     }
 }

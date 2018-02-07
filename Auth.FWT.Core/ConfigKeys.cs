@@ -6,16 +6,6 @@ namespace Auth.FWT.Core
 {
     public static class ConfigKeys
     {
-        public static int TelegramApiId
-        {
-            get { return Setting<int>("TelegramApiId"); }
-        }
-
-        public static string TelegramApiHash
-        {
-            get { return Setting("TelegramApiHash"); }
-        }
-
         public static string ConnectionString
         {
             get
@@ -25,6 +15,16 @@ namespace Auth.FWT.Core
         }
 
         public static string RedisConnectionString { get; set; }
+
+        public static string TelegramApiHash
+        {
+            get { return Setting("TelegramApiHash"); }
+        }
+
+        public static int TelegramApiId
+        {
+            get { return Setting<int>("TelegramApiId"); }
+        }
 
         private static T Setting<T>(string name) where T : struct
         {

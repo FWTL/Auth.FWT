@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Auth.FWT.Core.Data;
-using Auth.FWT.Domain.Entities.API;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities.API;
+using Auth.FWT.Core.Entities.Identity;
 using InquirerCS;
-using static Auth.FWT.Domain.Enums.Enum;
+using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.Manage
 {
@@ -14,12 +14,6 @@ namespace Auth.Manage
         public Application(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-        }
-
-        public void Run()
-        {
-            Menu();
-            Inquirer.Go();
         }
 
         public void Menu()
@@ -33,23 +27,19 @@ namespace Auth.Manage
                 .AddOption("Remove Role Claim", () => RemoveRoleClaim()));
         }
 
-        private void RemoveRoleClaim()
+        public void Run()
         {
-            UserRole role = null;
-            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+            Menu();
+            Inquirer.Go();
+        }
 
-            Inquirer.Prompt(Question.List("Chose", roles).WithConvertToString(x => x.Name)).Bind(() => role);
-            Inquirer.Prompt(() =>
+        private void AddRole()
+        {
+            var role = new FWT.Core.Entities.Identity.UserRole();
+            Inquirer.Prompt(Question.Input("Name")).Then(answer =>
             {
-                var claims = _unitOfWork.RoleClaimRepository.GetAllIncluding();
-                return Question.Checkbox("Chose", claims).WithConvertToString(x => x.ClaimValue);
-            }).Then(answers =>
-            {
-                foreach (var claim in answers)
-                {
-                    _unitOfWork.RoleClaimRepository.Delete(claim);
-                }
-
+                role.Name = answer;
+                _unitOfWork.RoleRepository.Insert(role);
                 _unitOfWork.SaveChanges();
                 Menu();
             });
@@ -57,7 +47,7 @@ namespace Auth.Manage
 
         private void AddRoleClaim()
         {
-            UserRole role = null;
+            FWT.Core.Entities.Identity.UserRole role = null;
             var roles = _unitOfWork.RoleRepository.GetAllIncluding();
 
             Inquirer.Prompt(Question.List("Chose", roles).WithConvertToString(x => x.Name)).Bind(() => role);
@@ -69,6 +59,25 @@ namespace Auth.Manage
                     ClaimType = "Permission",
                     ClaimValue = answer,
                 });
+                _unitOfWork.SaveChanges();
+                Menu();
+            });
+        }
+
+        private void CreateNewClient()
+        {
+            var client = new ClientAPI();
+            Inquirer.Prompt(Question.Input("Id")).Bind(() => client.Id);
+            Inquirer.Prompt(() => Question.Input("Name").WithDefaultValue(client.Id)).Bind(() => client.Name);
+            Inquirer.Prompt(Question.Input("Allowed Origin")).Bind(() => client.AllowedOrigin);
+            Inquirer.Prompt(Question.Input<int>("Refresh Token Lifetime (hours)")).Then(answer => client.RefreshTokenLifeTime = answer * 60);
+            Inquirer.Prompt(Question.Confirm("Is Active")).Then(answer =>
+            {
+                client.IsActive = answer;
+                client.ApplicationType = ApplicationType.JavaScript;
+                client.Secret = "";
+
+                _unitOfWork.ClientAPIRepository.Insert(client);
                 _unitOfWork.SaveChanges();
                 Menu();
             });
@@ -93,13 +102,23 @@ namespace Auth.Manage
             });
         }
 
-        private void AddRole()
+        private void RemoveRoleClaim()
         {
-            var role = new UserRole();
-            Inquirer.Prompt(Question.Input("Name")).Then(answer =>
+            FWT.Core.Entities.Identity.UserRole role = null;
+            var roles = _unitOfWork.RoleRepository.GetAllIncluding();
+
+            Inquirer.Prompt(Question.List("Chose", roles).WithConvertToString(x => x.Name)).Bind(() => role);
+            Inquirer.Prompt(() =>
             {
-                role.Name = answer;
-                _unitOfWork.RoleRepository.Insert(role);
+                var claims = _unitOfWork.RoleClaimRepository.GetAllIncluding();
+                return Question.Checkbox("Chose", claims).WithConvertToString(x => x.ClaimValue);
+            }).Then(answers =>
+            {
+                foreach (var claim in answers)
+                {
+                    _unitOfWork.RoleClaimRepository.Delete(claim);
+                }
+
                 _unitOfWork.SaveChanges();
                 Menu();
             });
@@ -129,25 +148,6 @@ namespace Auth.Manage
                     _unitOfWork.ClientAPIRepository.Update(item);
                 });
 
-                _unitOfWork.SaveChanges();
-                Menu();
-            });
-        }
-
-        private void CreateNewClient()
-        {
-            var client = new ClientAPI();
-            Inquirer.Prompt(Question.Input("Id")).Bind(() => client.Id);
-            Inquirer.Prompt(() => Question.Input("Name").WithDefaultValue(client.Id)).Bind(() => client.Name);
-            Inquirer.Prompt(Question.Input("Allowed Origin")).Bind(() => client.AllowedOrigin);
-            Inquirer.Prompt(Question.Input<int>("Refresh Token Lifetime (hours)")).Then(answer => client.RefreshTokenLifeTime = answer * 60);
-            Inquirer.Prompt(Question.Confirm("Is Active")).Then(answer =>
-            {
-                client.IsActive = answer;
-                client.ApplicationType = ApplicationType.JavaScript;
-                client.Secret = "";
-
-                _unitOfWork.ClientAPIRepository.Insert(client);
                 _unitOfWork.SaveChanges();
                 Menu();
             });

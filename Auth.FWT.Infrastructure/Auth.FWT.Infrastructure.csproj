@@ -178,10 +178,6 @@
       <Project>{0ED2E479-2353-59A2-C8FB-880112959A8C}</Project>
       <Name>Auth.FWT.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Auth.FWT.Domain\Auth.FWT.Domain.csproj">
-      <Project>{373414ac-a012-45ac-9cef-545c9ff6d528}</Project>
-      <Name>Auth.FWT.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets" Condition="Exists('..\packages\StyleCop.MSBuild.5.0.0\build\StyleCop.MSBuild.targets')" />

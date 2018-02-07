@@ -9,10 +9,9 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Entities;
 using Auth.FWT.Data.Base.Configuration;
 using Auth.FWT.Data.Conventions;
-using Auth.FWT.Domain.Entities;
-using Auth.FWT.Domain.Entities.Identity;
 using Auth.FWT.Infrastructure.Logging;
 
 namespace Auth.FWT.Data
@@ -39,6 +38,10 @@ namespace Auth.FWT.Data
             Configuration.ValidateOnSaveEnabled = false;
             Configuration.ProxyCreationEnabled = false;
         }
+
+        public DbSet<TelegramCode> TelegramCodes { get; set; }
+
+        public DbSet<TelegramSession> TelegramSessions { get; set; }
 
         public void BeginTransaction()
         {
@@ -173,9 +176,6 @@ namespace Auth.FWT.Data
 
             base.Dispose(disposing);
         }
-
-        public DbSet<TelegramSession> TelegramSessions { get; set; }
-        public DbSet<TelegramCode> TelegramCodes { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Auth.FWT.Domain.Entities.Identity;
+using Auth.FWT.Core.Entities.Identity;
 using Microsoft.AspNet.Identity;
 
 namespace Auth.FWT.Data.Identity

@@ -10,6 +10,7 @@ namespace Auth.FWT.API.Controllers.Account
     public class AccountController : ApiController
     {
         private ICommandDispatcher _commandDispatcher;
+
         private IQueryDispatcher _queryDispatcher;
 
         public AccountController(ICommandDispatcher commandDispatcher, IQueryDispatcher queryDispatcher)
@@ -19,17 +20,17 @@ namespace Auth.FWT.API.Controllers.Account
         }
 
         [HttpPost]
-        [Route("api/account/sendcode")]
+        [Route("api/account/login")]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
-        public async Task SendCode(string phoneNumber)
+        public async Task Login(string phoneNumber)
         {
             await _commandDispatcher.Dispatch(new SendCode.Command(phoneNumber));
         }
 
         [HttpPost]
-        [Route("api/account/login")]
+        [Route("api/account/sendcode")]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
-        public async Task Login(string phoneNumber)
+        public async Task SendCode(string phoneNumber)
         {
             await _commandDispatcher.Dispatch(new SendCode.Command(phoneNumber));
         }

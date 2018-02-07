@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using Auth.FWT.API.App_Start;
 
 namespace Auth.FWT.API
 {
@@ -8,7 +7,6 @@ namespace Auth.FWT.API
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            
         }
     }
 }

@@ -4,6 +4,33 @@ namespace Auth.FWT.Data.Migrations
 
     public partial class init : DbMigration
     {
+        public override void Down()
+        {
+            DropForeignKey("dbo.RefreshToken", "ClientAPIId", "dbo.ClientAPI");
+            DropForeignKey("dbo.UserLogin", "UserId", "dbo.User");
+            DropForeignKey("dbo.TelegramSession", "Id", "dbo.User");
+            DropForeignKey("dbo.UserRoleUser", "User_Id", "dbo.User");
+            DropForeignKey("dbo.UserRoleUser", "UserRole_Id", "dbo.UserRole");
+            DropForeignKey("dbo.RoleClaim", "RoleId", "dbo.UserRole");
+            DropForeignKey("dbo.UserClaim", "UserId", "dbo.User");
+            DropIndex("dbo.UserRoleUser", new[] { "User_Id" });
+            DropIndex("dbo.UserRoleUser", new[] { "UserRole_Id" });
+            DropIndex("dbo.RefreshToken", new[] { "ClientAPIId" });
+            DropIndex("dbo.UserLogin", new[] { "UserId" });
+            DropIndex("dbo.TelegramSession", new[] { "Id" });
+            DropIndex("dbo.RoleClaim", new[] { "RoleId" });
+            DropIndex("dbo.UserClaim", new[] { "UserId" });
+            DropTable("dbo.UserRoleUser");
+            DropTable("dbo.RefreshToken");
+            DropTable("dbo.ClientAPI");
+            DropTable("dbo.UserLogin");
+            DropTable("dbo.TelegramSession");
+            DropTable("dbo.RoleClaim");
+            DropTable("dbo.UserRole");
+            DropTable("dbo.UserClaim");
+            DropTable("dbo.User");
+        }
+
         public override void Up()
         {
             CreateTable(
@@ -121,33 +148,6 @@ namespace Auth.FWT.Data.Migrations
                 .ForeignKey("dbo.User", t => t.User_Id)
                 .Index(t => t.UserRole_Id)
                 .Index(t => t.User_Id);
-        }
-
-        public override void Down()
-        {
-            DropForeignKey("dbo.RefreshToken", "ClientAPIId", "dbo.ClientAPI");
-            DropForeignKey("dbo.UserLogin", "UserId", "dbo.User");
-            DropForeignKey("dbo.TelegramSession", "Id", "dbo.User");
-            DropForeignKey("dbo.UserRoleUser", "User_Id", "dbo.User");
-            DropForeignKey("dbo.UserRoleUser", "UserRole_Id", "dbo.UserRole");
-            DropForeignKey("dbo.RoleClaim", "RoleId", "dbo.UserRole");
-            DropForeignKey("dbo.UserClaim", "UserId", "dbo.User");
-            DropIndex("dbo.UserRoleUser", new[] { "User_Id" });
-            DropIndex("dbo.UserRoleUser", new[] { "UserRole_Id" });
-            DropIndex("dbo.RefreshToken", new[] { "ClientAPIId" });
-            DropIndex("dbo.UserLogin", new[] { "UserId" });
-            DropIndex("dbo.TelegramSession", new[] { "Id" });
-            DropIndex("dbo.RoleClaim", new[] { "RoleId" });
-            DropIndex("dbo.UserClaim", new[] { "UserId" });
-            DropTable("dbo.UserRoleUser");
-            DropTable("dbo.RefreshToken");
-            DropTable("dbo.ClientAPI");
-            DropTable("dbo.UserLogin");
-            DropTable("dbo.TelegramSession");
-            DropTable("dbo.RoleClaim");
-            DropTable("dbo.UserRole");
-            DropTable("dbo.UserClaim");
-            DropTable("dbo.User");
         }
     }
 }
