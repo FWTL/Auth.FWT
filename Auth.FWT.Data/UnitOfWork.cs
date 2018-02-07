@@ -58,7 +58,6 @@ namespace Auth.FWT.Data
         public IRepository<TelegramCode, string> TelegramCodeRepository
         {
             get
-
             {
                 return Repository<TelegramCode, string>();
             }

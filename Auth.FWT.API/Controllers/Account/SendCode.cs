@@ -77,10 +77,12 @@ namespace Auth.FWT.API.Controllers.Account
                         {
                             case ("PHONE_NUMBER_BANNED"):
                             case ("PHONE_NUMBER_INVALID"):
+
                                 {
                                     context.AddFailure(ex.Message);
                                     break;
                                 }
+
                             default:
                                 {
                                     throw new Exception("Unexpected error", ex);

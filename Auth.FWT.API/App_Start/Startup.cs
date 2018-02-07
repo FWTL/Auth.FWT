@@ -4,8 +4,8 @@ using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;
 
-
 [assembly: OwinStartup("api", typeof(Auth.FWT.API.Bootstrapper.Startup))]
+
 namespace Auth.FWT.API.Bootstrapper
 {
     public partial class Startup
