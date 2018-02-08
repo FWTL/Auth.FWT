@@ -27,8 +27,10 @@ namespace Auth.FWT._Azure
         private static void Main(string[] args)
         {
             CreateAzureAuthPropertiesInRegistry();
+            CreateOrUseExistingResourceGroup();
             CreateOrUseExistingPlan();
             CreateWebApp();
+            Inquirer.Go();
         }
 
         private static void CreateOrUseExistingPlan()
@@ -43,7 +45,7 @@ namespace Auth.FWT._Azure
             Inquirer.Prompt(() =>
             {
                 List<IAppServicePlan> servicePlans = _azure.AppServices.AppServicePlans.ListByResourceGroup(Answers.ResourceGroup.Name).ToList();
-                return Question.List("Choose", servicePlans).WithConfirmation();
+                return Question.List("Choose", servicePlans).WithConfirmation().WithConvertToString(item => item.Name);
             }).Then(answer =>
             {
                 Answers.AppServicePlan = answer;
@@ -57,7 +59,7 @@ namespace Auth.FWT._Azure
                 Answers.AppServicePlan = _azure.AppServices.AppServicePlans.Define(answer)
                     .WithRegion(Answers.ResourceGroup.Region.Name)
                     .WithExistingResourceGroup(Answers.ResourceGroup)
-                    .WithPricingTier(PricingTier.BasicB1)
+                    .WithPricingTier(PricingTier.FreeF1)
                     .WithOperatingSystem(Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Windows)
                 .Create();
             });
@@ -68,8 +70,8 @@ namespace Auth.FWT._Azure
             Inquirer.Prompt(Question.Input("Web app name").WithConfirmation()).Then(webAppName =>
             {
                 _azure.WebApps.Define(webAppName)
-                .WithExistingWindowsPlan(Answers.AppServicePlan)
-                .WithExistingResourceGroup(Answers.ResourceGroup)
+                    .WithExistingWindowsPlan(Answers.AppServicePlan)
+                    .WithExistingResourceGroup(Answers.ResourceGroup)
                 .Create();
             });
         }
@@ -81,6 +83,7 @@ namespace Auth.FWT._Azure
                 powerShellInstance.AddScript($@"[Environment]::SetEnvironmentVariable('AZURE_AUTH_LOCATION', '{AppDomain.CurrentDomain.BaseDirectory}azureauth.properties', 'User')");
                 Collection<PSObject> output = powerShellInstance.Invoke();
             }
+            Auth();
         }
 
         private static void Auth()
@@ -101,7 +104,7 @@ namespace Auth.FWT._Azure
             string resourceGroupName = null;
 
             Inquirer.Prompt(Question.Input("Group Name").WithConfirmation()).Bind(() => resourceGroupName);
-            Inquirer.Prompt(Question.List("Choose region", Region.Values.ToList()).WithConfirmation().WithDefaultValue(region => region == Region.EuropeNorth)).Then(region =>
+            Inquirer.Prompt(Question.List("Region", Region.Values.ToList()).WithConfirmation().WithDefaultValue(region => region == Region.EuropeNorth)).Then(region =>
             {
                 Answers.ResourceGroup = _azure.ResourceGroups.Define(resourceGroupName).WithRegion(region).Create();
             });
