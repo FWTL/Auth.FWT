@@ -21,7 +21,6 @@ namespace Auth.FWT._Azure
     internal class Program
     {
         private static IAzure _azure;
-        private static dynamic _answers = new ExpandoObject();
         private static Answers Answers = new Answers();
 
         private static void Main(string[] args)
@@ -59,7 +58,7 @@ namespace Auth.FWT._Azure
                 Answers.AppServicePlan = _azure.AppServices.AppServicePlans.Define(answer)
                     .WithRegion(Answers.ResourceGroup.Region.Name)
                     .WithExistingResourceGroup(Answers.ResourceGroup)
-                    .WithPricingTier(PricingTier.FreeF1)
+                    .WithPricingTier(PricingTier.SharedD1)
                     .WithOperatingSystem(Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Windows)
                 .Create();
             });
@@ -67,12 +66,26 @@ namespace Auth.FWT._Azure
 
         private static void CreateWebApp()
         {
-            Inquirer.Prompt(Question.Input("Web app name").WithConfirmation()).Then(webAppName =>
+            Inquirer.Prompt(Question.Input("Web app name").WithConfirmation().WithDefaultValue("devauthfwt" + DateTime.Now.Ticks)).Then(webAppName =>
             {
-                _azure.WebApps.Define(webAppName)
-                    .WithExistingWindowsPlan(Answers.AppServicePlan)
-                    .WithExistingResourceGroup(Answers.ResourceGroup)
-                .Create();
+                try
+                {
+                    _azure.WebApps.Define(webAppName)
+                        .WithExistingWindowsPlan(Answers.AppServicePlan)
+                        .WithExistingResourceGroup(Answers.ResourceGroup)
+                        .DefineHostnameBinding()
+                            .WithThirdPartyDomain("agme.info")
+                            .WithSubDomain("dev.auth.fwt")
+                            .WithDnsRecordType(Microsoft.Azure.Management.AppService.Fluent.Models.CustomHostNameDnsRecordType.CName)
+                            .Attach()
+                    .Create();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadKey();
+                    CreateWebApp();
+                }
             });
         }
 
@@ -104,7 +117,7 @@ namespace Auth.FWT._Azure
             string resourceGroupName = null;
 
             Inquirer.Prompt(Question.Input("Group Name").WithConfirmation()).Bind(() => resourceGroupName);
-            Inquirer.Prompt(Question.List("Region", Region.Values.ToList()).WithConfirmation().WithDefaultValue(region => region == Region.EuropeNorth)).Then(region =>
+            Inquirer.Prompt(Question.List("Region", Region.Values.ToList()).WithConfirmation().Page(10).WithDefaultValue(region => region == Region.EuropeNorth)).Then(region =>
             {
                 Answers.ResourceGroup = _azure.ResourceGroups.Define(resourceGroupName).WithRegion(region).Create();
             });

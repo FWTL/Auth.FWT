@@ -15,6 +15,7 @@ using Autofac.Integration.WebApi;
 using FluentValidation;
 using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
+using NodaTime;
 using Rws.Web.Core.CQRS;
 using TLSharp.Core;
 
@@ -69,6 +70,12 @@ namespace Auth.FWT.API
 
                 return client;
             }).InstancePerRequest();
+
+            builder.Register<IClock>(b =>
+            {
+                return SystemClock.Instance;
+
+            }).SingleInstance();
 
             _container = builder.Build();
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(_container);

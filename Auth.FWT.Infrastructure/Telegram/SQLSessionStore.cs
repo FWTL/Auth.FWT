@@ -3,17 +3,20 @@ using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
+using NodaTime;
 using TLSharp.Core;
 
 namespace Auth.FWT.Infrastructure.Telegram
 {
     public class SQLSessionStore : ISessionStore
     {
+        private IClock _clock;
         private IUnitOfWork _unitOfWork;
 
-        public SQLSessionStore(IUnitOfWork unitOfWork)
+        public SQLSessionStore(IUnitOfWork unitOfWork, IClock clock)
         {
             _unitOfWork = unitOfWork;
+            _clock = clock;
         }
 
         public Session Load(string sessionUserId)
@@ -29,13 +32,13 @@ namespace Auth.FWT.Infrastructure.Telegram
                 return null;
             }
 
-            if (!currentUser.TelegramSessionId.HasValue)
+            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(currentUser.Id);
+            if (telegramSession != null)
             {
-                return null;
+                return Session.FromBytes(telegramSession.Session, this, sessionUserId);
             }
 
-            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(currentUser.TelegramSessionId.Value);
-            return Session.FromBytes(telegramSession.Session, this, sessionUserId);
+            return null;
         }
 
         public void Save(Session session)
@@ -48,37 +51,22 @@ namespace Auth.FWT.Infrastructure.Telegram
             User currentUser = null;
             currentUser = _unitOfWork.UserRepository.GetSingle(session.SessionUserId.To<int>());
 
-            if (currentUser.TelegramSessionId.HasValue)
+            UpdateOrCreate(session, currentUser);
+        }
+
+        private void UpdateOrCreate(Session session, User currentUser)
+        {
+            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(currentUser.Id);
+            if (telegramSession == null)
             {
-                Update(session, currentUser);
+                telegramSession = new TelegramSession(session, currentUser);
+                _unitOfWork.TelegramSessionRepository.Insert(telegramSession);
             }
-
-            Create(session, currentUser);
-        }
-
-        private void Create(Session session, User currentUser)
-        {
-            _unitOfWork.BeginTransaction();
-
-            TelegramSession telegramSession = new TelegramSession();
-            telegramSession.Session = session.ToBytes();
-            telegramSession.ExpireDateUtc = DateTimeOffset.FromUnixTimeSeconds(session.SessionExpires).UtcDateTime;
-            telegramSession.UserId = currentUser.Id;
-            _unitOfWork.TelegramSessionRepository.Insert(telegramSession);
-
-            currentUser.TelegramSessionId = telegramSession.Id;
-            _unitOfWork.UserRepository.UpdateColumns(currentUser, () => currentUser.TelegramSessionId);
-
-            _unitOfWork.Commit();
-        }
-
-        private void Update(Session session, User currentUser)
-        {
-            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(currentUser.TelegramSessionId.Value);
-            telegramSession.Session = session.ToBytes();
-            telegramSession.ExpireDateUtc = DateTimeOffset.FromUnixTimeSeconds(session.SessionExpires).UtcDateTime;
-
-            _unitOfWork.TelegramSessionRepository.Update(telegramSession);
+            else
+            {
+                telegramSession = new TelegramSession(session, currentUser);
+                _unitOfWork.TelegramSessionRepository.Update(telegramSession);
+            }
             _unitOfWork.SaveChanges();
         }
     }

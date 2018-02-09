@@ -20,14 +20,6 @@ namespace Auth.FWT.API.Controllers.Account
         }
 
         [HttpPost]
-        [Route("api/account/login")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
-        public async Task Login(string phoneNumber)
-        {
-            await _commandDispatcher.Dispatch(new SendCode.Command(phoneNumber));
-        }
-
-        [HttpPost]
         [Route("api/account/sendcode")]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(ValidationResultModel))]
         public async Task SendCode(string phoneNumber)
