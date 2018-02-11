@@ -152,6 +152,7 @@
     <Compile Include="Logging\NLogCommandInterceptor.cs" />
     <Compile Include="Logging\NLogLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Telegram\AppTelegramClient.cs" />
     <Compile Include="Telegram\SQLSessionStore.cs" />
   </ItemGroup>
   <ItemGroup>
