@@ -41,7 +41,6 @@ namespace Auth.FWT.API.Controllers.Account
 
             public async Task Execute(Command command)
             {
-                await _telegramClient.ConnectAsync();
                 string hash = await _telegramClient.SendCodeRequestAsync(command.PhoneNumber);
 
                 TelegramCode telegramCode = await _unitOfWork.TelegramCodeRepository.GetSingleAsync(HashHelper.GetHash(command.PhoneNumber));
@@ -68,7 +67,6 @@ namespace Auth.FWT.API.Controllers.Account
                 RuleFor(x => x.PhoneNumber).NotEmpty();
                 RuleFor(x => x.PhoneNumber).CustomAsync(async (phone, context, token) =>
                 {
-                    await telegramClient.ConnectAsync();
                     try
                     {
                         if (!await telegramClient.IsPhoneRegisteredAsync(phone))
@@ -78,35 +76,7 @@ namespace Auth.FWT.API.Controllers.Account
                     }
                     catch (Exception ex)
                     {
-                        switch (ex.Message)
-                        {
-                            case ("PHONE_NUMBER_BANNED"):
-                            case ("PHONE_NUMBER_INVALID"):
-
-                                {
-                                    context.AddFailure(ex.Message);
-                                    break;
-                                }
-
-                            default:
-                                {
-                                    throw new Exception("Unexpected error", ex);
-                                }
-                        }
-                    }
-                });
-                RuleFor(x => x.PhoneNumber).CustomAsync(async (phone, context, token) =>
-                {
-                    DateTime yesterday = clock.UtcNow().AddDays(-1);
-
-                    var hashPhoneNumber = HashHelper.GetHash(phone);
-                    var telegramCode = await unitOfWork.TelegramCodeRepository.Query()
-                        .Where(tc => tc.Id == hashPhoneNumber)
-                    .FirstOrDefaultAsync();
-
-                    if (telegramCode != null && telegramCode.IssuedUTC > yesterday)
-                    {
-                        context.AddFailure("Code was sent in last 24 hours");
+                        context.AddFailure(ex.Message);
                     }
                 });
             }

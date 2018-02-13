@@ -65,16 +65,13 @@ namespace Auth.FWT.API
 
             builder.Register(b =>
             {
-                var userProvider = b.Resolve<IUserProvider>();
-                var client = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, b.Resolve<ISessionStore>(), userProvider.IsAuthenticated ? userProvider?.CurrentUserId.ToString() : null);
-
-                return client;
-            }).InstancePerRequest();
+                var instance = AppTelegramClient.Instance.TelegramClient;
+                return instance;
+            }).SingleInstance();
 
             builder.Register<IClock>(b =>
             {
                 return SystemClock.Instance;
-
             }).SingleInstance();
 
             _container = builder.Build();

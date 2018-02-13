@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Auth.FWT.Core;
 using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
@@ -15,6 +14,7 @@ using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
+using TeleSharp.TL;
 using TLSharp.Core;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
@@ -83,8 +83,7 @@ namespace Auth.FWT.API.Providers
             }
 
             var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
-            var telegramClient = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, sqlStore, null);
-            await telegramClient.ConnectAsync();
+            var telegramClient = AppTelegramClient.Instance.TelegramClient;
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
             if (user.IsNull())
@@ -99,36 +98,23 @@ namespace Auth.FWT.API.Providers
                 await unitOfWork.SaveChangesAsync();
             }
 
-            telegramClient = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, sqlStore, user.Id.ToString());
-            await telegramClient.ConnectAsync();
+            var session = Session.TryLoadOrCreateNew(sqlStore, user.Id.ToString());
+            TLUser tlUser = session.TLUser;
 
-            try
+            if (session.Id == 0)
             {
-                await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
-            }
-            catch (Exception ex)
-            {
-                switch (ex.Message)
+                try
                 {
-                    case ("PHONE_NUMBER_INVALID"):
-                    case ("PHONE_CODE_EMPTY"):
-                    case ("PHONE_CODE_EXPIRED"):
-                    case ("PHONE_CODE_INVALID"):
-                    case ("PHONE_NUMBER_UNOCCUPIED"):
-                        {
-                            context.SetError("invalid_grant", ex.Message);
-                            return;
-                        }
-
-                    default:
-                        {
-                            throw new Exception("Unexpected error", ex);
-                        }
+                    tlUser = await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
+                }
+                catch (Exception ex)
+                {
+                    context.SetError("invalid_grant", ex.Message);
                 }
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-            identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
+            identity.AddClaim(new Claim(ClaimTypes.Name, $"{tlUser.FirstName} {tlUser.LastName}"));
 
             foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
             {
@@ -166,21 +152,7 @@ namespace Auth.FWT.API.Providers
             }
             catch (Exception ex)
             {
-                switch (ex.Message)
-                {
-                    case ("PHONE_NUMBER_BANNED"):
-                    case ("PHONE_NUMBER_INVALID"):
-
-                        {
-                            context.SetError("invalid_grant", ex.Message);
-                            return false;
-                        }
-
-                    default:
-                        {
-                            throw new Exception("Unexpected error", ex);
-                        }
-                }
+                context.SetError("invalid_grant", ex.Message);
             }
 
             return true;

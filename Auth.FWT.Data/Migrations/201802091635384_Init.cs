@@ -131,7 +131,6 @@ namespace Auth.FWT.Data.Migrations
                 .ForeignKey("dbo.User", t => t.User_Id)
                 .Index(t => t.UserRole_Id)
                 .Index(t => t.User_Id);
-            
         }
         
         public override void Down()

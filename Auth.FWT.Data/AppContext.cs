@@ -33,7 +33,7 @@ namespace Auth.FWT.Data
         public AppContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
-            //DbInterception.Add(new NLogCommandInterceptor());
+            ////DbInterception.Add(new NLogCommandInterceptor());
             Database.Log = q => Debug.Write(q);
 
             Configuration.LazyLoadingEnabled = false;

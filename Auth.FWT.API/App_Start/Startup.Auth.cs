@@ -10,7 +10,7 @@ namespace Auth.FWT.API.Bootstrapper
     {
         public void ConfigureAuth(IAppBuilder app)
         {
-            OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
+            OAuthAuthorizationServerOptions oAuthServerOptions = new OAuthAuthorizationServerOptions()
             {
                 AllowInsecureHttp = true,
                 TokenEndpointPath = new PathString("/token"),
@@ -19,7 +19,7 @@ namespace Auth.FWT.API.Bootstrapper
                 RefreshTokenProvider = new RefreshTokenProvider()
             };
 
-            app.UseOAuthAuthorizationServer(OAuthServerOptions);
+            app.UseOAuthAuthorizationServer(oAuthServerOptions);
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
         }
     }

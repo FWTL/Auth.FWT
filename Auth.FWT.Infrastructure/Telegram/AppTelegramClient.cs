@@ -1,9 +1,5 @@
-﻿using Auth.FWT.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Auth.FWT.Core;
 using TLSharp.Core;
 
 namespace Auth.FWT.Infrastructure.Telegram
@@ -12,7 +8,11 @@ namespace Auth.FWT.Infrastructure.Telegram
     {
         private static readonly Lazy<AppTelegramClient> LazyAppTelegramClient = new Lazy<AppTelegramClient>(() => new AppTelegramClient());
 
-        private static readonly Lazy<TelegramClient> LazyTelegramClient = new Lazy<TelegramClient>(() => new TelegramClient(ConfigKeys.TelegramApiId,ConfigKeys.TelegramApiHash, new FakeSessionStore()));
+        private static readonly Lazy<TelegramClient> LazyTelegramClient = new Lazy<TelegramClient>(() =>
+        {
+            var instance = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, new FakeSessionStore());
+            return instance;
+        });
 
         private AppTelegramClient()
         {
@@ -26,9 +26,9 @@ namespace Auth.FWT.Infrastructure.Telegram
             }
         }
 
-        public void Debug(Exception exception, string message = null, params object[] args)
+        public TelegramClient TelegramClient
         {
-            LazyAppTelegramClient.Value;
+            get { return LazyTelegramClient.Value; }
         }
     }
 }
