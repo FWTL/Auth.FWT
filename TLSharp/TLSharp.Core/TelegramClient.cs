@@ -22,11 +22,10 @@ namespace TLSharp.Core
     public class TelegramClient : IDisposable
     {
         private MtProtoSender _sender;
-        private AuthKey _key;
         private TcpTransport _transport;
         private string _apiHash = "";
         private int _apiId = 0;
-        private Session _session;
+        //private Session _session;
         private List<TLDcOption> dcOptions;
         private TcpClientConnectionHandler _handler;
 

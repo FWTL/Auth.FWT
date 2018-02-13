@@ -101,7 +101,7 @@ namespace Auth.FWT.API.Providers
             var session = Session.TryLoadOrCreateNew(sqlStore, user.Id.ToString());
             TLUser tlUser = session.TLUser;
 
-            if (session.Id == 0)
+            if (tlUser.IsNull())
             {
                 try
                 {
@@ -109,12 +109,27 @@ namespace Auth.FWT.API.Providers
                 }
                 catch (Exception ex)
                 {
-                    context.SetError("invalid_grant", ex.Message);
+                    switch (ex.Message)
+                    {
+                        case ("PHONE_NUMBER_INVALID"):
+                        case ("PHONE_CODE_EMPTY"):
+                        case ("PHONE_CODE_EXPIRED"):
+                        case ("PHONE_CODE_INVALID"):
+                        case ("PHONE_NUMBER_UNOCCUPIED"):
+                            {
+                                context.SetError("invalid_grant", ex.Message);
+                                return;
+                            }
+
+                        default:
+                            {
+                                throw new Exception("Unexpected error", ex);
+                            }
+                    }
                 }
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-            identity.AddClaim(new Claim(ClaimTypes.Name, $"{tlUser.FirstName} {tlUser.LastName}"));
 
             foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
             {
@@ -132,7 +147,7 @@ namespace Auth.FWT.API.Providers
                         "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
                     },
                     {
-                        "userName", context.UserName
+                        "userName", $"{tlUser.FirstName} {tlUser.LastName}"
                     }
                 });
 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
@@ -11,6 +9,7 @@ using Auth.FWT.CQRS;
 using FluentValidation;
 using NodaTime;
 using TLSharp.Core;
+using TLSharp.Core.Network;
 
 namespace Auth.FWT.API.Controllers.Account
 {
@@ -51,7 +50,7 @@ namespace Auth.FWT.API.Controllers.Account
                 }
                 else
                 {
-                    telegramCode.CodeHash = telegramCode.CodeHash;
+                    telegramCode.CodeHash = hash;
                     telegramCode.IssuedUTC = _clock.UtcNow();
                     _unitOfWork.TelegramCodeRepository.Update(telegramCode);
                 }
@@ -74,9 +73,27 @@ namespace Auth.FWT.API.Controllers.Account
                             context.AddFailure("Phone number not registred in Telegram API");
                         }
                     }
-                    catch (Exception ex)
+                    catch (FloodException ex)
                     {
                         context.AddFailure(ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        switch (ex.Message)
+                        {
+                            case ("PHONE_NUMBER_BANNED"):
+                            case ("PHONE_NUMBER_INVALID"):
+
+                                {
+                                    context.AddFailure(ex.Message);
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    throw new Exception("Unexpected error", ex);
+                                }
+                        }
                     }
                 });
             }
