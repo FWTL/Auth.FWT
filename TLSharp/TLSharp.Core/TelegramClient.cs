@@ -25,7 +25,7 @@ namespace TLSharp.Core
         private TcpTransport _transport;
         private string _apiHash = "";
         private int _apiId = 0;
-        //private Session _session;
+        private Session _session;
         private List<TLDcOption> dcOptions;
         private TcpClientConnectionHandler _handler;
 
@@ -394,7 +394,7 @@ namespace TLSharp.Core
     {
         public const string InfoUrl = "https://github.com/sochix/TLSharp#quick-configuration";
 
-        internal MissingApiConfigurationException(string invalidParamName) :
+        public MissingApiConfigurationException(string invalidParamName) :
             base($"Your {invalidParamName} setting is missing. Adjust the configuration first, see {InfoUrl}")
         {
         }

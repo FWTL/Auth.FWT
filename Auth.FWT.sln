@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLSharp.Core", "TLSharp\TLS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSharp.TL", "TLSharp\TeleSharp.TL\TeleSharp.TL.csproj", "{D6144517-91D2-4880-86DF-E9FF5D7F383A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLSharp.Custome", "TLSharp.Custome\TLSharp.Custome.csproj", "{B661832A-827F-4EBB-A57C-A6947A2AA230}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B661832A-827F-4EBB-A57C-A6947A2AA230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B661832A-827F-4EBB-A57C-A6947A2AA230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B661832A-827F-4EBB-A57C-A6947A2AA230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B661832A-827F-4EBB-A57C-A6947A2AA230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,5 +77,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{400D2544-1CC6-4D8A-A62C-2292D9947A16} = {CC926EB8-0195-4B19-A4C0-6F2DB67856C5}
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A} = {CC926EB8-0195-4B19-A4C0-6F2DB67856C5}
+		{B661832A-827F-4EBB-A57C-A6947A2AA230} = {CC926EB8-0195-4B19-A4C0-6F2DB67856C5}
 	EndGlobalSection
 EndGlobal

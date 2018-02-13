@@ -99,13 +99,14 @@ namespace Auth.FWT.API.Providers
             }
 
             var session = Session.TryLoadOrCreateNew(sqlStore, user.Id.ToString());
-            TLUser tlUser = session.TLUser;
+            TLUser tlUser = session?.TLUser;
 
             if (tlUser.IsNull())
             {
                 try
                 {
                     tlUser = await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
+                    //session = telegramClient.Sess;
                 }
                 catch (Exception ex)
                 {
