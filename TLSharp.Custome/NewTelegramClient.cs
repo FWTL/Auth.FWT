@@ -14,21 +14,15 @@ namespace TLSharp.Custom
 {
     public class NewTelegramClient : ITelegramClient
     {
-        private string _apiHash;
+        private ISessionStore _store;
         private int _apiId;
-        private List<TLDcOption> _dcOptions;
+        private string _apiHash;
 
-        public NewTelegramClient(int apiId, string apiHash)
+        public NewTelegramClient(ISessionStore store, int apiId, string apiHash)
         {
-            if (apiId == default(int))
-                throw new MissingApiConfigurationException("API_ID");
-            if (string.IsNullOrEmpty(apiHash))
-                throw new MissingApiConfigurationException("API_HASH");
-
-            ///Init in IoC
-            TLContext.Init();
-            _apiHash = apiHash;
+            _store = store;
             _apiId = apiId;
+            _apiHash = apiHash;
         }
 
         public async Task<bool> ConnectAsync(UserSession userSession, bool reconnect = false)
@@ -57,14 +51,14 @@ namespace TLSharp.Custom
             await userSession.Sender.Send(invokewithLayer);
             await userSession.Sender.Receive(invokewithLayer);
 
-            _dcOptions = ((TLConfig)invokewithLayer.Response).DcOptions.ToList();
+            TLContext.DcOptions = ((TLConfig)invokewithLayer.Response).DcOptions.ToList();
 
             return true;
         }
 
         private async Task ReconnectToDcAsync(UserSession userSession, int dcId)
         {
-            if (_dcOptions == null || !_dcOptions.Any())
+            if (TLContext.DcOptions == null || !TLContext.DcOptions.Any())
             {
                 throw new InvalidOperationException($"Can't reconnect. Establish initial connection first.");
             }
@@ -76,7 +70,7 @@ namespace TLSharp.Custom
                 exported = await SendRequestAsync<TLExportedAuthorization>(userSession, exportAuthorization);
             }
 
-            var dc = _dcOptions.First(d => d.Id == dcId);
+            var dc = TLContext.DcOptions.First(d => d.Id == dcId);
 
             userSession.TcpTransport = new TcpTransport(dc.IpAddress, dc.Port, null);
             userSession.Session.ServerAddress = dc.IpAddress;
@@ -96,8 +90,6 @@ namespace TLSharp.Custom
         {
             userSession.Session.TLUser = TLUser;
             userSession.Session.SessionExpires = int.MaxValue;
-
-            userSession.Session.Save();
         }
 
         private async Task RequestWithDcMigration(UserSession userSession, TLMethod request)
@@ -134,6 +126,8 @@ namespace TLSharp.Custom
         {
             await RequestWithDcMigration(userSession, methodToExecute);
             var result = methodToExecute.GetType().GetProperty("Response").GetValue(methodToExecute);
+
+            _store.Save(userSession.Session);
 
             return (T)result;
         }

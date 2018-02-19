@@ -65,21 +65,14 @@ namespace Auth.FWT.API
 
             builder.RegisterType<SQLSessionStore>().As<ISessionStore>().InstancePerRequest();
 
-            builder.Register(b =>
+            builder.Register<ITelegramClient>(b =>
             {
-                var instance = AppTelegramClient.Instance.TelegramClient;
-                return instance;
-            }).SingleInstance();
+                return new NewTelegramClient(b.Resolve<ISessionStore>(), ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
+            }).InstancePerRequest();
 
             builder.Register<IUserSessionManager>(b =>
             {
                 return AppUserSessionManager.Instance.UserSessionManager;
-            });
-
-            builder.Register(b =>
-            {
-                IUserProvider userProvider = b.Resolve<IUserProvider>();
-                return new UserSession(userProvider.CurrentUserId, new SQLSessionStore(b.Resolve<IUnitOfWork>(), b.Resolve<IClock>()));
             });
 
             builder.Register<IClock>(b =>

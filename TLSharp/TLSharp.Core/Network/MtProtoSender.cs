@@ -61,8 +61,6 @@ namespace TLSharp.Core.Network
                 request.SerializeBody(writer);
                 await Send(memory.ToArray(), request);
             }
-
-            _session.Save();
         }
 
         public async Task Send(byte[] packet, TeleSharp.TL.TLMethod request)

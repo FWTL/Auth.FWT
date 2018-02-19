@@ -45,7 +45,6 @@
     <Compile Include="NewTelegramClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserSession.cs" />
-    <Compile Include="UserSessionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TLSharp\TeleSharp.TL\TeleSharp.TL.csproj">

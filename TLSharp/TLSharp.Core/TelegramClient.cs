@@ -40,7 +40,6 @@ namespace TLSharp.Core
             if (store == null)
                 store = new FileSessionStore();
 
-            TLContext.Init();
             _apiHash = apiHash;
             _apiId = apiId;
             _handler = handler;
@@ -358,8 +357,6 @@ namespace TLSharp.Core
         {
             _session.TLUser = TLUser;
             _session.SessionExpires = int.MaxValue;
-
-            _session.Save();
         }
 
         public bool IsConnected

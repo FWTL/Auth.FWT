@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Auth.FWT.Core;
 using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
@@ -83,7 +84,8 @@ namespace Auth.FWT.API.Providers
                 return;
             }
 
-            ITelegramClient telegramClient = AppTelegramClient.Instance.TelegramClient;
+            var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
+            ITelegramClient telegramClient = new NewTelegramClient(sqlStore, ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
             IUserSessionManager sessionManager = AppUserSessionManager.Instance.UserSessionManager;
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
@@ -99,7 +101,6 @@ namespace Auth.FWT.API.Providers
                 await unitOfWork.SaveChangesAsync();
             }
 
-            var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
             var userSession = sessionManager.Get(phoneNumberHashed);
 
             try
@@ -107,7 +108,7 @@ namespace Auth.FWT.API.Providers
                 userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
                 userSession.Session.SessionUserId = user.Id.ToString();
                 sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
-                userSession.Session.Save();
+                sqlStore.Save(userSession.Session);
             }
             catch (Exception ex)
             {
