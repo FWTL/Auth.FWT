@@ -5,6 +5,7 @@ using System.Web.Http;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Services.Dapper;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Data;
 using Auth.FWT.Data.Dapper;
@@ -18,6 +19,7 @@ using GitGud.Web.Core.Providers;
 using NodaTime;
 using Rws.Web.Core.CQRS;
 using TLSharp.Core;
+using TLSharp.Custom;
 
 namespace Auth.FWT.API
 {
@@ -68,6 +70,17 @@ namespace Auth.FWT.API
                 var instance = AppTelegramClient.Instance.TelegramClient;
                 return instance;
             }).SingleInstance();
+
+            builder.Register<IUserSessionManager>(b =>
+            {
+                return AppUserSessionManager.Instance.UserSessionManager;
+            });
+
+            builder.Register(b =>
+            {
+                IUserProvider userProvider = b.Resolve<IUserProvider>();
+                return new UserSession(userProvider.CurrentUserId, new SQLSessionStore(b.Resolve<IUnitOfWork>(), b.Resolve<IClock>()));
+            });
 
             builder.Register<IClock>(b =>
             {

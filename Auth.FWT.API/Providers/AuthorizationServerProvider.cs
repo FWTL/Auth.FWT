@@ -9,13 +9,14 @@ using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.Data;
 using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using TeleSharp.TL;
 using TLSharp.Core;
+using TLSharp.Custom;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.FWT.API.Providers
@@ -82,8 +83,8 @@ namespace Auth.FWT.API.Providers
                 return;
             }
 
-            var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
-            var telegramClient = AppTelegramClient.Instance.TelegramClient;
+            ITelegramClient telegramClient = AppTelegramClient.Instance.TelegramClient;
+            IUserSessionManager sessionManager = AppUserSessionManager.Instance.UserSessionManager;
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
             if (user.IsNull())
@@ -98,35 +99,34 @@ namespace Auth.FWT.API.Providers
                 await unitOfWork.SaveChangesAsync();
             }
 
-            var session = Session.TryLoadOrCreateNew(sqlStore, user.Id.ToString());
-            TLUser tlUser = session?.TLUser;
+            var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
+            var userSession = sessionManager.Get(phoneNumberHashed);
 
-            if (tlUser.IsNull())
+            try
             {
-                try
+                userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
+                userSession.Session.SessionUserId = user.Id.ToString();
+                sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
+                userSession.Session.Save();
+            }
+            catch (Exception ex)
+            {
+                switch (ex.Message)
                 {
-                    tlUser = await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
-                    //session = telegramClient.Sess;
-                }
-                catch (Exception ex)
-                {
-                    switch (ex.Message)
-                    {
-                        case ("PHONE_NUMBER_INVALID"):
-                        case ("PHONE_CODE_EMPTY"):
-                        case ("PHONE_CODE_EXPIRED"):
-                        case ("PHONE_CODE_INVALID"):
-                        case ("PHONE_NUMBER_UNOCCUPIED"):
-                            {
-                                context.SetError("invalid_grant", ex.Message);
-                                return;
-                            }
+                    case ("PHONE_NUMBER_INVALID"):
+                    case ("PHONE_CODE_EMPTY"):
+                    case ("PHONE_CODE_EXPIRED"):
+                    case ("PHONE_CODE_INVALID"):
+                    case ("PHONE_NUMBER_UNOCCUPIED"):
+                        {
+                            context.SetError("invalid_grant", ex.Message);
+                            return;
+                        }
 
-                        default:
-                            {
-                                throw new Exception("Unexpected error", ex);
-                            }
-                    }
+                    default:
+                        {
+                            throw new Exception("Unexpected error", ex);
+                        }
                 }
             }
 
@@ -148,7 +148,7 @@ namespace Auth.FWT.API.Providers
                         "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
                     },
                     {
-                        "userName", $"{tlUser.FirstName} {tlUser.LastName}"
+                        "userName", $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}"
                     }
                 });
 
@@ -156,11 +156,12 @@ namespace Auth.FWT.API.Providers
             context.Validated(ticket);
         }
 
-        private async Task<bool> IsPhoneNumberValid(string phoneNumber, TelegramClient telegramClient, OAuthGrantResourceOwnerCredentialsContext context)
+        private async Task<bool> IsPhoneNumberValid(string phoneNumber, ITelegramClient telegramClient, OAuthGrantResourceOwnerCredentialsContext context)
         {
             try
             {
-                if (!await telegramClient.IsPhoneRegisteredAsync(phoneNumber))
+                var userSession = new UserSession(0, new FakeSessionStore());
+                if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phoneNumber))
                 {
                     context.SetError("invalid_grant", "Phone number not registred");
                     return false;

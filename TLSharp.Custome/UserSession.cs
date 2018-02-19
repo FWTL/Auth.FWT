@@ -6,23 +6,19 @@ using System.Threading.Tasks;
 using TLSharp.Core;
 using TLSharp.Core.Network;
 
-namespace TLSharp.Custome
+namespace TLSharp.Custom
 {
     public class UserSession
     {
-        private int userid { get; set; }
-
         public Session Session { get; private set; }
-        public TcpTransport TcpTransport { get; private set; }
+        public TcpTransport TcpTransport { get; set; }
 
-        public MtProtoSender Sender { get; private set; }
+        public MtProtoSender Sender { get; set; }
 
         public UserSession(int userId, ISessionStore store)
         {
-            userid = userId;
-            Session = Session.TryLoadOrCreateNew(store, userId.ToString());
+            Session = Session.TryLoadOrCreateNew(store, string.Empty);
             TcpTransport = new TcpTransport(Session.ServerAddress, Session.Port);
-            Sender = new MtProtoSender(TcpTransport, Session);
         }
     }
 }

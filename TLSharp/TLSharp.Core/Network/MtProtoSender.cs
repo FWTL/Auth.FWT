@@ -537,9 +537,9 @@ namespace TLSharp.Core.Network
         }
     }
 
-    internal abstract class DataCenterMigrationException : Exception
+    public abstract class DataCenterMigrationException : Exception
     {
-        internal int DC { get; private set; }
+        public int DC { get; private set; }
 
         private const string REPORT_MESSAGE =
             " See: https://github.com/sochix/TLSharp#i-get-a-xxxmigrationexception-or-a-migrate_x-error";
