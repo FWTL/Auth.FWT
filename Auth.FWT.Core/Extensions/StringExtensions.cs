@@ -14,7 +14,11 @@ namespace Auth.FWT.Core.Extensions
         {
             if (!string.IsNullOrWhiteSpace(source))
             {
-                return (T)Convert.ChangeType(source, typeof(T), CultureInfo.InvariantCulture);
+                try
+                {
+                    return (T)Convert.ChangeType(source, typeof(T), CultureInfo.InvariantCulture);
+                }
+                catch { };
             }
 
             return null;

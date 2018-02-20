@@ -102,7 +102,7 @@ namespace Auth.FWT.API.Providers
             }
 
             var userSession = sessionManager.Get(phoneNumberHashed);
-            if(userSession.IsNull())
+            if (userSession.IsNull())
             {
                 context.SetError("invalid_code", "Request for new code");
                 return;
@@ -110,8 +110,8 @@ namespace Auth.FWT.API.Providers
 
             try
             {
-                userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
                 userSession.Session.SessionUserId = user.Id.ToString();
+                userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
                 sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
             }
             catch (Exception ex)
@@ -197,6 +197,12 @@ namespace Auth.FWT.API.Providers
             if (!context.TryGetBasicCredentials(out clientId, out clientSecret))
             {
                 context.TryGetFormCredentials(out clientId, out clientSecret);
+            }
+
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                context.SetError("invalid_clientId", "clientId should be sent.");
+                return Task.FromResult<object>(null);
             }
 
             var unitOfWork = new UnitOfWork(new Data.AppContext());

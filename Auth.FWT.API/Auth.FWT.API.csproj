@@ -185,6 +185,7 @@
   <ItemGroup>
     <None Include="appSettings.config" />
     <Content Include="Global.asax" />
+    <EmbeddedResource Include="SwaggerExtensions\Index.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

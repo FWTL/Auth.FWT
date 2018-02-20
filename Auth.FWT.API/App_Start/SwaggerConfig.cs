@@ -17,10 +17,12 @@ namespace Auth.FWT.API
             .EnableSwagger(c =>
                 {
                     c.SingleApiVersion("v1", "Auth.FWT.API");
+                    c.BasicAuth("basic").Description("Bearer Token Authentication");
                     c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
                 })
             .EnableSwaggerUi(c =>
             {
+                c.CustomAsset("index", thisAssembly, "Auth.FWT.API.SwaggerExtensions.Index.html");
             });
         }
     }

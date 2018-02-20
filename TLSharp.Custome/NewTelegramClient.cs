@@ -91,6 +91,7 @@ namespace TLSharp.Custom
         {
             userSession.Session.TLUser = TLUser;
             userSession.Session.SessionExpires = int.MaxValue;
+            _store.Save(userSession.Session);
         }
 
         private async Task RequestWithDcMigration(UserSession userSession, TLMethod request)
