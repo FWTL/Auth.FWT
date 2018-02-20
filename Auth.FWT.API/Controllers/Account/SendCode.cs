@@ -45,7 +45,7 @@ namespace Auth.FWT.API.Controllers.Account
 
             public async Task Execute(Command command)
             {
-                var userSession = new UserSession(0, new SQLSessionStore(_unitOfWork, _clock));
+                var userSession = new UserSession(new SQLSessionStore(_unitOfWork, _clock));
                 string hash = await _telegramClient.SendCodeRequestAsync(userSession, command.PhoneNumber);
                 _userManager.Add(HashHelper.GetHash(command.PhoneNumber), userSession);
 
@@ -75,7 +75,7 @@ namespace Auth.FWT.API.Controllers.Account
                 {
                     try
                     {
-                        var userSession = new UserSession(0, new FakeSessionStore());
+                        var userSession = new UserSession(new FakeSessionStore());
                         if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phone))
                         {
                             context.AddFailure("Phone number not registred in Telegram API");

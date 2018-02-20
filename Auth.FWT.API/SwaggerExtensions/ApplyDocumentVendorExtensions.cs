@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger;
 
-namespace GitGud.API.SwaggerExtensions
+namespace Auth.FWT.API.SwaggerExtensions
 {
     public class ApplyDocumentVendorExtensions : IDocumentFilter
     {

@@ -185,7 +185,6 @@
   <ItemGroup>
     <None Include="appSettings.config" />
     <Content Include="Global.asax" />
-    <Content Include="SwaggerExtensions\DefaultAPIKey.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -204,7 +203,6 @@
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
-    <Compile Include="Filters\AssignOAuth2SecurityRequirements.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -215,6 +213,7 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\AddAuthorizationHeaderParameterOperationFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

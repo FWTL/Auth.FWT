@@ -15,9 +15,15 @@ namespace TLSharp.Custom
 
         public MtProtoSender Sender { get; set; }
 
-        public UserSession(int userId, ISessionStore store)
+        public UserSession(ISessionStore store)
         {
             Session = Session.TryLoadOrCreateNew(store, string.Empty);
+            TcpTransport = new TcpTransport(Session.ServerAddress, Session.Port);
+        }
+
+        public UserSession(int userId, ISessionStore store)
+        {
+            Session = Session.TryLoadOrCreateNew(store, userId.ToString());
             TcpTransport = new TcpTransport(Session.ServerAddress, Session.Port);
         }
     }

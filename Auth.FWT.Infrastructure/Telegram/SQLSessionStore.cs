@@ -1,5 +1,4 @@
-﻿using System;
-using Auth.FWT.Core.Data;
+﻿using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
@@ -21,18 +20,12 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public Session Load(string sessionUserId)
         {
-            User currentUser = null;
-            if (!string.IsNullOrWhiteSpace(sessionUserId))
-            {
-                currentUser = _unitOfWork.UserRepository.GetSingle(sessionUserId.To<int>());
-            }
-
-            if (currentUser.IsNull())
+            if (string.IsNullOrWhiteSpace(sessionUserId))
             {
                 return null;
             }
 
-            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(currentUser.Id);
+            TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(sessionUserId.To<int>());
             if (telegramSession != null && telegramSession.ExpireDateUtc < _clock.UtcNow())
             {
                 return Session.FromBytes(telegramSession.Session, this, sessionUserId);

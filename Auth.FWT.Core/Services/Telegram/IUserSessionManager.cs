@@ -1,4 +1,5 @@
-﻿using TLSharp.Custom;
+﻿using TLSharp.Core;
+using TLSharp.Custom;
 
 namespace Auth.FWT.Core.Services.Telegram
 {
@@ -6,7 +7,7 @@ namespace Auth.FWT.Core.Services.Telegram
     {
         void Add(string key, UserSession userSession);
 
-        UserSession Get(string key);
+        UserSession Get(string key, ISessionStore store = null);
 
         void Replace(string oldKey, string newKey);
     }

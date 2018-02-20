@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
+using TeleSharp.TL.Messages;
 using TLSharp.Core;
 using TLSharp.Core.Auth;
 using TLSharp.Core.Network;
@@ -157,6 +158,12 @@ namespace TLSharp.Custom
             await RequestWithDcMigration(session, authCheckPhoneRequest);
 
             return authCheckPhoneRequest.Response.PhoneRegistered;
+        }
+
+        public async Task<TLAbsDialogs> GetUserDialogsAsync(UserSession session)
+        {
+            var peer = new TLInputPeerSelf();
+            return await SendRequestAsync<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 100 });
         }
     }
 }

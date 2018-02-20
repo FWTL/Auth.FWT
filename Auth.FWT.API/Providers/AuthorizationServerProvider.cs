@@ -102,13 +102,17 @@ namespace Auth.FWT.API.Providers
             }
 
             var userSession = sessionManager.Get(phoneNumberHashed);
+            if(userSession.IsNull())
+            {
+                context.SetError("invalid_code", "Request for new code");
+                return;
+            }
 
             try
             {
                 userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
                 userSession.Session.SessionUserId = user.Id.ToString();
                 sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
-                sqlStore.Save(userSession.Session);
             }
             catch (Exception ex)
             {
@@ -132,6 +136,8 @@ namespace Auth.FWT.API.Providers
             }
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+            identity.AddClaim(new Claim("as:UserId", user.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Name, $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}"));
 
             foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
             {
@@ -144,14 +150,11 @@ namespace Auth.FWT.API.Providers
             }
 
             var props = new AuthenticationProperties(new Dictionary<string, string>
+            {
                 {
-                    {
-                        "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
-                    },
-                    {
-                        "userName", $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}"
-                    }
-                });
+                    "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
+                },
+            });
 
             var ticket = new AuthenticationTicket(identity, props);
             context.Validated(ticket);
@@ -161,7 +164,7 @@ namespace Auth.FWT.API.Providers
         {
             try
             {
-                var userSession = new UserSession(0, new FakeSessionStore());
+                var userSession = new UserSession(new FakeSessionStore());
                 if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phoneNumber))
                 {
                     context.SetError("invalid_grant", "Phone number not registred");

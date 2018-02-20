@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
+using TLSharp.Core;
 using TLSharp.Custom;
 
 namespace Auth.FWT.Infrastructure.Telegram
@@ -19,8 +21,20 @@ namespace Auth.FWT.Infrastructure.Telegram
             Sessions.Add(key, userSession);
         }
 
-        public UserSession Get(string key)
+        public UserSession Get(string key, ISessionStore store = null)
         {
+            if (Sessions.ContainsKey(key))
+            {
+                return Sessions[key];
+            }
+
+            int? id = key.ToN<int>();
+            if (!id.HasValue)
+            {
+                return null;
+            }
+
+            Sessions[key] = new UserSession(id.Value, store);
             return Sessions[key];
         }
 
