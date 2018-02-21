@@ -21,11 +21,11 @@ namespace Auth.FWT.Data.Migrations
             ////    System.Diagnostics.Debugger.Launch();
             ////}
 
-            if (!context.Set<UserRole, int>().Any(ur => ur.Name == UserRoles.USER))
+            if (!context.Set<UserRole, int>().Any(ur => ur.Name == AppUserRoles.USER))
             {
                 var userRole = new UserRole()
                 {
-                    Name = UserRoles.USER
+                    Name = AppUserRoles.USER
                 };
 
                 context.Set<UserRole, int>().Add(userRole);
@@ -38,7 +38,7 @@ namespace Auth.FWT.Data.Migrations
                 {
                     ClaimType = AppClaims.USER_READ,
                     ClaimValue = AppClaims.USER_WRITE,
-                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == UserRoles.USER).Id
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == AppUserRoles.USER).Id
                 };
 
                 context.Set<RoleClaim, int>().Add(swaggerRead);
@@ -51,7 +51,7 @@ namespace Auth.FWT.Data.Migrations
                 {
                     ClaimType = AppClaims.USER_WRITE,
                     ClaimValue = AppClaims.USER_WRITE,
-                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == UserRoles.USER).Id
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == AppUserRoles.USER).Id
                 };
 
                 context.Set<RoleClaim, int>().Add(swaggerRead);

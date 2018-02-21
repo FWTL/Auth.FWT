@@ -18,7 +18,7 @@ namespace Auth.FWT.Core.Extensions
                 {
                     return (T)Convert.ChangeType(source, typeof(T), CultureInfo.InvariantCulture);
                 }
-                catch { };
+                catch { }
             }
 
             return null;

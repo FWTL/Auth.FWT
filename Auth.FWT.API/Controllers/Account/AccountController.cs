@@ -4,7 +4,6 @@ using System.Web.Http;
 using Auth.FWT.API.Models;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Telegram;
-using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
 using Swashbuckle.Swagger.Annotations;
 using TLSharp.Core;
@@ -44,7 +43,7 @@ namespace Auth.FWT.API.Controllers.Account
         public async Task Test()
         {
             var id = _up.CurrentUserId;
-            var session = AppUserSessionManager.Instance.UserSessionManager.Get(id.ToString(),_ss);
+            var session = AppUserSessionManager.Instance.UserSessionManager.Get(id.ToString(), _ss);
             var test = await _tele.GetUserDialogsAsync(session);
         }
     }

@@ -8,7 +8,7 @@ namespace Auth.FWT.Infrastructure.Telegram
 {
     public class UserSessionManager : IUserSessionManager
     {
-        public Dictionary<string, UserSession> Sessions = new Dictionary<string, UserSession>();
+        public Dictionary<string, UserSession> Sessions { get; set; } = new Dictionary<string, UserSession>();
 
         public void Add(string key, UserSession userSession)
         {

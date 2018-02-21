@@ -17,9 +17,4 @@ namespace Auth.FWT.Core.Entities.Identity
 
         public virtual ICollection<User> Users { get; set; }
     }
-
-    public class UserRoles
-    {
-        public const string USER = "USER";
-    }
 }

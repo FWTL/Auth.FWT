@@ -99,14 +99,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TeleSharp.TL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TLSharp\TLSharp.Core\bin\Debug\TeleSharp.TL.dll</HintPath>
-    </Reference>
-    <Reference Include="TLSharp.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\TLSharp\TLSharp.Core\bin\Debug\TLSharp.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigKeys.cs" />
@@ -123,6 +115,7 @@
     <Compile Include="Entities\API\RefreshToken.cs" />
     <Compile Include="Entities\BaseEntity.cs" />
     <Compile Include="Entities\Identity\AppClaims.cs" />
+    <Compile Include="Entities\Identity\AppRole.cs" />
     <Compile Include="Entities\Identity\RoleClaim.cs" />
     <Compile Include="Entities\Identity\User.cs" />
     <Compile Include="Entities\Identity\UserClaim.cs" />
@@ -167,8 +160,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TLSharp.Custome\TLSharp.Custome.csproj">
-      <Project>{B661832A-827F-4EBB-A57C-A6947A2AA230}</Project>
+      <Project>{b661832a-827f-4ebb-a57c-a6947a2aa230}</Project>
       <Name>TLSharp.Custome</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TLSharp\TeleSharp.TL\TeleSharp.TL.csproj">
+      <Project>{d6144517-91d2-4880-86df-e9ff5d7f383a}</Project>
+      <Name>TeleSharp.TL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TLSharp\TLSharp.Core\TLSharp.Core.csproj">
+      <Project>{400d2544-1cc6-4d8a-a62c-2292d9947a16}</Project>
+      <Name>TLSharp.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
