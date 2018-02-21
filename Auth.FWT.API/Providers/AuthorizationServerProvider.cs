@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
@@ -9,12 +10,14 @@ using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.Data;
 using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using TLSharp.Core;
+using TLSharp.Custom;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.FWT.API.Providers
@@ -47,7 +50,7 @@ namespace Auth.FWT.API.Providers
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var unitOfWork = new UnitOfWork(new AppContext());
+            var unitOfWork = new UnitOfWork(new Data.AppContext());
 
             var allowedOrigin = context.OwinContext.Get<string>("as:clientAllowedOrigin");
             if (allowedOrigin.IsNull())
@@ -58,7 +61,8 @@ namespace Auth.FWT.API.Providers
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { allowedOrigin });
 
             IFormCollection form = await context.Request.ReadFormAsync();
-            string phoneNumber = HashHelper.GetHash($"+{Regex.Match(form["phoneNumber"], @"\d+").Value}");
+            string phoneNumberHashed = HashHelper.GetHash($"+{Regex.Match(form["phoneNumber"], @"\d+").Value}");
+            string phoneNumber = $"+{Regex.Match(form["phoneNumber"], @"\d+").Value}";
             string code = form["code"];
 
             if (string.IsNullOrWhiteSpace(phoneNumber))
@@ -73,29 +77,74 @@ namespace Auth.FWT.API.Providers
                 return;
             }
 
-            var sqlStore = new SQLSessionStore(unitOfWork);
-            var telegramClient = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, sqlStore, null);
-            await telegramClient.ConnectAsync();
-
-            string hash = await unitOfWork.TelegramCodeRepository.Query().Where(tc => tc.Id == phoneNumber).Select(tc => tc.CodeHash).FirstOrDefaultAsync();
+            string hash = await unitOfWork.TelegramCodeRepository.Query().Where(tc => tc.Id == phoneNumberHashed).Select(tc => tc.CodeHash).FirstOrDefaultAsync();
             if (string.IsNullOrWhiteSpace(hash))
             {
                 context.SetError("invalid_code", "Request for new code");
                 return;
             }
 
-            await telegramClient.MakeAuthAsync(phoneNumber, hash, code);
+            var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
+            ITelegramClient telegramClient = new NewTelegramClient(sqlStore, ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
+            IUserSessionManager sessionManager = AppUserSessionManager.Instance.UserSessionManager;
 
-            User user = await unitOfWork.UserRepository.Query().Where(x => x.LockoutEnabled).FirstOrDefaultAsync();
-
+            User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
             if (user.IsNull())
             {
-                context.SetError("invalid_grant", "The phone number or code is incorrect.");
+                if (!await IsPhoneNumberValid(phoneNumber, telegramClient, context))
+                {
+                    return;
+                }
+
+                var role = await unitOfWork.RoleRepository.Query().Where(r => r.Name == "USER").SingleAsync();
+
+                user = new User(phoneNumberHashed, NodaTime.SystemClock.Instance.UtcNow());
+                user.Roles.Add(role);
+                unitOfWork.UserRepository.Insert(user);
+                await unitOfWork.SaveChangesAsync();
+            }
+
+            var userSession = sessionManager.Get(phoneNumberHashed);
+            if (userSession.IsNull())
+            {
+                context.SetError("invalid_code", "Request for new code");
                 return;
             }
 
+            try
+            {
+                userSession.Session.SessionUserId = user.Id.ToString();
+                userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
+                sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                switch (ex.Message)
+                {
+                    case ("PHONE_NUMBER_INVALID"):
+                    case ("PHONE_CODE_EMPTY"):
+                    case ("PHONE_CODE_EXPIRED"):
+                    case ("PHONE_CODE_INVALID"):
+                    case ("PHONE_NUMBER_UNOCCUPIED"):
+                        {
+                            context.SetError("invalid_grant", ex.Message);
+                            return;
+                        }
+
+                    default:
+                        {
+                            throw new Exception("Unexpected error", ex);
+                        }
+                }
+            }
+
+            user.UserName = $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}";
+            unitOfWork.UserRepository.UpdateColumns(user, () => user.UserName);
+            await unitOfWork.SaveChangesAsync();
+
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-            identity.AddClaim(new Claim(ClaimTypes.Name, context.UserName));
+            identity.AddClaim(new Claim("as:UserId", user.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
 
             foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
             {
@@ -108,17 +157,33 @@ namespace Auth.FWT.API.Providers
             }
 
             var props = new AuthenticationProperties(new Dictionary<string, string>
+            {
                 {
-                    {
-                        "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
-                    },
-                    {
-                        "userName", context.UserName
-                    }
-                });
+                    "as:client_id", (context.ClientId.IsNull()) ? string.Empty : context.ClientId
+                },
+            });
 
             var ticket = new AuthenticationTicket(identity, props);
             context.Validated(ticket);
+        }
+
+        private async Task<bool> IsPhoneNumberValid(string phoneNumber, ITelegramClient telegramClient, OAuthGrantResourceOwnerCredentialsContext context)
+        {
+            try
+            {
+                var userSession = new UserSession(new FakeSessionStore());
+                if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phoneNumber))
+                {
+                    context.SetError("invalid_grant", "Phone number not registred");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                context.SetError("invalid_grant", ex.Message);
+            }
+
+            return true;
         }
 
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)
@@ -141,7 +206,13 @@ namespace Auth.FWT.API.Providers
                 context.TryGetFormCredentials(out clientId, out clientSecret);
             }
 
-            var unitOfWork = new UnitOfWork(new AppContext());
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                context.SetError("invalid_clientId", "clientId should be sent.");
+                return Task.FromResult<object>(null);
+            }
+
+            var unitOfWork = new UnitOfWork(new Data.AppContext());
             ClientAPI client = unitOfWork.ClientAPIRepository.GetSingle(context.ClientId);
 
             if (client.IsNull())

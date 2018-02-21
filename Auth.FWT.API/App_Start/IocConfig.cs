@@ -5,6 +5,7 @@ using System.Web.Http;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Services.Dapper;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Data;
 using Auth.FWT.Data.Dapper;
@@ -15,8 +16,10 @@ using Autofac.Integration.WebApi;
 using FluentValidation;
 using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
+using NodaTime;
 using Rws.Web.Core.CQRS;
 using TLSharp.Core;
+using TLSharp.Custom;
 
 namespace Auth.FWT.API
 {
@@ -62,13 +65,20 @@ namespace Auth.FWT.API
 
             builder.RegisterType<SQLSessionStore>().As<ISessionStore>().InstancePerRequest();
 
-            builder.Register(b =>
+            builder.Register<ITelegramClient>(b =>
             {
-                var userProvider = b.Resolve<IUserProvider>();
-                var client = new TelegramClient(ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash, b.Resolve<ISessionStore>(), userProvider.IsAuthenticated ? userProvider?.CurrentUserId.ToString() : null);
-
-                return client;
+                return new NewTelegramClient(b.Resolve<ISessionStore>(), ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
             }).InstancePerRequest();
+
+            builder.Register<IUserSessionManager>(b =>
+            {
+                return AppUserSessionManager.Instance.UserSessionManager;
+            });
+
+            builder.Register<IClock>(b =>
+            {
+                return SystemClock.Instance;
+            }).SingleInstance();
 
             _container = builder.Build();
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(_container);

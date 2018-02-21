@@ -5,9 +5,14 @@ using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
+using Auth.FWT.Infrastructure.Telegram;
 using FluentValidation;
+using NodaTime;
 using TLSharp.Core;
+using TLSharp.Core.Network;
+using TLSharp.Custom;
 
 namespace Auth.FWT.API.Controllers.Account
 {
@@ -25,30 +30,35 @@ namespace Auth.FWT.API.Controllers.Account
 
         public class Handler : ICommandHandler<Command>
         {
-            private TelegramClient _telegramClient;
-
+            private IClock _clock;
+            private ITelegramClient _telegramClient;
             private IUnitOfWork _unitOfWork;
+            private IUserSessionManager _userManager;
 
-            public Handler(TelegramClient telegramClient, IUnitOfWork unitOfWork)
+            public Handler(ITelegramClient telegramClient, IUnitOfWork unitOfWork, IClock clock, IUserSessionManager userManager)
             {
                 _telegramClient = telegramClient;
                 _unitOfWork = unitOfWork;
+                _clock = clock;
+                _userManager = userManager;
             }
 
             public async Task Execute(Command command)
             {
-                await _telegramClient.ConnectAsync();
-                string hash = await _telegramClient.SendCodeRequestAsync(command.PhoneNumber);
+                var userSession = new UserSession(new SQLSessionStore(_unitOfWork, _clock));
+                string hash = await _telegramClient.SendCodeRequestAsync(userSession, command.PhoneNumber);
+                _userManager.Add(HashHelper.GetHash(command.PhoneNumber), userSession);
 
                 TelegramCode telegramCode = await _unitOfWork.TelegramCodeRepository.GetSingleAsync(HashHelper.GetHash(command.PhoneNumber));
                 if (telegramCode.IsNull())
                 {
-                    telegramCode = new TelegramCode(command.PhoneNumber, hash);
+                    telegramCode = new TelegramCode(command.PhoneNumber, hash, _clock.UtcNow());
                     _unitOfWork.TelegramCodeRepository.Insert(telegramCode);
                 }
                 else
                 {
-                    telegramCode.CodeHash = telegramCode.CodeHash;
+                    telegramCode.CodeHash = hash;
+                    telegramCode.IssuedUTC = _clock.UtcNow();
                     _unitOfWork.TelegramCodeRepository.Update(telegramCode);
                 }
 
@@ -58,18 +68,22 @@ namespace Auth.FWT.API.Controllers.Account
 
         public class Validator : AbstractValidator<Command>
         {
-            public Validator(TelegramClient telegramClient)
+            public Validator(ITelegramClient telegramClient, IUnitOfWork unitOfWork, IClock clock)
             {
                 RuleFor(x => x.PhoneNumber).NotEmpty();
                 RuleFor(x => x.PhoneNumber).CustomAsync(async (phone, context, token) =>
                 {
-                    await telegramClient.ConnectAsync();
                     try
                     {
-                        if (!await telegramClient.IsPhoneRegisteredAsync(phone))
+                        var userSession = new UserSession(new FakeSessionStore());
+                        if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phone))
                         {
                             context.AddFailure("Phone number not registred in Telegram API");
                         }
+                    }
+                    catch (FloodException ex)
+                    {
+                        context.AddFailure(ex.Message);
                     }
                     catch (Exception ex)
                     {

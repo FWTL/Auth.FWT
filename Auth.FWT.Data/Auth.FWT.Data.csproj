@@ -174,13 +174,9 @@
     <Compile Include="Identity\IdentityFactory.cs" />
     <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="IEntitiesContext.cs" />
-    <Compile Include="Migrations\201801121409391_init.cs" />
-    <Compile Include="Migrations\201801121409391_init.Designer.cs">
-      <DependentUpon>201801121409391_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201802071103570_telegramcodehash.cs" />
-    <Compile Include="Migrations\201802071103570_telegramcodehash.Designer.cs">
-      <DependentUpon>201802071103570_telegramcodehash.cs</DependentUpon>
+    <Compile Include="Migrations\201802091635384_Init.cs" />
+    <Compile Include="Migrations\201802091635384_Init.Designer.cs">
+      <DependentUpon>201802091635384_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -203,11 +199,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201801121409391_init.resx">
-      <DependentUpon>201801121409391_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802071103570_telegramcodehash.resx">
-      <DependentUpon>201802071103570_telegramcodehash.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802091635384_Init.resx">
+      <DependentUpon>201802091635384_Init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

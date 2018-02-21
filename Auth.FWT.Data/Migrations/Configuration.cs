@@ -21,37 +21,37 @@ namespace Auth.FWT.Data.Migrations
             ////    System.Diagnostics.Debugger.Launch();
             ////}
 
-            if (!context.Set<UserRole, int>().Any(ur => ur.Name == "swagger"))
+            if (!context.Set<UserRole, int>().Any(ur => ur.Name == AppUserRoles.USER))
             {
-                var swaggerRole = new UserRole()
+                var userRole = new UserRole()
                 {
-                    Name = "swagger"
+                    Name = AppUserRoles.USER
                 };
 
-                context.Set<UserRole, int>().Add(swaggerRole);
+                context.Set<UserRole, int>().Add(userRole);
                 context.SaveChanges();
             }
 
-            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.SWAGGER_READ))
+            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.USER_READ))
             {
                 var swaggerRead = new RoleClaim()
                 {
-                    ClaimType = AppClaims.SWAGGER_READ,
-                    ClaimValue = AppClaims.SWAGGER_READ,
-                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == "swagger").Id
+                    ClaimType = AppClaims.USER_READ,
+                    ClaimValue = AppClaims.USER_WRITE,
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == AppUserRoles.USER).Id
                 };
 
                 context.Set<RoleClaim, int>().Add(swaggerRead);
                 context.SaveChanges();
             }
 
-            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.SWAGGER_WRITE))
+            if (!context.Set<RoleClaim, int>().Any(rc => rc.ClaimType == AppClaims.USER_WRITE))
             {
                 var swaggerRead = new RoleClaim()
                 {
-                    ClaimType = AppClaims.SWAGGER_WRITE,
-                    ClaimValue = AppClaims.SWAGGER_WRITE,
-                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == "swagger").Id
+                    ClaimType = AppClaims.USER_WRITE,
+                    ClaimValue = AppClaims.USER_WRITE,
+                    RoleId = context.Set<UserRole, int>().FirstOrDefault(ur => ur.Name == AppUserRoles.USER).Id
                 };
 
                 context.Set<RoleClaim, int>().Add(swaggerRead);

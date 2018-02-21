@@ -9,6 +9,8 @@ namespace Auth.FWT.Data.Base.Configuration
         public UserConfiguration()
         {
             Property(x => x.SecurityStamp).HasColumnType(ParametersName.Varchar).HasMaxLength(36);
+            Property(x => x.PhoneNumberHashed).HasColumnType(ParametersName.Varchar).IsMaxLength();
+            HasOptional(x => x.TelegramSession).WithRequired(x => x.User);
         }
     }
 }

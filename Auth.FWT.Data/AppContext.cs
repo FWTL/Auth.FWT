@@ -6,6 +6,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -25,14 +26,16 @@ namespace Auth.FWT.Data
         private DbTransaction _transaction;
 
         public AppContext()
-            : base("name=AppContext")
+            : this("name=AppContext")
         {
         }
 
         public AppContext(string nameOrConnectionString)
             : base(nameOrConnectionString)
         {
-            DbInterception.Add(new NLogCommandInterceptor());
+            ////DbInterception.Add(new NLogCommandInterceptor());
+            Database.Log = q => Debug.Write(q);
+
             Configuration.LazyLoadingEnabled = false;
             Configuration.AutoDetectChangesEnabled = false;
             Configuration.ValidateOnSaveEnabled = false;
@@ -48,7 +51,6 @@ namespace Auth.FWT.Data
             _objectContext = ((IObjectContextAdapter)this).ObjectContext;
             if (_objectContext.Connection.State == ConnectionState.Open)
             {
-                _transaction = _objectContext.Connection.BeginTransaction();
                 return;
             }
 

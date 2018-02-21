@@ -65,6 +65,10 @@
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NodaTime, Version=2.2.4.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.2.2.4\lib\net45\NodaTime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="RestSharp, Version=106.2.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.2.1\lib\net452\RestSharp.dll</HintPath>
       <Private>True</Private>
@@ -148,6 +152,8 @@
     <Compile Include="Logging\NLogCommandInterceptor.cs" />
     <Compile Include="Logging\NLogLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Telegram\AppUserSessionManager.cs" />
+    <Compile Include="Telegram\UserSessionManager.cs" />
     <Compile Include="Telegram\SQLSessionStore.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +169,10 @@
     <ProjectReference Include="..\Auth.FWT.Core\Auth.FWT.Core.csproj">
       <Project>{0ED2E479-2353-59A2-C8FB-880112959A8C}</Project>
       <Name>Auth.FWT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TLSharp.Custome\TLSharp.Custome.csproj">
+      <Project>{b661832a-827f-4ebb-a57c-a6947a2aa230}</Project>
+      <Name>TLSharp.Custome</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

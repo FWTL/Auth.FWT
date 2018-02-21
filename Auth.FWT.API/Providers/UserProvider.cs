@@ -21,7 +21,7 @@ namespace GitGud.API.Providers
             get
             {
                 ClaimsPrincipal principal = _request.GetRequestContext().Principal as ClaimsPrincipal;
-                return principal.Claims.Where(c => c.Type == ClaimTypes.UserData).Single().Value.To<int>();
+                return principal.Claims.Where(c => c.Type == "as:UserId").Single().Value.To<int>();
             }
         }
 

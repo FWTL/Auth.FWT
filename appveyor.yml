@@ -15,6 +15,7 @@ branches:
 
 build:
   verbosity: minimal
+  publish_wap: true
 
 cache:
   - packages -> **\packages.config
@@ -28,10 +29,16 @@ pull_requests:
 before_build:
   - nuget restore Auth.FWT.sln
 
-notifications:
-- provider: Email
-  to:
-  - agolaszewski@agme.info
-  on_build_success: false
-  on_build_failure: true
-  on_build_status_changed: false
+deploy:
+  - provider: WebDeploy
+    server: https://devauthfwt.scm.azurewebsites.net:443/msdeploy.axd?site=devauthfwt
+    website: devauthfwt
+    username:
+     secure: bz6UoujGhzcfrJ3HrvmjGg==
+    password:
+     secure: CNFWL5eYjDQnrNYmy/K09uLnxb4+/01+9Az3VUew32QGw0MOcBdkHGIczXKxb7t4C28v6/McQncGtTfkNXjUTA==
+    ntlm: false
+    remove_files: false
+    app_offline: true
+    on:
+      branch: master

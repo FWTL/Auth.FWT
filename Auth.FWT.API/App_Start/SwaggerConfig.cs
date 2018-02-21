@@ -2,6 +2,7 @@ using System.IO;
 using System.Web.Hosting;
 using System.Web.Http;
 using Auth.FWT.API.Filters;
+using Auth.FWT.API.SwaggerExtensions;
 using Swashbuckle.Application;
 
 namespace Auth.FWT.API
@@ -16,11 +17,12 @@ namespace Auth.FWT.API
             .EnableSwagger(c =>
                 {
                     c.SingleApiVersion("v1", "Auth.FWT.API");
-                    c.OAuth2("oauth2").Flow("password").TokenUrl(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "/token"));
-                    c.OperationFilter<AssignOAuth2SecurityRequirements>();
+                    c.BasicAuth("basic").Description("Bearer Token Authentication");
+                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
                 })
             .EnableSwaggerUi(c =>
             {
+                c.CustomAsset("index", thisAssembly, "Auth.FWT.API.SwaggerExtensions.Index.html");
             });
         }
     }

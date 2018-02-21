@@ -12,6 +12,13 @@ namespace Auth.FWT.Core.Entities.Identity
             Roles = new HashSet<UserRole>();
         }
 
+        public User(string phoneNumberHashed, DateTime stamp) : this()
+        {
+            PhoneNumberHashed = phoneNumberHashed;
+            SecurityStamp = stamp.Ticks.ToString();
+            UserName = "User" + stamp;
+        }
+
         public virtual ICollection<UserClaim> Claims { get; set; }
 
         public bool LockoutEnabled { get; set; }
@@ -24,8 +31,8 @@ namespace Auth.FWT.Core.Entities.Identity
 
         public virtual TelegramSession TelegramSession { get; set; }
 
-        public int? TelegramSessionId { get; set; }
-
         public string UserName { get; set; }
+
+        public string PhoneNumberHashed { get; set; }
     }
 }
