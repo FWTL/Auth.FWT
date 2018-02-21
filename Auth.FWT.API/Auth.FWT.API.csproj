@@ -183,7 +183,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="appSettings.config" />
+    <None Include="appSettings.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Global.asax" />
     <EmbeddedResource Include="SwaggerExtensions\Index.html" />
     <Content Include="Web.config">
