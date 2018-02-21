@@ -24,7 +24,6 @@ environment:
 install:
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
-  - secure-file\tools\secure-file -decrypt Auth.FWT.API\Web.Release.config.enc -secret %my_secret%
 
 cache:
   - packages -> **\packages.config
