@@ -17,11 +17,19 @@ build:
   verbosity: minimal
   publish_wap: true
 
+environment:
+  my_secret:
+    secure: UwgegenFaKv8YUhW2vg2i9fHLub/Nq20apkdChOIhkQ=
+  
+install:
+  - nuget install secure-file -ExcludeVersion
+  - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
+
 cache:
   - packages -> **\packages.config
   
 platform: Any CPU
-configuration: Release
+configuration: DEVELOPMENT
 
 pull_requests:
   do_not_increment_build_number: true

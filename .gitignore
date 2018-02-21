@@ -276,3 +276,4 @@ __pycache__/
 /Auth.FWT.API/appSettings.config
 /Auth.FWT._Azure/azureauth.properties
 /Auth.FWT.API/Web.DEV.config
+/Auth.FWT.API/Web.DEVELOPMENT.config
