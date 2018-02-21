@@ -12,7 +12,7 @@ namespace Auth.FWT.Core.Entities.Identity
             Roles = new HashSet<UserRole>();
         }
 
-        public User(string phoneNumberHashed, DateTime stamp)
+        public User(string phoneNumberHashed, DateTime stamp) : this()
         {
             PhoneNumberHashed = phoneNumberHashed;
             SecurityStamp = stamp.Ticks.ToString();

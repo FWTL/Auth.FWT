@@ -96,7 +96,10 @@ namespace Auth.FWT.API.Providers
                     return;
                 }
 
+                var role = await unitOfWork.RoleRepository.Query().Where(r => r.Name == "USER").SingleAsync();
+
                 user = new User(phoneNumberHashed, NodaTime.SystemClock.Instance.UtcNow());
+                user.Roles.Add(role);
                 unitOfWork.UserRepository.Insert(user);
                 await unitOfWork.SaveChangesAsync();
             }
@@ -135,9 +138,13 @@ namespace Auth.FWT.API.Providers
                 }
             }
 
+            user.UserName = $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}";
+            unitOfWork.UserRepository.UpdateColumns(user, () => user.UserName);
+            await unitOfWork.SaveChangesAsync();
+
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
             identity.AddClaim(new Claim("as:UserId", user.Id.ToString()));
-            identity.AddClaim(new Claim(ClaimTypes.Name, $"{userSession.Session.TLUser.FirstName} {userSession.Session.TLUser.LastName}"));
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
 
             foreach (RoleClaim claim in user.Roles.SelectMany(r => r.Claims))
             {
