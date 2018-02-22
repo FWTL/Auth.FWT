@@ -15,6 +15,7 @@ branches:
 
 build:
   verbosity: minimal
+  publish_wap: true
 
 environment:
   my_secret:
