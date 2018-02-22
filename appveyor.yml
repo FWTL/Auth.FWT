@@ -51,3 +51,6 @@ deploy:
     app_offline: true
     on:
       branch: master
+
+on_succes:
+   - update-database -ProjectName Auth.FWT.Data
