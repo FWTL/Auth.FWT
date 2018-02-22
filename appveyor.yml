@@ -12,6 +12,10 @@ init:
 branches:
   only:
   - master
+  
+artifacts:
+ - path : C:\projects\auth-fun-with-telegram\Auth.FWT.API\bin\
+   name : Bin
 
 build:
   verbosity: minimal
