@@ -53,4 +53,4 @@ deploy:
       branch: master
 
 before_deploy:
-   - C:\projects\auth-fun-with-telegram\Auth.FWT.API\bin\Tools\migrate.exe Auth.FWT.Data.dll /startupConfigurationFile="..\\web.config"
+   - C:\projects\auth-fun-with-telegram\Auth.FWT.API\bin\migrate.exe Auth.FWT.Data.dll /startupConfigurationFile="..\\web.config"
