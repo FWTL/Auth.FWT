@@ -18,7 +18,6 @@ namespace Auth.FWT.API
                 {
                     c.SingleApiVersion("v1", "Auth.FWT.API");
                     c.BasicAuth("basic").Description("Bearer Token Authentication");
-                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
                 })
             .EnableSwaggerUi(c =>
             {
