@@ -214,7 +214,6 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
-    <Compile Include="SwaggerExtensions\AddAuthorizationHeaderParameterOperationFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
