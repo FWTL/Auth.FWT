@@ -25,6 +25,8 @@ install:
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\Web.DEVELOPMENT.config.enc -secret %my_secret%
+  - nuget install EntityFramework -ExcludeVersion
+  - ps : Import-Module EntityFramework\tools\EntityFramework.psm1
 
 cache:
   - packages -> **\packages.config
@@ -53,5 +55,4 @@ deploy:
       branch: master
 
 before_deploy:
-  - ps : Import-Module packages\EntityFramework.6.2.0\tools\EntityFramework.psm1
   - ps : update-database -ProjectName Auth.FWT.Data
