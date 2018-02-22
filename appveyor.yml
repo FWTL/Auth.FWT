@@ -14,7 +14,7 @@ branches:
   - master
   
 artifacts:
- - path : Auth.FWT.API\bin\
+ - path : Auth.FWT.API\
    name : Bin
 
 build:
