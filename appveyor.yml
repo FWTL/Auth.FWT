@@ -26,7 +26,7 @@ install:
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\Web.DEVELOPMENT.config.enc -secret %my_secret%
   - nuget install EntityFramework -ExcludeVersion
-  - ps : Import-Module EntityFramework\tools\EntityFramework.psm1
+  - ps : Import-Module C:\projects\auth-fun-with-telegram\EntityFramework\tools\EntityFramework.psm1
 
 cache:
   - packages -> **\packages.config
