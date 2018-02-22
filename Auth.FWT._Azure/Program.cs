@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.Linq;
 using System.Management.Automation;
 using InquirerCS;
@@ -9,6 +8,7 @@ using Microsoft.Azure.Management.AppService.Fluent;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Management.Sql.Fluent;
 
 namespace Auth.FWT._Azure
 {
@@ -16,6 +16,8 @@ namespace Auth.FWT._Azure
     {
         public IAppServicePlan AppServicePlan { get; internal set; }
         public IResourceGroup ResourceGroup { get; set; }
+
+        public ISqlServer SQLServer { get; set; }
     }
 
     internal class Program
@@ -26,10 +28,83 @@ namespace Auth.FWT._Azure
         private static void Main(string[] args)
         {
             CreateAzureAuthPropertiesInRegistry();
-            CreateOrUseExistingResourceGroup();
-            CreateOrUseExistingPlan();
-            CreateWebApp();
+            Menu();
             Inquirer.Go();
+        }
+
+        private static void Menu()
+        {
+            Inquirer.Prompt(Question.Menu("")
+            .AddOption("Create Web App", () =>
+            {
+                CreateOrUseExistingResourceGroup();
+                CreateOrUseExistingPlan();
+                CreateWebApp();
+            })
+            .AddOption("Create SQL Db", () =>
+            {
+                CreateOrUseExistingResourceGroup();
+                CreateOrUseSQLServer();
+            }));
+        }
+
+        private static void CreateDb()
+        {
+            var list = Answers.SQLServer.Databases.List();
+            if (list.Any(db => db.Name != "AuthFWT"))
+            {
+                Answers.SQLServer.Databases.Define("AuthFWT").WithMaxSizeBytes(500000000);
+            }
+        }
+
+        private static void CreateOrUseSQLServer()
+        {
+            Inquirer.Prompt(Question.Menu("Create or use existing SQL Server")
+               .AddOption("Create", () => CreateSQLServer())
+               .AddOption("Use existing", () => UseExistingSQLServer()));
+        }
+
+        private static void UseExistingSQLServer()
+        {
+            var sqlServers = _azure.SqlServers.ListByResourceGroup(Answers.ResourceGroup.Name);
+            Inquirer.Prompt(Question.List("SQLServer", sqlServers).WithConvertToString(s => s.Name)).Bind(() => Answers.SQLServer)
+            .After(() =>
+            {
+                CreateDb();
+            });
+        }
+
+        private static void CreateSQLServer()
+        {
+            var login = string.Empty;
+            var password = string.Empty;
+            var sqlDbName = "devsql" + DateTime.UtcNow.Ticks;
+
+            Inquirer.Prompt(Question.Input("DbName").WithDefaultValue(sqlDbName)).Bind(() => sqlDbName);
+            Inquirer.Prompt(Question.Input("Login")).Bind(() => login);
+            Inquirer.Prompt(Question.Password("Password").WithConfirmation()).Bind(() => password)
+            .After(() =>
+            {
+                try
+                {
+                    Answers.SQLServer = _azure.SqlServers.Define(sqlDbName)
+                        .WithRegion(Answers.ResourceGroup.Region)
+                        .WithExistingResourceGroup(Answers.ResourceGroup)
+                        .WithAdministratorLogin(login)
+                        .WithAdministratorPassword(password)
+                        .WithNewFirewallRule("0.0.0.0", "255.255.255.255")
+                        .Create();
+                    CreateDb();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    Console.ReadKey();
+                    CreateSQLServer();
+                }
+
+            
+            });
         }
 
         private static void CreateOrUseExistingPlan()
