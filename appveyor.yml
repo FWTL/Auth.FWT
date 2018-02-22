@@ -15,16 +15,6 @@ branches:
 
 build:
   verbosity: minimal
-  publish_wap: true
-
-environment:
-  my_secret:
-    secure: UwgegenFaKv8YUhW2vg2i9fHLub/Nq20apkdChOIhkQ=
-  
-install:
-  - nuget install secure-file -ExcludeVersion
-  - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
-  - secure-file\tools\secure-file -decrypt Auth.FWT.API\Web.DEVELOPMENT.config.enc -secret %my_secret%
 
 cache:
   - packages -> **\packages.config
@@ -37,17 +27,3 @@ pull_requests:
 
 before_build:
   - nuget restore Auth.FWT.sln
-
-deploy:
-  - provider: WebDeploy
-    server: https://devauthfwt.scm.azurewebsites.net:443/msdeploy.axd?site=devauthfwt
-    website: devauthfwt
-    username:
-     secure: bz6UoujGhzcfrJ3HrvmjGg==
-    password:
-     secure: CNFWL5eYjDQnrNYmy/K09uLnxb4+/01+9Az3VUew32QGw0MOcBdkHGIczXKxb7t4C28v6/McQncGtTfkNXjUTA==
-    ntlm: false
-    remove_files: false
-    app_offline: true
-    on:
-      branch: master
