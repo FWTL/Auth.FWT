@@ -25,8 +25,6 @@ install:
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\appSettings.config.enc -secret %my_secret%
   - secure-file\tools\secure-file -decrypt Auth.FWT.API\Web.DEVELOPMENT.config.enc -secret %my_secret%
-  - nuget install EntityFramework -ExcludeVersion
-  - ps : Import-Module C:\projects\auth-fun-with-telegram\EntityFramework\tools\EntityFramework.psm1
 
 cache:
   - packages -> **\packages.config
@@ -55,4 +53,4 @@ deploy:
       branch: master
 
 before_deploy:
-  - ps : update-database -ProjectName Auth.FWT.Data
+   - C:\projects\auth-fun-with-telegram\TLSharp\TeleSharp.TL\bin\DEVELOPMENT\migrate.exe Auth.FWT.Data.dll /startupConfigurationFile="..\\web.config"
