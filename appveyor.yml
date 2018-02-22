@@ -52,5 +52,5 @@ deploy:
     on:
       branch: master
 
-on_succes:
-   - update-database -ProjectName Auth.FWT.Data
+on_success:
+  - update-database -ProjectName Auth.FWT.Data
