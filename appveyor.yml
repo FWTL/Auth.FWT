@@ -14,7 +14,7 @@ branches:
   - master
   
 artifacts:
- - path : C:\projects\auth-fun-with-telegram\Auth.FWT.API\bin\
+ - path : Auth.FWT.API\bin\
    name : Bin
 
 build:
