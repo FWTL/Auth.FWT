@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
@@ -136,10 +138,33 @@ namespace TLSharp.Custom
 
         public async Task<string> SendCodeRequestAsync(UserSession userSession, string phoneNumber)
         {
-            var request = new TLRequestSendCode() { PhoneNumber = phoneNumber, ApiId = _apiId, ApiHash = _apiHash };
-            await RequestWithDcMigration(userSession, request);
+            try
+            {
+                var request = new TLRequestSendCode() { PhoneNumber = phoneNumber, ApiId = _apiId, ApiHash = _apiHash };
+                await RequestWithDcMigration(userSession, request);
 
-            return request.Response.PhoneCodeHash;
+                return request.Response.PhoneCodeHash;
+            }
+            catch (FloodException ex)
+            {
+                throw new ValidationException(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                switch (ex.Message)
+                {
+                    case ("PHONE_NUMBER_BANNED"):
+                    case ("PHONE_NUMBER_INVALID"):
+                        {
+                            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("phoneNumber",ex.Message) });
+                        }
+
+                    default:
+                        {
+                            throw new Exception("Unexpected error", ex);
+                        }
+                }
+            }
         }
 
         public async Task<UserSession> MakeAuthAsync(UserSession userSession, string phoneNumber, string phoneCodeHash, string code)
