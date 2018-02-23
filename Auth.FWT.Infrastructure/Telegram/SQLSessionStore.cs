@@ -26,7 +26,7 @@ namespace Auth.FWT.Infrastructure.Telegram
             }
 
             TelegramSession telegramSession = _unitOfWork.TelegramSessionRepository.GetSingle(sessionUserId.To<int>());
-            if (telegramSession != null && telegramSession.ExpireDateUtc < _clock.UtcNow())
+            if (telegramSession != null)
             {
                 return Session.FromBytes(telegramSession.Session, this, sessionUserId);
             }

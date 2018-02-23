@@ -102,8 +102,6 @@ namespace Auth.FWT._Azure
                     Console.ReadKey();
                     CreateSQLServer();
                 }
-
-            
             });
         }
 

@@ -147,7 +147,7 @@ namespace TLSharp.Custom
             }
             catch (FloodException ex)
             {
-                throw new ValidationException(ex.Message);
+                ThrowValidationError(ex);
             }
             catch (Exception ex)
             {
@@ -156,7 +156,8 @@ namespace TLSharp.Custom
                     case ("PHONE_NUMBER_BANNED"):
                     case ("PHONE_NUMBER_INVALID"):
                         {
-                            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("phoneNumber",ex.Message) });
+                            ThrowValidationError(ex);
+                            break;
                         }
 
                     default:
@@ -165,6 +166,13 @@ namespace TLSharp.Custom
                         }
                 }
             }
+
+            return string.Empty;
+        }
+
+        public void ThrowValidationError(Exception ex)
+        {
+            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("phoneNumber", ex.Message) });
         }
 
         public async Task<UserSession> MakeAuthAsync(UserSession userSession, string phoneNumber, string phoneCodeHash, string code)
