@@ -75,6 +75,13 @@ namespace Auth.FWT.API
                 return AppUserSessionManager.Instance.UserSessionManager;
             });
 
+            builder.Register(b =>
+            {
+                var manager = b.Resolve<IUserSessionManager>();
+                var currentUserId = b.Resolve<IUserProvider>()?.CurrentUserId;
+                return manager.Get(currentUserId.ToString(), b.Resolve<ISessionStore>());
+            });
+
             builder.Register<IClock>(b =>
             {
                 return SystemClock.Instance;

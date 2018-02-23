@@ -43,9 +43,9 @@ namespace Auth.FWT.API.Providers
             token.ProtectedTicket = context.SerializeTicket();
 
             unitOfWork.BeginTransaction();
-                unitOfWork.RefreshTokenRepository.BatchDelete(rt => rt.ClientAPIId == token.ClientAPIId && rt.Subject == token.Subject);
-                unitOfWork.RefreshTokenRepository.Insert(token);
-            await unitOfWork.CommitAsync();
+            unitOfWork.RefreshTokenRepository.BatchDelete(rt => rt.ClientAPIId == token.ClientAPIId && rt.Subject == token.Subject);
+            unitOfWork.RefreshTokenRepository.Insert(token);
+            unitOfWork.Commit();
 
             context.SetToken(refreshTokenId);
         }

@@ -16,7 +16,6 @@ using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using TLSharp.Core;
 using TLSharp.Custom;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
@@ -91,12 +90,7 @@ namespace Auth.FWT.API.Providers
             User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
             if (user.IsNull())
             {
-                if (!await IsPhoneNumberValid(phoneNumber, telegramClient, context))
-                {
-                    return;
-                }
-
-                var role = await unitOfWork.RoleRepository.Query().Where(r => r.Name == "USER").SingleAsync();
+                var role = await unitOfWork.RoleRepository.Query().Where(r => r.Name == AppUserRoles.USER).SingleAsync();
 
                 user = new User(phoneNumberHashed, NodaTime.SystemClock.Instance.UtcNow());
                 user.Roles.Add(role);
@@ -165,25 +159,6 @@ namespace Auth.FWT.API.Providers
 
             var ticket = new AuthenticationTicket(identity, props);
             context.Validated(ticket);
-        }
-
-        private async Task<bool> IsPhoneNumberValid(string phoneNumber, ITelegramClient telegramClient, OAuthGrantResourceOwnerCredentialsContext context)
-        {
-            try
-            {
-                var userSession = new UserSession(new FakeSessionStore());
-                if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phoneNumber))
-                {
-                    context.SetError("invalid_grant", "Phone number not registred");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                context.SetError("invalid_grant", ex.Message);
-            }
-
-            return true;
         }
 
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)

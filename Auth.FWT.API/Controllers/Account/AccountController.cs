@@ -10,6 +10,7 @@ using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Telegram;
 using GitGud.Web.Core.Providers;
 using Swashbuckle.Swagger.Annotations;
+using TeleSharp.TL.Messages;
 using TLSharp.Core;
 using TLSharp.Custom;
 
@@ -24,7 +25,7 @@ namespace Auth.FWT.API.Controllers.Account
         private IUnitOfWork _uow;
         private IUserProvider _up;
 
-        public AccountController(ICommandDispatcher commandDispatcher, IUnitOfWork uow,  IQueryDispatcher queryDispatcher, ITelegramClient tele, IUserProvider up, TLSharp.Core.ISessionStore ss)
+        public AccountController(ICommandDispatcher commandDispatcher, IUnitOfWork uow, IQueryDispatcher queryDispatcher, ITelegramClient tele, IUserProvider up, TLSharp.Core.ISessionStore ss)
         {
             _commandDispatcher = commandDispatcher;
             _queryDispatcher = queryDispatcher;
@@ -45,11 +46,12 @@ namespace Auth.FWT.API.Controllers.Account
         [Authorize]
         [Route("api/account/test")]
         [HttpGet]
-        public async Task Test()
+        public async Task<TLAbsDialogs> Test()
         {
             var id = _up.CurrentUserId;
             var session = AppUserSessionManager.Instance.UserSessionManager.Get(id.ToString(), _ss);
             var test = await _tele.GetUserDialogsAsync(session);
+            return test;
         }
 
         [Route("api/account/test2")]

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
@@ -7,11 +6,9 @@ using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
-using Auth.FWT.Infrastructure.Telegram;
 using FluentValidation;
 using NodaTime;
 using TLSharp.Core;
-using TLSharp.Core.Network;
 using TLSharp.Custom;
 
 namespace Auth.FWT.API.Controllers.Account
@@ -31,22 +28,25 @@ namespace Auth.FWT.API.Controllers.Account
         public class Handler : ICommandHandler<Command>
         {
             private IClock _clock;
+            private ISessionStore _sessionStore;
             private ITelegramClient _telegramClient;
             private IUnitOfWork _unitOfWork;
             private IUserSessionManager _userManager;
 
-            public Handler(ITelegramClient telegramClient, IUnitOfWork unitOfWork, IClock clock, IUserSessionManager userManager)
+            public Handler(ITelegramClient telegramClient, IUnitOfWork unitOfWork, IClock clock, IUserSessionManager userManager, ISessionStore sessionStore)
             {
                 _telegramClient = telegramClient;
                 _unitOfWork = unitOfWork;
                 _clock = clock;
                 _userManager = userManager;
+                _sessionStore = sessionStore;
             }
 
             public async Task Execute(Command command)
             {
-                var userSession = new UserSession(new SQLSessionStore(_unitOfWork, _clock));
+                var userSession = new UserSession(_sessionStore);
                 string hash = await _telegramClient.SendCodeRequestAsync(userSession, command.PhoneNumber);
+
                 _userManager.Add(HashHelper.GetHash(command.PhoneNumber), userSession);
 
                 TelegramCode telegramCode = await _unitOfWork.TelegramCodeRepository.GetSingleAsync(HashHelper.GetHash(command.PhoneNumber));
@@ -68,42 +68,9 @@ namespace Auth.FWT.API.Controllers.Account
 
         public class Validator : AbstractValidator<Command>
         {
-            public Validator(ITelegramClient telegramClient, IUnitOfWork unitOfWork, IClock clock)
+            public Validator()
             {
                 RuleFor(x => x.PhoneNumber).NotEmpty();
-                RuleFor(x => x.PhoneNumber).CustomAsync(async (phone, context, token) =>
-                {
-                    try
-                    {
-                        var userSession = new UserSession(new FakeSessionStore());
-                        if (!await telegramClient.IsPhoneRegisteredAsync(userSession, phone))
-                        {
-                            context.AddFailure("Phone number not registred in Telegram API");
-                        }
-                    }
-                    catch (FloodException ex)
-                    {
-                        context.AddFailure(ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        switch (ex.Message)
-                        {
-                            case ("PHONE_NUMBER_BANNED"):
-                            case ("PHONE_NUMBER_INVALID"):
-
-                                {
-                                    context.AddFailure(ex.Message);
-                                    break;
-                                }
-
-                            default:
-                                {
-                                    throw new Exception("Unexpected error", ex);
-                                }
-                        }
-                    }
-                });
             }
         }
     }
