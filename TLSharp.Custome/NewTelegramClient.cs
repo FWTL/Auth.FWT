@@ -98,6 +98,11 @@ namespace TLSharp.Custom
 
         private async Task RequestWithDcMigration(UserSession userSession, TLMethod request)
         {
+            if(!userSession.TcpTransport.IsConnected)
+            {
+                userSession.TcpTransport = new TcpTransport(userSession.Session.ServerAddress, userSession.Session.Port);
+            }
+
             if (userSession.Sender == null)
             {
                 await ConnectAsync(userSession);

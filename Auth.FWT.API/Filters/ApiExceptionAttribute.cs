@@ -7,6 +7,7 @@ using Auth.FWT.API.Models;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Logging;
 using FluentValidation;
+using Microsoft.ApplicationInsights;
 
 namespace Auth.FWT.API.Filters
 {
@@ -39,6 +40,9 @@ namespace Auth.FWT.API.Filters
             sb.Append(filterContext.Exception);
 
             _logger.Error(sb.ToString());
+
+            var telemetry = new TelemetryClient();
+            telemetry.TrackException(filterContext.Exception);
         }
     }
 }
