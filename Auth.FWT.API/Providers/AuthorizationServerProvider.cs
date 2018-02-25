@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Auth.FWT.Core;
+﻿using Auth.FWT.Core;
 using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
@@ -16,7 +9,13 @@ using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using TLSharp.Custom;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.FWT.API.Providers
@@ -84,8 +83,8 @@ namespace Auth.FWT.API.Providers
             }
 
             var sqlStore = new SQLSessionStore(unitOfWork, NodaTime.SystemClock.Instance);
-            ITelegramClient telegramClient = new NewTelegramClient(sqlStore, ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
             IUserSessionManager sessionManager = AppUserSessionManager.Instance.UserSessionManager;
+            ITelegramClient telegramClient = new NewTelegramClient(sessionManager, sqlStore, ConfigKeys.TelegramApiId, ConfigKeys.TelegramApiHash);
 
             User user = await unitOfWork.UserRepository.Query().Where(x => x.PhoneNumberHashed == phoneNumberHashed).FirstOrDefaultAsync();
             if (user.IsNull())
@@ -98,7 +97,7 @@ namespace Auth.FWT.API.Providers
                 await unitOfWork.SaveChangesAsync();
             }
 
-            var userSession = sessionManager.Get(phoneNumberHashed);
+            var userSession = sessionManager.Get(phoneNumberHashed, sqlStore);
             if (userSession.IsNull())
             {
                 context.SetError("invalid_code", "Request for new code");

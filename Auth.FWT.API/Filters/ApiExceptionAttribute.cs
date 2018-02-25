@@ -1,13 +1,13 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Web.Http.Filters;
-using Auth.FWT.API.Models;
+﻿using Auth.FWT.API.Models;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Logging;
 using FluentValidation;
 using Microsoft.ApplicationInsights;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Web.Http.Filters;
 
 namespace Auth.FWT.API.Filters
 {

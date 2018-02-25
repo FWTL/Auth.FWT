@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Auth.FWT.Core.Services.Telegram;
 using FluentValidation;
 using FluentValidation.Results;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
@@ -13,19 +13,21 @@ using TLSharp.Core;
 using TLSharp.Core.Auth;
 using TLSharp.Core.Network;
 
-namespace TLSharp.Custom
+namespace Auth.FWT.Infrastructure.Telegram
 {
     public class NewTelegramClient : ITelegramClient
     {
         private ISessionStore _store;
+        private IUserSessionManager _sessionManager;
         private int _apiId;
         private string _apiHash;
 
-        public NewTelegramClient(ISessionStore store, int apiId, string apiHash)
+        public NewTelegramClient(IUserSessionManager sessionManager, ISessionStore store, int apiId, string apiHash)
         {
             _store = store;
             _apiId = apiId;
             _apiHash = apiHash;
+            _sessionManager = sessionManager;
         }
 
         public async Task<bool> ConnectAsync(UserSession userSession, bool reconnect = false)
@@ -75,7 +77,7 @@ namespace TLSharp.Custom
 
             var dc = TLContext.DcOptions.First(d => d.Id == dcId);
 
-            userSession.TcpTransport = new TcpTransport(dc.IpAddress, dc.Port, null);
+            userSession.TcpTransport = _sessionManager.GetConnection(dc.IpAddress, dc.Port);
             userSession.Session.ServerAddress = dc.IpAddress;
             userSession.Session.Port = dc.Port;
 
@@ -98,9 +100,9 @@ namespace TLSharp.Custom
 
         private async Task RequestWithDcMigration(UserSession userSession, TLMethod request)
         {
-            if(!userSession.TcpTransport.IsConnected)
+            if (!userSession.TcpTransport.IsConnected)
             {
-                userSession.TcpTransport = new TcpTransport(userSession.Session.ServerAddress, userSession.Session.Port);
+                userSession.TcpTransport = _sessionManager.GetConnection(userSession.Session.ServerAddress, userSession.Session.Port);
             }
 
             if (userSession.Sender == null)

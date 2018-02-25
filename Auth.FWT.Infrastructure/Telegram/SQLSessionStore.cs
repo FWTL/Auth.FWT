@@ -20,7 +20,7 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public Session Load(string sessionUserId)
         {
-            if (string.IsNullOrWhiteSpace(sessionUserId))
+            if (!sessionUserId.ToN<int>().HasValue)
             {
                 return null;
             }
@@ -36,7 +36,7 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public void Save(Session session)
         {
-            if (string.IsNullOrWhiteSpace(session.SessionUserId))
+            if (!session.SessionUserId.ToN<int>().HasValue)
             {
                 return;
             }

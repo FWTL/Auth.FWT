@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Auth.FWT.Core.Data;
+﻿using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
@@ -8,8 +6,9 @@ using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using FluentValidation;
 using NodaTime;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TLSharp.Core;
-using TLSharp.Custom;
 
 namespace Auth.FWT.API.Controllers.Account
 {
@@ -44,10 +43,8 @@ namespace Auth.FWT.API.Controllers.Account
 
             public async Task Execute(Command command)
             {
-                var userSession = new UserSession(_sessionStore);
+                var userSession = _userManager.Get(HashHelper.GetHash(command.PhoneNumber), _sessionStore);
                 string hash = await _telegramClient.SendCodeRequestAsync(userSession, command.PhoneNumber);
-
-                _userManager.Add(HashHelper.GetHash(command.PhoneNumber), userSession);
 
                 TelegramCode telegramCode = await _unitOfWork.TelegramCodeRepository.GetSingleAsync(HashHelper.GetHash(command.PhoneNumber));
                 if (telegramCode.IsNull())

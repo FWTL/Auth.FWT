@@ -66,9 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ITelegramClient.cs" />
-    <Compile Include="NewTelegramClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TLSharp\TeleSharp.TL\TeleSharp.TL.csproj">

@@ -170,17 +170,15 @@
     <Compile Include="Services\Cache\IRedisClient.cs" />
     <Compile Include="Services\Dapper\IDapperConnector.cs" />
     <Compile Include="Services\Logging\ILogger.cs" />
+    <Compile Include="Services\Telegram\ITelegramClient.cs" />
     <Compile Include="Services\Telegram\IUserSessionManager.cs" />
+    <Compile Include="Services\Telegram\UserSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TLSharp.Custome\TLSharp.Custome.csproj">
-      <Project>{b661832a-827f-4ebb-a57c-a6947a2aa230}</Project>
-      <Name>TLSharp.Custome</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TLSharp\TeleSharp.TL\TeleSharp.TL.csproj">
       <Project>{d6144517-91d2-4880-86df-e9ff5d7f383a}</Project>
       <Name>TeleSharp.TL</Name>

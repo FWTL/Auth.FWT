@@ -1,14 +1,14 @@
 ﻿using TLSharp.Core;
-using TLSharp.Custom;
+using TLSharp.Core.Network;
 
 namespace Auth.FWT.Core.Services.Telegram
 {
     public interface IUserSessionManager
     {
-        void Add(string key, UserSession userSession);
-
-        UserSession Get(string key, ISessionStore store = null);
+        UserSession Get(string key, ISessionStore store);
 
         void Replace(string oldKey, string newKey);
+
+        TcpTransport GetConnection(string address, int port);
     }
 }

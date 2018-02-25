@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Auth.FWT.API.Models;
+﻿using Auth.FWT.API.Models;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities.Identity;
+using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Telegram;
 using GitGud.Web.Core.Providers;
 using Swashbuckle.Swagger.Annotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
-using TLSharp.Custom;
 
 namespace Auth.FWT.API.Controllers.Account
 {
@@ -59,6 +59,13 @@ namespace Auth.FWT.API.Controllers.Account
         public async Task<List<UserRole>> Test2()
         {
             return _uow.RoleRepository.GetAllIncluding().ToList();
+        }
+
+        [Route("api/account/reset")]
+        [HttpGet]
+        public void Reset()
+        {
+            AppUserSessionManager.Instance.UserSessionManager.Sessions.Clear();
         }
     }
 }

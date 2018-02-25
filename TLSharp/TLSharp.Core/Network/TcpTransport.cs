@@ -10,6 +10,7 @@ namespace TLSharp.Core.Network
     public class TcpTransport : IDisposable
     {
         private readonly TcpClient _tcpClient;
+
         private int sendCounter = 0;
 
         public TcpTransport(string address, int port, TcpClientConnectionHandler handler = null)
@@ -93,7 +94,6 @@ namespace TLSharp.Core.Network
                 return this._tcpClient.Connected;
             }
         }
-
 
         public void Dispose()
         {

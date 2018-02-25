@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Auth.FWT.Core.Extensions;
-using Auth.FWT.Core.Services.Telegram;
+﻿using Auth.FWT.Core.Services.Telegram;
+using System.Collections.Generic;
 using TLSharp.Core;
-using TLSharp.Custom;
+using TLSharp.Core.Network;
 
 namespace Auth.FWT.Infrastructure.Telegram
 {
@@ -10,32 +9,40 @@ namespace Auth.FWT.Infrastructure.Telegram
     {
         public Dictionary<string, UserSession> Sessions { get; set; } = new Dictionary<string, UserSession>();
 
-        public void Add(string key, UserSession userSession)
-        {
-            if (Sessions.ContainsKey(key))
-            {
-                Sessions[key] = userSession;
-                return;
-            }
+        public Dictionary<string, TcpTransport> Connections { get; set; } = new Dictionary<string, TcpTransport>();
 
-            Sessions.Add(key, userSession);
-        }
-
-        public UserSession Get(string key, ISessionStore store = null)
+        public UserSession Get(string key, ISessionStore store)
         {
             if (Sessions.ContainsKey(key))
             {
                 return Sessions[key];
             }
 
-            int? id = key.ToN<int>();
-            if (!id.HasValue)
-            {
-                return null;
-            }
+            var session = Session.TryLoadOrCreateNew(store, key);
+            TcpTransport transport = GetConnection(session.ServerAddress, session.Port);
 
-            Sessions[key] = new UserSession(id.Value, store);
+            Sessions[key] = new UserSession(session, transport);
             return Sessions[key];
+        }
+
+        public TcpTransport GetConnection(string address, int port)
+        {
+            if (Connections.ContainsKey($"{address}:{port}"))
+            {
+                var transport = Connections[$"{address}:{port}"];
+                if (transport.IsConnected)
+                {
+                    return transport;
+                }
+
+                return Connections[$"{address}:{port}"] = new TcpTransport(address, port);
+            }
+            else
+            {
+                var transport = new TcpTransport(address, port);
+                Connections.Add($"{address}:{port}", transport);
+                return transport;
+            }
         }
 
         public void Replace(string oldKey, string newKey)
