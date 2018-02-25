@@ -1,9 +1,9 @@
+using Auth.FWT.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using Auth.FWT.Core.Data;
 
 namespace Auth.FWT.Core.Extensions
 {
@@ -44,6 +44,29 @@ namespace Auth.FWT.Core.Extensions
         public static IEnumerable<TResult> Random<TSource, TResult>(this IQueryable<TSource> source, Func<TSource, TResult> selector, int rows = 1)
         {
             return source.OrderBy(x => Guid.NewGuid()).Take(rows).Select(selector);
+        }
+
+        public static IEnumerable<TResult> GetAllOfType<TResult>(this IEnumerable<TResult> source)
+        {
+            return source.Where(s => s.GetType().FullName == typeof(TResult).FullName);
+        }
+
+        public static List<Dictionary<string, object>> GetValuesOf<TResult>(this IEnumerable<TResult> source, params string[] @params)
+        {
+            var results = new List<Dictionary<string, object>>();
+
+            foreach (var item in source)
+            {
+                var type = item.GetType();
+                var result = new Dictionary<string, object>();
+                foreach (var param in @params)
+                {
+                    result.Add(param, type.GetProperty(param)?.GetValue(item));
+                }
+                results.Add(result);
+            }
+
+            return results;
         }
     }
 }

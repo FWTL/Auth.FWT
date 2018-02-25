@@ -204,7 +204,7 @@ namespace Auth.FWT.Infrastructure.Telegram
         public async Task<TLAbsDialogs> GetUserDialogsAsync(UserSession session)
         {
             var peer = new TLInputPeerSelf();
-            return await SendRequestAsync<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 100 });
+            return await SendRequestAsync<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 10000 });
         }
     }
 }
