@@ -1,9 +1,9 @@
-using Auth.FWT.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using Auth.FWT.Core.Data;
 
 namespace Auth.FWT.Core.Extensions
 {
@@ -63,6 +63,7 @@ namespace Auth.FWT.Core.Extensions
                 {
                     result.Add(param, type.GetProperty(param)?.GetValue(item));
                 }
+
                 results.Add(result);
             }
 

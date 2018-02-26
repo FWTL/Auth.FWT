@@ -1,8 +1,8 @@
-﻿using Auth.FWT.CQRS;
-using GitGud.Web.Core.Providers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Auth.FWT.CQRS;
+using GitGud.Web.Core.Providers;
 
 namespace Auth.FWT.API.Controllers.Chat
 {
@@ -21,6 +21,7 @@ namespace Auth.FWT.API.Controllers.Chat
 
         [Authorize]
         [HttpGet]
+        [Route("api/chats")]
         public async Task<List<GetUserChats.Result>> Chats()
         {
             return await _queryDispatcher.Dispatch<GetUserChats.Query, List<GetUserChats.Result>>(new GetUserChats.Query(_userProvider.CurrentUserId));

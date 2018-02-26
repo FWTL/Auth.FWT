@@ -1,4 +1,11 @@
-﻿using Auth.FWT.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Auth.FWT.Core;
 using Auth.FWT.Core.Entities.API;
 using Auth.FWT.Core.Entities.Identity;
 using Auth.FWT.Core.Extensions;
@@ -9,13 +16,6 @@ using Auth.FWT.Infrastructure.Telegram;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static Auth.FWT.Core.Enums.DomainEnums;
 
 namespace Auth.FWT.API.Providers

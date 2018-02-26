@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigKeys.cs" />
+    <Compile Include="CQRS\ICachableHandler.cs" />
     <Compile Include="CQRS\ICommand.cs" />
     <Compile Include="CQRS\ICommandDispatcher.cs" />
     <Compile Include="CQRS\ICommandHandler.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Entities\TelegramSession.cs" />
     <Compile Include="Enums\DomainEnums.cs" />
     <Compile Include="Enums\Enums.cs" />
+    <Compile Include="Events\IQueueEvent.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -170,6 +172,8 @@
     <Compile Include="Services\Cache\IRedisClient.cs" />
     <Compile Include="Services\Dapper\IDapperConnector.cs" />
     <Compile Include="Services\Logging\ILogger.cs" />
+    <Compile Include="Services\ServiceBus\IServiceBus.cs" />
+    <Compile Include="Services\ServiceBus\KeyValuePair.cs" />
     <Compile Include="Services\Telegram\ITelegramClient.cs" />
     <Compile Include="Services\Telegram\IUserSessionManager.cs" />
     <Compile Include="Services\Telegram\UserSession.cs" />

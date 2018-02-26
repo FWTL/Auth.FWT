@@ -1,10 +1,10 @@
-﻿using Auth.FWT.Core.Services.Telegram;
-using FluentValidation;
-using FluentValidation.Results;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Services.Telegram;
+using FluentValidation;
+using FluentValidation.Results;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
@@ -91,9 +91,9 @@ namespace Auth.FWT.Infrastructure.Telegram
             }
         }
 
-        private void OnUserAuthenticated(UserSession userSession, TLUser TLUser)
+        private void OnUserAuthenticated(UserSession userSession, TLUser user)
         {
-            userSession.Session.TLUser = TLUser;
+            userSession.Session.TLUser = user;
             userSession.Session.SessionExpires = int.MaxValue;
             _store.Save(userSession.Session);
         }
@@ -122,7 +122,7 @@ namespace Auth.FWT.Infrastructure.Telegram
                 catch (DataCenterMigrationException e)
                 {
                     await ReconnectToDcAsync(userSession, e.DC);
-                    // prepare the request for another try
+                    //// prepare the request for another try
                     request.ConfirmReceived = false;
                 }
             }

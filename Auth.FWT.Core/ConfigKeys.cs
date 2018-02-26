@@ -14,7 +14,10 @@ namespace Auth.FWT.Core
             }
         }
 
-        public static string RedisConnectionString { get; set; }
+        public static string RedisConnectionString
+        {
+            get { return Setting("RedisConnectionString"); }
+        }
 
         public static string TelegramApiHash
         {
@@ -24,6 +27,11 @@ namespace Auth.FWT.Core
         public static int TelegramApiId
         {
             get { return Setting<int>("TelegramApiId"); }
+        }
+
+        public static string AzureBusConnectionString
+        {
+            get { return Setting("AzureBusConnectionString"); }
         }
 
         private static T Setting<T>(string name) where T : struct

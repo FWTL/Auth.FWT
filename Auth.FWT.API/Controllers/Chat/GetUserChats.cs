@@ -1,10 +1,14 @@
-﻿using Auth.FWT.Core.Extensions;
-using Auth.FWT.Core.Services.Telegram;
-using Auth.FWT.CQRS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Auth.FWT.API.Controllers.Events;
+using Auth.FWT.Core.Events;
+using Auth.FWT.Core.Extensions;
+using Auth.FWT.Core.Services.Telegram;
+using Auth.FWT.CQRS;
+using Auth.FWT.Infrastructure.Handlers;
+using StackExchange.Redis;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 
@@ -22,6 +26,14 @@ namespace Auth.FWT.API.Controllers.Chat
             }
         }
 
+        public class Cache : RedisJsonHandler<Query, List<Result>>
+        {
+            public Cache(IDatabase redis) : base(redis)
+            {
+                KeyFn = query => { return "GetUserChats" + query.Userid; };
+            }
+        }
+
         public class Handler : IQueryHandler<Query, List<Result>>
         {
             private ITelegramClient _telegramClient;
@@ -32,6 +44,8 @@ namespace Auth.FWT.API.Controllers.Chat
                 _telegramClient = telegramClient;
                 _userSession = userSession;
             }
+
+            public List<IEvent> Events { get; set; } = new List<IEvent>();
 
             public async Task<List<Result>> Handle(Query query)
             {
@@ -53,6 +67,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+
                         if (chat["MigratedTo"] == null)
                         {
                             results.Add(new Result()
@@ -67,6 +82,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChannel;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChannelId);
+
                         results.Add(new Result()
                         {
                             Id = (int)chat["Id"],
@@ -95,6 +111,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+
                         if (chat["MigratedTo"] != null && chat["MigratedTo"] is TLInputChannel)
                         {
                             var inputChannel = chat["MigratedTo"] as TLInputChannel;
@@ -103,6 +120,8 @@ namespace Auth.FWT.API.Controllers.Chat
                         }
                     }
                 }
+
+                Events.Add(new ReplaceValueInCache<List<Result>>("GetUserChats" + query.Userid, results));
 
                 return results;
             }

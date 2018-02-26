@@ -1,4 +1,6 @@
-﻿using Auth.FWT.Core.Data;
+﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
@@ -6,8 +8,6 @@ using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using FluentValidation;
 using NodaTime;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TLSharp.Core;
 
 namespace Auth.FWT.API.Controllers.Account

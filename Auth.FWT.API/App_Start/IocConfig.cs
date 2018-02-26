@@ -1,11 +1,18 @@
-﻿using Auth.FWT.Core;
+﻿using System.Net.Http;
+using System.Reflection;
+using System.Web;
+using System.Web.Http;
+using Auth.FWT.Core;
+using Auth.FWT.Core.CQRS;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Services.Dapper;
+using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Data;
 using Auth.FWT.Data.Dapper;
 using Auth.FWT.Infrastructure.Logging;
+using Auth.FWT.Infrastructure.ServiceBus;
 using Auth.FWT.Infrastructure.Telegram;
 using Autofac;
 using Autofac.Integration.WebApi;
@@ -14,10 +21,7 @@ using GitGud.API.Providers;
 using GitGud.Web.Core.Providers;
 using NodaTime;
 using Rws.Web.Core.CQRS;
-using System.Net.Http;
-using System.Reflection;
-using System.Web;
-using System.Web.Http;
+using StackExchange.Redis;
 using TLSharp.Core;
 
 namespace Auth.FWT.API
@@ -41,6 +45,7 @@ namespace Auth.FWT.API
             builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(IQueryHandler<,>)).InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(AbstractValidator<>)).InstancePerRequest();
+            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICachableHandler<,>)).InstancePerRequest();
 
             builder.Register<IDapperConnector>(b =>
             {
@@ -72,19 +77,35 @@ namespace Auth.FWT.API
             builder.Register<IUserSessionManager>(b =>
             {
                 return AppUserSessionManager.Instance.UserSessionManager;
-            });
+            }).SingleInstance();
 
             builder.Register(b =>
             {
                 var manager = b.Resolve<IUserSessionManager>();
                 var currentUserId = b.Resolve<IUserProvider>()?.CurrentUserId;
                 return manager.Get(currentUserId.ToString(), b.Resolve<ISessionStore>());
-            });
+            }).InstancePerRequest();
 
             builder.Register<IClock>(b =>
             {
                 return SystemClock.Instance;
             }).SingleInstance();
+
+            builder.Register(b =>
+            {
+                return ConnectionMultiplexer.Connect(ConfigKeys.RedisConnectionString);
+            }).SingleInstance();
+
+            builder.Register(b =>
+            {
+                var redis = b.Resolve<ConnectionMultiplexer>();
+                return redis.GetDatabase(-1);
+            }).InstancePerRequest();
+
+            builder.Register<IServiceBus>(b =>
+            {
+                return new AzureServiceBus();
+            }).InstancePerRequest();
 
             _container = builder.Build();
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(_container);
