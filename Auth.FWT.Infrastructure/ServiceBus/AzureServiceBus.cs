@@ -13,9 +13,11 @@ namespace Auth.FWT.Infrastructure.ServiceBus
     public class AzureServiceBus : IServiceBus, IDisposable
     {
         private Dictionary<string, QueueClient> _clients = new Dictionary<string, QueueClient>();
+        private string _sessionId;
 
         public AzureServiceBus()
         {
+            _sessionId = Guid.NewGuid().ToString("n");
         }
 
         public async Task SendToQueueAsync<TResult>(string name, string label, TResult value)
@@ -23,7 +25,8 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             var message = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value))))
             {
                 ContentType = "application/json",
-                Label = label
+                Label = label,
+                SessionId = _sessionId
             };
 
             if (!_clients.ContainsKey(name))
