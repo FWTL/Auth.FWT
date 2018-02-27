@@ -7,7 +7,6 @@ using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Handlers;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
@@ -19,10 +18,12 @@ namespace Auth.FWT.API.Controllers.Chat
         public class Query : IQuery
         {
             public int Userid { get; set; }
+            public bool DoRefresh { get; private set; }
 
-            public Query(int userId)
+            public Query(int userId, bool doRefresh)
             {
                 Userid = userId;
+                DoRefresh = doRefresh;
             }
         }
 
@@ -33,23 +34,26 @@ namespace Auth.FWT.API.Controllers.Chat
                 KeyFn = query => { return "GetUserChats" + query.Userid; };
             }
 
-            public void Save(Query query, List<Result> results)
+            public override async Task<List<Result>> Read(Query query)
             {
-                _redis.StringSet(KeyFn(query), JsonConvert.SerializeObject(results), TimeSpan.FromDays(2));
+                if (query.DoRefresh)
+                {
+                    return null;
+                }
+
+                return await base.Read(query);
             }
         }
 
         public class Handler : IQueryHandler<Query, List<Result>>
         {
-            private IDatabase _redis;
             private ITelegramClient _telegramClient;
             private UserSession _userSession;
 
-            public Handler(ITelegramClient telegramClient, UserSession userSession, IDatabase redis)
+            public Handler(ITelegramClient telegramClient, UserSession userSession)
             {
                 _telegramClient = telegramClient;
                 _userSession = userSession;
-                _redis = redis;
             }
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
@@ -65,8 +69,8 @@ namespace Auth.FWT.API.Controllers.Chat
                 TLDialogs dialogs = absDialogs as TLDialogs;
                 var results = new List<Result>();
 
-                var chats = dialogs.Chats.GetValuesOf("Id", "Title", "MigratedTo");
-                var users = dialogs.Users.GetValuesOf("Id", "FirstName", "LastName", "Username");
+                var chats = dialogs.Chats.GetValuesOf("Id", "Title", "MigratedTo", "Photo");
+                var users = dialogs.Users.GetValuesOf("Id", "FirstName", "LastName", "Username", "Photo");
 
                 foreach (var dialog in dialogs.Dialogs)
                 {
@@ -80,7 +84,7 @@ namespace Auth.FWT.API.Controllers.Chat
                             results.Add(new Result()
                             {
                                 Id = (int)chat["Id"],
-                                Title = (string)chat["Title"]
+                                Title = (string)chat["Title"],
                             });
                         }
                     }
@@ -93,7 +97,7 @@ namespace Auth.FWT.API.Controllers.Chat
                         results.Add(new Result()
                         {
                             Id = (int)chat["Id"],
-                            Title = (string)chat["Title"]
+                            Title = (string)chat["Title"],
                         });
                     }
 
@@ -107,7 +111,7 @@ namespace Auth.FWT.API.Controllers.Chat
                         results.Add(new Result()
                         {
                             Id = (int)user["Id"],
-                            Title = name
+                            Title = name,
                         });
                     }
                 }
@@ -128,8 +132,6 @@ namespace Auth.FWT.API.Controllers.Chat
                     }
                 }
 
-                new Cache(_redis).Save(query, results);
-
                 return results;
             }
         }
@@ -139,7 +141,6 @@ namespace Auth.FWT.API.Controllers.Chat
             public int Id { get; set; }
 
             public int? MigratedFrom { get; set; }
-
             public string Title { get; set; }
         }
     }

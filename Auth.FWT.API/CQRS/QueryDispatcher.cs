@@ -31,7 +31,7 @@ namespace Rws.Web.Core.CQRS
                 }
             }
 
-            ICachableHandler<TQuery, TResult> cache;
+            IReadCacheHandler<TQuery, TResult> cache;
             if (_context.TryResolve(out cache))
             {
                 TResult result = await cache.Read(query);

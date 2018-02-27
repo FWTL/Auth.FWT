@@ -7,7 +7,7 @@ using StackExchange.Redis;
 
 namespace Auth.FWT.Infrastructure.Handlers
 {
-    public class RedisJsonHandler<TQuery, TResult> : ICachableHandler<TQuery, TResult> where TQuery : IQuery where TResult : class
+    public class RedisJsonHandler<TQuery, TResult> : IReadCacheHandler<TQuery, TResult>, IWriteCacheHandler<TQuery, TResult> where TQuery : IQuery where TResult : class
     {
         protected IDatabase _redis;
 
@@ -30,6 +30,11 @@ namespace Auth.FWT.Infrastructure.Handlers
             }
 
             return JsonConvert.DeserializeObject<TResult>(redisValue);
+        }
+
+        public async Task Save(TQuery query, TResult result, TimeSpan? ttl = null)
+        {
+            await _redis.StringSetAsync(KeyFn(query), JsonConvert.SerializeObject(result), ttl);
         }
 
         public Func<TQuery, string> KeyFn { get; set; }

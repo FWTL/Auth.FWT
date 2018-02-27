@@ -22,9 +22,9 @@ namespace Auth.FWT.API.Controllers.Chat
         [Authorize]
         [HttpGet]
         [Route("api/chats")]
-        public async Task<List<GetUserChats.Result>> Chats()
+        public async Task<List<GetUserChats.Result>> Chats(bool doRefresh)
         {
-            return await _queryDispatcher.Dispatch<GetUserChats.Query, List<GetUserChats.Result>>(new GetUserChats.Query(_userProvider.CurrentUserId));
+            return await _queryDispatcher.Dispatch<GetUserChats.Query, List<GetUserChats.Result>>(new GetUserChats.Query(_userProvider.CurrentUserId, doRefresh));
         }
     }
 }

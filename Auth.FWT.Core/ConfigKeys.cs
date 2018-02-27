@@ -14,6 +14,14 @@ namespace Auth.FWT.Core
             }
         }
 
+        public static string HangfireConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings["FWTHangfire"].ConnectionString;
+            }
+        }
+
         public static string RedisConnectionString
         {
             get { return Setting("RedisConnectionString"); }

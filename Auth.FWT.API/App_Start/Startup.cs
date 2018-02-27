@@ -1,5 +1,6 @@
-﻿using System.Web.Http;
-using Auth.FWT.API.App_Start;
+﻿using Auth.FWT.API.App_Start;
+using Auth.FWT.Core;
+using Hangfire;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;
@@ -14,8 +15,8 @@ namespace Auth.FWT.API.Bootstrapper
         {
             var container = IocConfig.RegisterDependencies();
             app.UseAutofacMiddleware(container);
-            app.UseAutofacWebApi(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalConfiguration.Configuration.Filters);
+            app.UseAutofacWebApi(System.Web.Http.GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(System.Web.Http.GlobalConfiguration.Configuration.Filters);
 
             MapperConfig.Configure();
             SwaggerConfig.Register();
@@ -28,6 +29,9 @@ namespace Auth.FWT.API.Bootstrapper
             });
 
             app.UseStageMarker(PipelineStage.PostAcquireState);
+
+            GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigKeys.HangfireConnectionString);
+            app.UseHangfireDashboard();
         }
     }
 }

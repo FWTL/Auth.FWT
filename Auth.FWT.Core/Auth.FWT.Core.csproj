@@ -120,7 +120,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigKeys.cs" />
-    <Compile Include="CQRS\ICachableHandler.cs" />
+    <Compile Include="CQRS\IWriteCacheHandler.cs" />
+    <Compile Include="CQRS\IReadChageHandler.cs" />
     <Compile Include="CQRS\ICommand.cs" />
     <Compile Include="CQRS\ICommandDispatcher.cs" />
     <Compile Include="CQRS\ICommandHandler.cs" />

@@ -40,12 +40,13 @@ namespace Auth.FWT.API
 
             builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICommandHandler<>)).InstancePerRequest();
-            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICommandHandler<,>)).InstancePerRequest();
 
             builder.RegisterType<QueryDispatcher>().As<IQueryDispatcher>().InstancePerRequest();
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(IQueryHandler<,>)).InstancePerRequest();
+
             builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(AbstractValidator<>)).InstancePerRequest();
-            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICachableHandler<,>)).InstancePerRequest();
+            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(IReadCacheHandler<,>)).InstancePerRequest();
+            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(IWriteCacheHandler<,>)).InstancePerRequest();
 
             builder.Register<IDapperConnector>(b =>
             {
