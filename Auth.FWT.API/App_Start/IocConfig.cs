@@ -99,7 +99,7 @@ namespace Auth.FWT.API
             builder.Register(b =>
             {
                 var redis = b.Resolve<ConnectionMultiplexer>();
-                return redis.GetDatabase(-1);
+                return redis.GetDatabase();
             }).InstancePerRequest();
 
             builder.Register<IServiceBus>(b =>

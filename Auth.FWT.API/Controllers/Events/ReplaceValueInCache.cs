@@ -6,18 +6,16 @@ namespace Auth.FWT.API.Controllers.Events
 {
     public class ReplaceValueInCache<TValue> : IEvent
     {
-        private string _key;
-        private TValue _value;
+        private KeyValuePair<TValue> _pair;
 
         public ReplaceValueInCache(string key, TValue value)
         {
-            _key = key;
-            _value = value;
+            _pair = new KeyValuePair<TValue>(key, value);
         }
 
         public async Task Send(IServiceBus client)
         {
-            await client.SendToQueueAsync("redis", _key, _value);
+            await client.SendToQueueAsync("redis", _pair);
         }
     }
 }

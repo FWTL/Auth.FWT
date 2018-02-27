@@ -9,14 +9,14 @@ namespace Auth.FWT.Infrastructure.Handlers
 {
     public class RedisJsonHandler<TQuery, TResult> : ICachableHandler<TQuery, TResult> where TQuery : IQuery where TResult : class
     {
-        private IDatabase _redis;
+        protected IDatabase _redis;
 
         public RedisJsonHandler(IDatabase redis)
         {
             _redis = redis;
         }
 
-        public async Task<TResult> Read(TQuery key)
+        public virtual async Task<TResult> Read(TQuery key)
         {
             if (key == null)
             {

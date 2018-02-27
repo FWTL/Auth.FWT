@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Auth.FWT.API.Controllers.Events;
 using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Handlers;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
@@ -32,17 +32,24 @@ namespace Auth.FWT.API.Controllers.Chat
             {
                 KeyFn = query => { return "GetUserChats" + query.Userid; };
             }
+
+            public void Save(Query query, List<Result> results)
+            {
+                _redis.StringSet(KeyFn(query), JsonConvert.SerializeObject(results), TimeSpan.FromDays(2));
+            }
         }
 
         public class Handler : IQueryHandler<Query, List<Result>>
         {
+            private IDatabase _redis;
             private ITelegramClient _telegramClient;
             private UserSession _userSession;
 
-            public Handler(ITelegramClient telegramClient, UserSession userSession)
+            public Handler(ITelegramClient telegramClient, UserSession userSession, IDatabase redis)
             {
                 _telegramClient = telegramClient;
                 _userSession = userSession;
+                _redis = redis;
             }
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
@@ -121,7 +128,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     }
                 }
 
-                Events.Add(new ReplaceValueInCache<List<Result>>("GetUserChats" + query.Userid, results));
+                new Cache(_redis).Save(query, results);
 
                 return results;
             }

@@ -20,12 +20,11 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             _sessionId = Guid.NewGuid().ToString("n");
         }
 
-        public async Task SendToQueueAsync<TResult>(string name, string label, TResult value)
+        public async Task SendToQueueAsync<TResult>(string name, TResult value)
         {
             var message = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value))))
             {
                 ContentType = "application/json",
-                Label = label,
                 SessionId = _sessionId
             };
 
@@ -45,7 +44,7 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             }
         }
 
-        public Task SendToTopicMessageAsync<TResult>(string name, string label, TResult value)
+        public Task SendToTopicMessageAsync<TResult>(string name, TResult value)
         {
             throw new NotImplementedException();
         }
