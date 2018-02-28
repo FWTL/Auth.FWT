@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using Auth.FWT.Core.Extensions;
 
 namespace QueueReceiver
 {
@@ -7,7 +8,12 @@ namespace QueueReceiver
     {
         public static string RedisConnectionString
         {
-            get { return Setting("RedisConnectionString"); }
+            get { return ConfigurationManager.ConnectionStrings["Redis"].ConnectionString; }
+        }
+
+        public static string ServiceBus
+        {
+            get { return ConfigurationManager.ConnectionStrings["ServiceBus"].ConnectionString; }
         }
 
         private static T Setting<T>(string name) where T : struct

@@ -25,7 +25,6 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             var message = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value))))
             {
                 ContentType = "application/json",
-                SessionId = _sessionId
             };
 
             if (!_clients.ContainsKey(name))

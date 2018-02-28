@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using Auth.FWT.Core.Extensions;
 using Autofac;
-using GitGud.Web.Core.Providers;
+using Auth.FWT.Core.Providers;
 
 namespace GitGud.API.Providers
 {

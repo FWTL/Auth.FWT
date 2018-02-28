@@ -1,4 +1,8 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Auth.FWT.API.CQRS;
+using Auth.FWT.Core.CQRS;
+using Auth.FWT.Infrastructure.Handlers;
+using Autofac;
 using StackExchange.Redis;
 
 namespace QueueReceiver
@@ -8,6 +12,10 @@ namespace QueueReceiver
         public static IContainer RegisterDependencies()
         {
             var builder = new ContainerBuilder();
+
+            builder.RegisterType<EventDispatcher>().As<IEventDispatcher>().InstancePerDependency();
+            builder.RegisterGeneric(typeof(RedisJsonHandler<,>)).As(typeof(IWriteCacheHandler<,>)).InstancePerDependency();
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsClosedTypesOf(typeof(IEventHandler<>)).InstancePerDependency();
 
             builder.Register(b =>
             {

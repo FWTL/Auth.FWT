@@ -1,20 +1,24 @@
-﻿using Microsoft.Azure.WebJobs;
-using StackExchange.Redis;
+﻿using System.Collections.Generic;
+using System.IO;
+using Auth.FWT.API.Controllers.Events;
+using Auth.FWT.Core.CQRS;
+using Microsoft.Azure.WebJobs;
+using static Auth.FWT.API.Controllers.Chat.GetUserChats;
 
 namespace QueueReceiver
 {
     public class Job
     {
-        private IDatabase _redis;
+        private IEventDispatcher _eventDispatcher;
 
-        public Job(IDatabase redis)
+        public Job(IEventDispatcher eventDispatcher)
         {
-            _redis = redis;
+            _eventDispatcher = eventDispatcher;
         }
 
-        public static void ProcessQueueMessage([QueueTrigger("xyz")] string value)
+        public void ProcessQueueMessage([ServiceBusTrigger("redis")] UserChatsRefreshed value, TextWriter log)
         {
-            
+            _eventDispatcher.Dispatch(value);
         }
     }
 }

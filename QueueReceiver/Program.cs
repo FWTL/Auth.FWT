@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.ServiceBus;
 
 namespace QueueReceiver
 {
@@ -8,8 +9,14 @@ namespace QueueReceiver
         {
             var jobHostConfiguration = new JobHostConfiguration
             {
-                JobActivator = new AutofacJobActivator(IocConfig.RegisterDependencies())
+                JobActivator = new AutofacJobActivator(IocConfig.RegisterDependencies()),
             };
+
+            ServiceBusConfiguration serviceBusConfig = new ServiceBusConfiguration
+            {
+                ConnectionString = ConfigKeys.ServiceBus,
+            };
+            jobHostConfiguration.UseServiceBus(serviceBusConfig);
 
             var host = new JobHost(jobHostConfiguration);
             host.RunAndBlock();

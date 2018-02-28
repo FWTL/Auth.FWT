@@ -120,14 +120,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigKeys.cs" />
+    <Compile Include="CQRS\IEventDispatcher.cs" />
+    <Compile Include="CQRS\IEventHandler.cs" />
     <Compile Include="CQRS\IWriteCacheHandler.cs" />
-    <Compile Include="CQRS\IReadChageHandler.cs" />
+    <Compile Include="CQRS\IReadCacheHandler.cs" />
     <Compile Include="CQRS\ICommand.cs" />
     <Compile Include="CQRS\ICommandDispatcher.cs" />
     <Compile Include="CQRS\ICommandHandler.cs" />
     <Compile Include="CQRS\IQuery.cs" />
     <Compile Include="CQRS\IQueryDispatcher.cs" />
     <Compile Include="CQRS\IQueryHandler.cs" />
+    <Compile Include="CQRS\ICacheKey.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\IUnitOfWork.cs" />
     <Compile Include="Data\OrderBy.cs" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Auth.FWT.API.Controllers.Events;
 using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
@@ -131,6 +132,8 @@ namespace Auth.FWT.API.Controllers.Chat
                         }
                     }
                 }
+
+                Events.Add(new UserChatsRefreshed(query, results));
 
                 return results;
             }

@@ -250,8 +250,9 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
-    <Compile Include="Controllers\Events\ReplaceValueInCache.cs" />
+    <Compile Include="Controllers\Events\UserChatsRefreshed.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
+    <Compile Include="CQRS\EventDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
     <Compile Include="Global.asax.cs">

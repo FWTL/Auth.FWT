@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Auth.FWT.CQRS;
-using GitGud.Web.Core.Providers;
+using Auth.FWT.Core.Providers;
 
 namespace Auth.FWT.API.Controllers.Chat
 {

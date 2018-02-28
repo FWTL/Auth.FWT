@@ -18,7 +18,7 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using FluentValidation;
 using GitGud.API.Providers;
-using GitGud.Web.Core.Providers;
+using Auth.FWT.Core.Providers;
 using NodaTime;
 using Rws.Web.Core.CQRS;
 using StackExchange.Redis;

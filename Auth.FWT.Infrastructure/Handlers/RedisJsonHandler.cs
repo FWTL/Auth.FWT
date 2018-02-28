@@ -32,7 +32,7 @@ namespace Auth.FWT.Infrastructure.Handlers
             return JsonConvert.DeserializeObject<TResult>(redisValue);
         }
 
-        public async Task Save(TQuery query, TResult result, TimeSpan? ttl = null)
+        public virtual async Task Save(TQuery query, TResult result, TimeSpan? ttl = null)
         {
             await _redis.StringSetAsync(KeyFn(query), JsonConvert.SerializeObject(result), ttl);
         }
