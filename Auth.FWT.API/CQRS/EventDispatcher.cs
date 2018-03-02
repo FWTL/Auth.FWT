@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Auth.FWT.Core.CQRS;
@@ -19,17 +18,10 @@ namespace Auth.FWT.API.CQRS
 
         public async Task Dispatch<TEvent>(TEvent @event) where TEvent : IEvent
         {
-            try
+            IEnumerable<IEventHandler<TEvent>> handlers = _context.Resolve<IEnumerable<IEventHandler<TEvent>>>().ToList();
+            foreach (var handler in handlers)
             {
-                IEnumerable<IEventHandler<TEvent>> handlers = _context.Resolve<IEnumerable<IEventHandler<TEvent>>>().ToList();
-                foreach (var handler in handlers)
-                {
-                    await handler.Execute(@event);
-                }
-            }
-            catch(Exception ex)
-            {
-                
+                await handler.Execute(@event);
             }
         }
     }

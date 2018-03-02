@@ -1,25 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Auth.FWT.API.Controllers.Events;
 using Auth.FWT.Core.CQRS;
-using static Auth.FWT.API.Controllers.Chat.GetUserChats;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace QueueReceiver
 {
-    public class UserChatsRefreshedHandler : IEventHandler<UserChatsRefreshed>
+    public class RedisHandler : IEventHandler<UserChatsRefreshed>
     {
-        private IWriteCacheHandler<Query, List<Result>> _writer;
+        private IDatabase _cache;
 
-        public UserChatsRefreshedHandler(IWriteCacheHandler<Query, List<Result>> writer)
+        public RedisHandler(IDatabase cache)
         {
-            _writer = writer;
+            _cache = cache;
         }
 
         public async Task Execute(UserChatsRefreshed @event)
         {
-            _writer.KeyFn = query => { return "GetUserChats" + query.Userid; };
-            await _writer.Save(@event.Query, @event.Result, TimeSpan.FromDays(2));
+            await Save(query => { return "GetUserChats" + query.Userid; }, @event.Query, @event.Result, TimeSpan.FromDays(2));
+        }
+
+        public virtual async Task Save<TQuery, TResult>(Func<TQuery, string> KeyFn, TQuery query, TResult result, TimeSpan? ttl = null)
+        {
+            await _cache.StringSetAsync(KeyFn(query), JsonConvert.SerializeObject(result), ttl);
         }
     }
 }

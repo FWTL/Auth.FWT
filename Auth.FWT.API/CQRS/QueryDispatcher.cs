@@ -49,6 +49,12 @@ namespace Rws.Web.Core.CQRS
                 await @event.Send(_serviceBus);
             }
 
+            IWriteCacheHandler<TQuery, TResult> cache2;
+            if (_context.TryResolve(out cache2))
+            {
+                await cache2.Save(query, queryResult);
+            }
+
             return queryResult;
         }
     }

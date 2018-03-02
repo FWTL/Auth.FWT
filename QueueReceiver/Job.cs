@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Auth.FWT.API.Controllers.Events;
 using Auth.FWT.Core.CQRS;
 using Microsoft.Azure.WebJobs;
-using static Auth.FWT.API.Controllers.Chat.GetUserChats;
 
 namespace QueueReceiver
 {
