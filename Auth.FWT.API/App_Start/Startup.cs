@@ -30,8 +30,10 @@ namespace Auth.FWT.API.Bootstrapper
 
             app.UseStageMarker(PipelineStage.PostAcquireState);
 
+            GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(HangfireIocConfig.RegisterDependencies()));
             GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigKeys.HangfireConnectionString);
             app.UseHangfireDashboard();
+            app.UseHangfireServer();
         }
     }
 }

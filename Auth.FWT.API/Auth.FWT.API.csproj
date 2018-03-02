@@ -239,18 +239,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\AutomapperConfig.cs" />
+    <Compile Include="App_Start\HangfireIocConfig.cs" />
     <Compile Include="App_Start\FiltersConfig.cs" />
     <Compile Include="App_Start\IocConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\ContainerJobActivator.cs" />
     <Compile Include="Controllers\Chat\ChatController.cs" />
     <Compile Include="Controllers\Chat\GetUserChats.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
-    <Compile Include="Controllers\Events\UserChatsRefreshed.cs" />
+    <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
+    <Compile Include="Controllers\Statistics\GetMessages.cs" />
+    <Compile Include="Controllers\Statistics\StatisticsController.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\EventDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />

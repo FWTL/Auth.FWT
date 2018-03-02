@@ -1,7 +1,4 @@
-﻿using System.IO;
-using Auth.FWT.API.Controllers.Events;
-using Auth.FWT.Core.CQRS;
-using Microsoft.Azure.WebJobs;
+﻿using Auth.FWT.Core.CQRS;
 
 namespace QueueReceiver
 {
@@ -12,11 +9,6 @@ namespace QueueReceiver
         public Job(IEventDispatcher eventDispatcher)
         {
             _eventDispatcher = eventDispatcher;
-        }
-
-        public void ProcessQueueMessage([ServiceBusTrigger("redis")] UserChatsRefreshed value, TextWriter log)
-        {
-            _eventDispatcher.Dispatch(value);
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Auth.FWT.API.Controllers.Events;
 using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
@@ -70,8 +69,8 @@ namespace Auth.FWT.API.Controllers.Chat
                 TLDialogs dialogs = absDialogs as TLDialogs;
                 var results = new List<Result>();
 
-                var chats = dialogs.Chats.GetValuesOf("Id", "Title", "MigratedTo", "Photo");
-                var users = dialogs.Users.GetValuesOf("Id", "FirstName", "LastName", "Username", "Photo");
+                var chats = dialogs.Chats.GetListOfValuesOf("Id", "Title", "MigratedTo", "Photo");
+                var users = dialogs.Users.GetListOfValuesOf("Id", "FirstName", "LastName", "Username", "Photo");
 
                 foreach (var dialog in dialogs.Dialogs)
                 {
@@ -84,8 +83,8 @@ namespace Auth.FWT.API.Controllers.Chat
                         {
                             results.Add(new Result()
                             {
-                                Id = (int)chat["Id"],
                                 Title = (string)chat["Title"],
+                                ChatId = peer.ChatId
                             });
                         }
                     }
@@ -97,8 +96,8 @@ namespace Auth.FWT.API.Controllers.Chat
 
                         results.Add(new Result()
                         {
-                            Id = (int)chat["Id"],
                             Title = (string)chat["Title"],
+                            ChannelId = peer.ChannelId
                         });
                     }
 
@@ -111,8 +110,8 @@ namespace Auth.FWT.API.Controllers.Chat
 
                         results.Add(new Result()
                         {
-                            Id = (int)user["Id"],
                             Title = name,
+                            UserId = peer.UserId,
                         });
                     }
                 }
@@ -127,13 +126,11 @@ namespace Auth.FWT.API.Controllers.Chat
                         if (chat["MigratedTo"] != null && chat["MigratedTo"] is TLInputChannel)
                         {
                             var inputChannel = chat["MigratedTo"] as TLInputChannel;
-                            var channel = results.FirstOrDefault(c => c.Id == inputChannel.ChannelId);
-                            channel.MigratedFrom = peer.ChatId;
+                            var channel = results.FirstOrDefault(c => c.ChannelId == inputChannel.ChannelId);
+                            channel.ChatId = peer.ChatId;
                         }
                     }
                 }
-
-                Events.Add(new UserChatsRefreshed(query, results));
 
                 return results;
             }
@@ -141,9 +138,12 @@ namespace Auth.FWT.API.Controllers.Chat
 
         public class Result
         {
-            public int Id { get; set; }
+            public int? ChatId { get; set; }
 
-            public int? MigratedFrom { get; set; }
+            public int? ChannelId { get; set; }
+
+            public int? UserId { get; set; }
+
             public string Title { get; set; }
         }
     }

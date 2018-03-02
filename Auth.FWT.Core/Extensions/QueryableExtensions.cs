@@ -51,23 +51,44 @@ namespace Auth.FWT.Core.Extensions
             return source.Where(s => s.GetType().FullName == typeof(TResult).FullName);
         }
 
-        public static List<Dictionary<string, object>> GetValuesOf<TResult>(this IEnumerable<TResult> source, params string[] @params)
+        public static List<Dictionary<string, object>> GetListOfValuesOf<TResult>(this IEnumerable<TResult> source, params string[] @params)
         {
             var results = new List<Dictionary<string, object>>();
 
             foreach (var item in source)
             {
-                var type = item.GetType();
-                var result = new Dictionary<string, object>();
-                foreach (var param in @params)
-                {
-                    result.Add(param, type.GetProperty(param)?.GetValue(item));
-                }
-
-                results.Add(result);
+                results.Add(GetValuesOf(item, @params));
             }
 
             return results;
+        }
+
+        public static Dictionary<string, object> GetValuesOf<TResult>(this TResult source, params string[] @params)
+        {
+            var type = source.GetType();
+            var result = new Dictionary<string, object>();
+            foreach (var param in @params)
+            {
+                result.Add(param, type.GetProperty(param)?.GetValue(source));
+            }
+
+            return result;
+        }
+
+        public static TResult GetRefValuesOf<TResult>(this object source, string param) where TResult : class
+        {
+            var type = source.GetType();
+            var result = type.GetProperty(param)?.GetValue(source);
+
+            return result as TResult;
+        }
+
+        public static TResult GetStructValuesOf<TResult>(this object source, string param) where TResult : struct
+        {
+            var type = source.GetType();
+            var result = type.GetProperty(param)?.GetValue(source);
+
+            return (TResult)result;
         }
     }
 }

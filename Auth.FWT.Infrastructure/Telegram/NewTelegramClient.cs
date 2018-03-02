@@ -206,5 +206,49 @@ namespace Auth.FWT.Infrastructure.Telegram
             var peer = new TLInputPeerSelf();
             return await SendRequestAsync<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 10000 });
         }
+
+        public async Task<TLAbsMessages> GetUserChatHistory(UserSession session, int userChatId, int maxId = int.MaxValue, int limit = 100)
+        {
+            try
+            {
+                var req = new TLRequestGetHistory()
+                {
+                    Peer = new TLInputPeerUser() { UserId = userChatId },
+                    MaxId = maxId,
+                    OffsetId = maxId,
+                    Limit = limit
+                };
+
+                var results = await SendRequestAsync<TLAbsMessages>(session, req);
+                return results;
+            }
+            catch (FloodException ex)
+            {
+                ThrowValidationError(ex);
+            }
+            catch (Exception ex)
+            {
+                switch (ex.Message)
+                {
+                    case ("CHANNEL_INVALID	"):
+                    case ("CHANNEL_PRIVATE"):
+                    case ("CHAT_ID_INVALID"):
+                    case ("PEER_ID_INVALID"):
+                    case ("AUTH_KEY_PERM_EMPTY"):
+                    case ("Timeout"):
+                        {
+                            ThrowValidationError(ex);
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new Exception("Unexpected error", ex);
+                        }
+                }
+            }
+
+            return null;
+        }
     }
 }
