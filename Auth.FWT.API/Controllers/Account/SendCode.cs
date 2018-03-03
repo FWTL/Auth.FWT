@@ -44,7 +44,7 @@ namespace Auth.FWT.API.Controllers.Account
             public async Task Execute(Command command)
             {
                 var userSession = _userManager.Get(HashHelper.GetHash(command.PhoneNumber), _sessionStore);
-                string hash = await _telegramClient.SendCodeRequestAsync(userSession, command.PhoneNumber);
+                string hash = _telegramClient.SendCodeRequest(userSession, command.PhoneNumber);
 
                 TelegramCode telegramCode = await _unitOfWork.TelegramCodeRepository.GetSingleAsync(HashHelper.GetHash(command.PhoneNumber));
                 if (telegramCode.IsNull())

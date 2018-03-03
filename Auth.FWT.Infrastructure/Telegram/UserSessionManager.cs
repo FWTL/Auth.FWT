@@ -27,21 +27,26 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public TcpTransport GetConnection(string address, int port)
         {
-            if (Connections.ContainsKey($"{address}:{port}"))
+            string key = $"{address}:{port}";
+            if (Connections.ContainsKey(key))
             {
-                var transport = Connections[$"{address}:{port}"];
+                var transport = Connections[key];
                 if (transport.IsConnected)
                 {
                     return transport;
                 }
 
-                return Connections[$"{address}:{port}"] = new TcpTransport(address, port);
+                return Connections[key] = new TcpTransport(address, port);
             }
             else
             {
                 var transport = new TcpTransport(address, port);
-                Connections.Add($"{address}:{port}", transport);
-                return transport;
+                if (!Connections.ContainsKey(key))
+                {
+                    Connections.Add(key, transport);
+                }
+
+                return Connections[key];
             }
         }
 

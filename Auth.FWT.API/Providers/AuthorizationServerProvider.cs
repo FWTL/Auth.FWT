@@ -107,7 +107,7 @@ namespace Auth.FWT.API.Providers
             try
             {
                 userSession.Session.SessionUserId = user.Id.ToString();
-                userSession = await telegramClient.MakeAuthAsync(userSession, phoneNumber, hash, code);
+                userSession = telegramClient.MakeAuth(userSession, phoneNumber, hash, code);
                 sessionManager.Replace(phoneNumberHashed, user.Id.ToString());
             }
             catch (Exception ex)

@@ -1,5 +1,4 @@
-﻿using Ionic.Zlib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ionic.Zlib;
 using TLSharp.Core.MTProto;
 using TLSharp.Core.MTProto.Crypto;
 using TLSharp.Core.Requests;
@@ -39,7 +39,7 @@ namespace TLSharp.Core.Network
             return confirmed ? _session.Sequence++ * 2 + 1 : _session.Sequence * 2;
         }
 
-        public async Task Send(TeleSharp.TL.TLMethod request)
+        public void Send(TeleSharp.TL.TLMethod request)
         {
             // TODO: refactor
             if (needConfirmation.Any())
@@ -49,7 +49,7 @@ namespace TLSharp.Core.Network
                 using (var writer = new BinaryWriter(memory))
                 {
                     ackRequest.SerializeBody(writer);
-                    await Send(memory.ToArray(), ackRequest);
+                    Send(memory.ToArray(), ackRequest);
                     needConfirmation.Clear();
                 }
             }
@@ -58,11 +58,11 @@ namespace TLSharp.Core.Network
             using (var writer = new BinaryWriter(memory))
             {
                 request.SerializeBody(writer);
-                await Send(memory.ToArray(), request);
+                Send(memory.ToArray(), request);
             }
         }
 
-        public async Task Send(byte[] packet, TeleSharp.TL.TLMethod request)
+        public async void Send(byte[] packet, TeleSharp.TL.TLMethod request)
         {
             request.MessageId = _session.GetNewMessageId();
 
@@ -92,7 +92,7 @@ namespace TLSharp.Core.Network
                     writer.Write(msgKey);
                     writer.Write(ciphertext);
 
-                    await _transport.Send(ciphertextPacket.GetBuffer());
+                    _transport.Send(ciphertextPacket.GetBuffer());
                 }
             }
         }
@@ -129,11 +129,11 @@ namespace TLSharp.Core.Network
             return new Tuple<byte[], ulong, int>(message, remoteMessageId, remoteSequence);
         }
 
-        public async Task<byte[]> Receive(TeleSharp.TL.TLMethod request)
+        public byte[] Receive(TeleSharp.TL.TLMethod request)
         {
             while (!request.ConfirmReceived)
             {
-                var result = DecodeMessage((await _transport.Receieve()).Body);
+                var result = DecodeMessage((_transport.Receieve()).Body);
 
                 using (var messageStream = new MemoryStream(result.Item1, false))
                 using (var messageReader = new BinaryReader(messageStream))
@@ -145,17 +145,17 @@ namespace TLSharp.Core.Network
             return null;
         }
 
-        public async Task SendPingAsync()
+        public void SendPingAsync()
         {
             var pingRequest = new PingRequest();
             using (var memory = new MemoryStream())
             using (var writer = new BinaryWriter(memory))
             {
                 pingRequest.SerializeBody(writer);
-                await Send(memory.ToArray(), pingRequest);
+                Send(memory.ToArray(), pingRequest);
             }
 
-            await Receive(pingRequest);
+            Receive(pingRequest);
         }
 
         private bool processMessage(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)

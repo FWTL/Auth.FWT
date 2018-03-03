@@ -58,9 +58,9 @@ namespace Auth.FWT.API.Controllers.Chat
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
 
-            public async Task<List<Result>> Handle(Query query)
+            public Task<List<Result>> Handle(Query query)
             {
-                TLAbsDialogs absDialogs = await _telegramClient.GetUserDialogsAsync(_userSession);
+                TLAbsDialogs absDialogs = _telegramClient.GetUserDialogs(_userSession);
                 if (absDialogs is TLDialogsSlice)
                 {
                     throw new Exception("TLDialogsSlice not supported");
@@ -132,7 +132,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     }
                 }
 
-                return results;
+                return Task.FromResult(results);
             }
         }
 

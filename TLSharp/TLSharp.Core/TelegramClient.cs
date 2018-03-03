@@ -48,11 +48,11 @@ namespace TLSharp.Core
             _transport = new TcpTransport(_session.ServerAddress, _session.Port, _handler);
         }
 
-        public async Task<bool> ConnectAsync(bool reconnect = false)
+        public bool Connect(bool reconnect = false)
         {
             if (_session.AuthKey == null || reconnect)
             {
-                var result = await Authenticator.DoAuthentication(_transport);
+                var result = Authenticator.DoAuthentication(_transport);
                 _session.AuthKey = result.AuthKey;
                 _session.TimeOffset = result.TimeOffset;
             }
@@ -71,8 +71,8 @@ namespace TLSharp.Core
                 SystemVersion = "Win 10.0"
             };
             var invokewithLayer = new TLRequestInvokeWithLayer() { Layer = 66, Query = request };
-            await _sender.Send(invokewithLayer);
-            await _sender.Receive(invokewithLayer);
+            _sender.Send(invokewithLayer);
+            _sender.Receive(invokewithLayer);
 
             dcOptions = ((TLConfig)invokewithLayer.Response).DcOptions.ToList();
 
@@ -97,7 +97,7 @@ namespace TLSharp.Core
             _session.ServerAddress = dc.IpAddress;
             _session.Port = dc.Port;
 
-            await ConnectAsync(true);
+            Connect(true);
 
             if (_session.TLUser != null)
             {
@@ -111,7 +111,7 @@ namespace TLSharp.Core
         {
             if (_sender == null)
             {
-                await ConnectAsync();
+                Connect();
             }
 
             var completed = false;
@@ -119,8 +119,8 @@ namespace TLSharp.Core
             {
                 try
                 {
-                    await _sender.Send(request);
-                    await _sender.Receive(request);
+                    _sender.Send(request);
+                    _sender.Receive(request);
                     completed = true;
                 }
                 catch (DataCenterMigrationException e)
@@ -316,9 +316,9 @@ namespace TLSharp.Core
             return result;
         }
 
-        public async Task SendPingAsync()
+        public void SendPingAsync()
         {
-            await _sender.SendPingAsync();
+            _sender.SendPingAsync();
         }
 
         public async Task<TLAbsMessages> GetHistoryAsync(TLAbsInputPeer peer, int offset, int max_id, int limit)

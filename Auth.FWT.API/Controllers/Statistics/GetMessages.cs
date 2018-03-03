@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.Infrastructure.Telegram;
@@ -24,10 +23,10 @@ namespace Auth.FWT.API.Controllers.Statistics
             _random = new Random();
         }
 
-        public async Task UserChatHistory(int userId, int chatId, int maxId)
+        public void UserChatHistory(int userId, int chatId, int maxId)
         {
             var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
-            var result = await _telegramClient.GetUserChatHistory(userSession, chatId, maxId);
+            var result = _telegramClient.GetUserChatHistory(userSession, chatId, maxId);
             if (result is TLMessagesSlice)
             {
                 var messagesSlice = result as TLMessagesSlice;
@@ -35,7 +34,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                 {
                     maxId = messagesSlice.Messages[messagesSlice.Messages.Count - 1].GetStructValuesOf<int>("Id");
 
-                    BackgroundJob.Schedule<GetMessages>(gm => gm.UserChatHistory(userId, chatId, maxId), TimeSpan.FromMinutes(_random.Next(5, 20)));
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.UserChatHistory(userId, chatId, maxId), TimeSpan.FromSeconds(_random.Next(5, 20)));
                 }
             }
         }
