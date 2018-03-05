@@ -252,8 +252,9 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
+    <Compile Include="Controllers\Jobs\TelegramMessage.cs" />
     <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
-    <Compile Include="Controllers\Statistics\GetMessages.cs" />
+    <Compile Include="Controllers\Jobs\GetMessages.cs" />
     <Compile Include="Controllers\Statistics\StatisticsController.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\EventDispatcher.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\DefaultValueOperationFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

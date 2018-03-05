@@ -33,6 +33,7 @@ namespace Auth.FWT.API.Controllers.Account
         public void Reset()
         {
             AppUserSessionManager.Instance.UserSessionManager.Sessions.Clear();
+            AppUserSessionManager.Instance.UserSessionManager.Connections.Clear();
         }
     }
 }

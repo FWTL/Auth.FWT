@@ -1,4 +1,5 @@
-﻿using Auth.FWT.API.Controllers.Statistics;
+﻿using Auth.FWT.API.Controllers.Jobs;
+using Auth.FWT.API.Controllers.Statistics;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Providers;

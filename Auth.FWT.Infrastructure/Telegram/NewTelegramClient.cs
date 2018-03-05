@@ -178,7 +178,7 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public void ThrowValidationError(Exception ex)
         {
-            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("phoneNumber", ex.Message) });
+            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("Error", ex.Message) });
         }
 
         public UserSession MakeAuth(UserSession userSession, string phoneNumber, string phoneCodeHash, string code)
@@ -186,7 +186,6 @@ namespace Auth.FWT.Infrastructure.Telegram
             var request = new TLRequestSignIn() { PhoneNumber = phoneNumber, PhoneCodeHash = phoneCodeHash, PhoneCode = code };
 
             RequestWithDcMigration(userSession, request);
-
             OnUserAuthenticated(userSession, ((TLUser)request.Response.User));
 
             return userSession;
@@ -208,11 +207,29 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public TLAbsMessages GetUserChatHistory(UserSession session, int userChatId, int maxId = int.MaxValue, int limit = 100)
         {
+            var userPeer = new TLInputPeerUser() { UserId = userChatId };
+            return GetHistory(session, userPeer, maxId, limit);
+        }
+
+        public TLAbsMessages GetChannalHistory(UserSession session, int channalId, int maxId, int limit = 100)
+        {
+            var channalPeer = new TLInputPeerChannel() { ChannelId = channalId };
+            return GetHistory(session, channalPeer, maxId, limit);
+        }
+
+        public TLAbsMessages GetChatHistory(UserSession session, int chatId, int maxId, int limit = 100)
+        {
+            var chatPeer = new TLInputPeerChat() { ChatId = chatId };
+            return GetHistory(session, chatPeer, maxId, limit);
+        }
+
+        private TLAbsMessages GetHistory(UserSession session, TLAbsInputPeer peer, int maxId, int limit = 100)
+        {
             try
             {
                 var req = new TLRequestGetHistory()
                 {
-                    Peer = new TLInputPeerUser() { UserId = userChatId },
+                    Peer = peer,
                     MaxId = maxId,
                     OffsetId = maxId,
                     Limit = limit

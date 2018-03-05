@@ -13,5 +13,9 @@ namespace Auth.FWT.Core.Services.Telegram
         TLAbsDialogs GetUserDialogs(UserSession session);
 
         TLAbsMessages GetUserChatHistory(UserSession session, int userChatId, int maxId, int limit = 100);
+
+        TLAbsMessages GetChannalHistory(UserSession userSession, int channalId, int maxId, int limit = 100);
+
+        TLAbsMessages GetChatHistory(UserSession userSession, int chatId, int maxId, int limit = 100);
     }
 }
