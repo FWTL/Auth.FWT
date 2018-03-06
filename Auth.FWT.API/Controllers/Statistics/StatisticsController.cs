@@ -26,7 +26,7 @@ namespace Auth.FWT.API.Controllers.Reporting
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChatHistory()
             {
                 ChatId = chatId,
-                CurrentuserId = _userProvider.CurrentUserId
+                CurrentUserId = _userProvider.CurrentUserId
             });
         }
 
@@ -38,7 +38,7 @@ namespace Auth.FWT.API.Controllers.Reporting
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingUserChatHistory()
             {
                 UserId = userId,
-                CurrentuserId = _userProvider.CurrentUserId
+                CurrentUserId = _userProvider.CurrentUserId
             });
         }
 
@@ -50,7 +50,7 @@ namespace Auth.FWT.API.Controllers.Reporting
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChannalHistory()
             {
                 ChannelId = channelId,
-                CurrentuserId = _userProvider.CurrentUserId
+                CurrentUserId = _userProvider.CurrentUserId
             });
         }
     }

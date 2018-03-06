@@ -13,6 +13,7 @@ namespace Auth.FWT.Infrastructure.ServiceBus
     public class AzureServiceBus : IServiceBus, IDisposable
     {
         private Dictionary<string, QueueClient> _clients = new Dictionary<string, QueueClient>();
+
         private string _sessionId;
 
         public AzureServiceBus()
@@ -20,7 +21,30 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             _sessionId = Guid.NewGuid().ToString("n");
         }
 
+        public void Dispose()
+        {
+            foreach (var client in _clients)
+            {
+                client.Value.Close();
+            }
+        }
+
+        public void SendToQueue<TResult>(string name, TResult value)
+        {
+            _clients[name].Send(CreateBrokeredMessage(name, value));
+        }
+
         public async Task SendToQueueAsync<TResult>(string name, TResult value)
+        {
+            await _clients[name].SendAsync(CreateBrokeredMessage(name, value));
+        }
+
+        public Task SendToTopicMessageAsync<TResult>(string name, TResult value)
+        {
+            throw new NotImplementedException();
+        }
+
+        private BrokeredMessage CreateBrokeredMessage<TResult>(string name, TResult value)
         {
             var message = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value))))
             {
@@ -32,20 +56,7 @@ namespace Auth.FWT.Infrastructure.ServiceBus
                 _clients.Add(name, QueueClient.CreateFromConnectionString(ConfigKeys.AzureBusConnectionString, name));
             }
 
-            await _clients[name].SendAsync(message);
-        }
-
-        public void Dispose()
-        {
-            foreach (var client in _clients)
-            {
-                client.Value.Close();
-            }
-        }
-
-        public Task SendToTopicMessageAsync<TResult>(string name, TResult value)
-        {
-            throw new NotImplementedException();
+            return message;
         }
     }
 }

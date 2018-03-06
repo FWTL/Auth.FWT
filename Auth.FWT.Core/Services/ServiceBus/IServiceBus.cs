@@ -6,6 +6,8 @@ namespace Auth.FWT.Core.Services.ServiceBus
     {
         Task SendToQueueAsync<TResult>(string name, TResult value);
 
+        void SendToQueue<TResult>(string name, TResult value);
+
         Task SendToTopicMessageAsync<TResult>(string name, TResult value);
     }
 }

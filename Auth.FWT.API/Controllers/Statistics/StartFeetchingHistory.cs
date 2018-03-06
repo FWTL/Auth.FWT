@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Auth.FWT.API.Controllers.Jobs;
+using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
+using Auth.FWT.Events;
 using Hangfire;
 
 namespace Auth.FWT.API.Controllers.Statistics
@@ -10,19 +13,19 @@ namespace Auth.FWT.API.Controllers.Statistics
     {
         public class StartFeetchingUserChatHistory : ICommand
         {
-            public int CurrentuserId { get; set; }
+            public int CurrentUserId { get; set; }
             public int UserId { get; set; }
         }
 
         public class StartFeetchingChatHistory : ICommand
         {
-            public int CurrentuserId { get; set; }
+            public int CurrentUserId { get; set; }
             public int ChatId { get; set; }
         }
 
         public class StartFeetchingChannalHistory : ICommand
         {
-            public int CurrentuserId { get; set; }
+            public int CurrentUserId { get; set; }
             public int ChannelId { get; set; }
         }
 
@@ -31,31 +34,57 @@ namespace Auth.FWT.API.Controllers.Statistics
             ICommandHandler<StartFeetchingChatHistory>,
             ICommandHandler<StartFeetchingChannalHistory>
         {
+            private IServiceBus _serviceBus;
             private ITelegramClient _telegramClient;
             private UserSession _userSession;
 
-            public Handler(ITelegramClient telegramClient, UserSession userSession)
+            public Handler(ITelegramClient telegramClient, UserSession userSession, IServiceBus serviceBus)
             {
                 _telegramClient = telegramClient;
                 _userSession = userSession;
+                _serviceBus = serviceBus;
             }
 
-            public Task Execute(StartFeetchingChannalHistory command)
+            public async Task Execute(StartFeetchingChannalHistory command)
             {
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentuserId, command.ChannelId, int.MaxValue));
-                return Task.FromResult(0);
+                var jobId = Guid.NewGuid();
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChannelId, int.MaxValue, jobId));
+
+                await _serviceBus.SendToQueueAsync("processing", new TelegramFetchingMessagesJobStarted()
+                {
+                    JobId = jobId,
+                    InvokedBy = command.CurrentUserId,
+                    ChannalType = ChannalType.Channal,
+                    ChannalId = command.ChannelId
+                });
             }
 
-            public Task Execute(StartFeetchingChatHistory command)
+            public async Task Execute(StartFeetchingChatHistory command)
             {
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChatHistory(command.CurrentuserId, command.ChatId, int.MaxValue));
-                return Task.FromResult(0);
+                var jobId = Guid.NewGuid();
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChatId, int.MaxValue, jobId));
+
+                await _serviceBus.SendToQueueAsync("processing", new TelegramFetchingMessagesJobStarted()
+                {
+                    JobId = jobId,
+                    InvokedBy = command.CurrentUserId,
+                    ChannalType = ChannalType.Chat,
+                    ChannalId = command.ChatId
+                });
             }
 
-            public Task Execute(StartFeetchingUserChatHistory command)
+            public async Task Execute(StartFeetchingUserChatHistory command)
             {
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentuserId, command.UserId, int.MaxValue));
-                return Task.FromResult(0);
+                var jobId = Guid.NewGuid();
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId));
+
+                await _serviceBus.SendToQueueAsync("processing", new TelegramFetchingMessagesJobStarted()
+                {
+                    JobId = jobId,
+                    InvokedBy = command.CurrentUserId,
+                    ChannalType = ChannalType.User,
+                    ChannalId = command.UserId
+                });
             }
         }
     }
