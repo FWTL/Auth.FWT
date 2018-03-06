@@ -252,6 +252,10 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
+    <Compile Include="Controllers\Jobs\MediaParser.cs" />
+    <Compile Include="Controllers\Jobs\MessageActionParser.cs" />
+    <Compile Include="Controllers\Jobs\MessageEntityParser.cs" />
+    <Compile Include="Controllers\Jobs\TelegramAction.cs" />
     <Compile Include="Controllers\Jobs\TelegramMessage.cs" />
     <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
     <Compile Include="Controllers\Jobs\GetMessages.cs" />

@@ -91,11 +91,11 @@ namespace Auth.FWT.API.Controllers.Jobs
         {
             if (message is TLMessage)
             {
-                var tlMessage = message as TLMessage;
-                new TelegramMessage(tlMessage);
+                new TelegramMessage(message as TLMessage);
             }
             else if (message is TLMessageService)
             {
+                new TelegramMessage(message as TLMessageService);
             }
             else if (message is TLMessageEmpty)
             {
