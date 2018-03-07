@@ -1,21 +1,43 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace TLSharp.Core.Network
 {
     public class MtProtoPlainSender
     {
-        private int sequence = 0;
-        private int timeOffset;
-        private long lastMessageId;
-        private Random random;
         private TcpTransport _transport;
+
+        private long lastMessageId;
+
+        private Random random;
+
+        private int sequence = 0;
+
+        private int timeOffset;
 
         public MtProtoPlainSender(TcpTransport transport)
         {
             _transport = transport;
             random = new Random();
+        }
+
+        public byte[] Receive()
+        {
+            var result = _transport.Receieve();
+
+            using (var memoryStream = new MemoryStream(result.Body))
+            {
+                using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                {
+                    long authKeyid = binaryReader.ReadInt64();
+                    long messageId = binaryReader.ReadInt64();
+                    int messageLength = binaryReader.ReadInt32();
+
+                    byte[] response = binaryReader.ReadBytes(messageLength);
+
+                    return response;
+                }
+            }
         }
 
         public void Send(byte[] data)
@@ -36,25 +58,6 @@ namespace TLSharp.Core.Network
             }
         }
 
-        public  byte[] Receive()
-        {
-            var result = _transport.Receieve();
-
-            using (var memoryStream = new MemoryStream(result.Body))
-            {
-                using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                {
-                    long authKeyid = binaryReader.ReadInt64();
-                    long messageId = binaryReader.ReadInt64();
-                    int messageLength = binaryReader.ReadInt32();
-
-                    byte[] response = binaryReader.ReadBytes(messageLength);
-
-                    return response;
-                }
-            }
-        }
-
         private long GetNewMessageId()
         {
             long time = Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
@@ -71,7 +74,5 @@ namespace TLSharp.Core.Network
             lastMessageId = newMessageId;
             return newMessageId;
         }
-
-
     }
 }

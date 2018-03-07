@@ -7,18 +7,87 @@ using TLSharp.Core.MTProto.Crypto;
 
 namespace TLSharp.Core.Auth
 {
-    public class Step3_Response
-    {
-        public AuthKey AuthKey { get; set; }
-        public int TimeOffset { get; set; }
-
-    }
-
     public class Step3_CompleteDHExchange
     {
         private BigInteger _gab;
+
         private byte[] newNonce;
+
         private int timeOffset;
+
+        public Step3_Response FromBytes(byte[] response)
+        {
+            using (MemoryStream responseStream = new MemoryStream(response))
+            {
+                using (BinaryReader responseReader = new BinaryReader(responseStream))
+                {
+                    uint code = responseReader.ReadUInt32();
+                    if (code == 0x3bcbf734)
+                    { // dh_gen_ok
+                      //logger.debug("dh_gen_ok");
+
+
+                        byte[] nonceFromServer = responseReader.ReadBytes(16);
+                        // TODO
+                        /*
+						if (!nonceFromServer.SequenceEqual(nonce))
+						{
+							logger.error("invalid nonce");
+							return null;
+						}
+						*/
+
+                        byte[] serverNonceFromServer = responseReader.ReadBytes(16);
+
+                        // TODO:
+
+                        /*
+						if (!serverNonceFromServer.SequenceEqual(serverNonce))
+						{
+							logger.error("invalid server nonce");
+							return null;
+						}
+						*/
+
+                        byte[] newNonceHash1 = responseReader.ReadBytes(16);
+                        //logger.debug("new nonce hash 1: {0}", BitConverter.ToString(newNonceHash1));
+
+                        AuthKey authKey = new AuthKey(_gab);
+
+                        byte[] newNonceHashCalculated = authKey.CalcNewNonceHash(newNonce, 1);
+
+                        if (!newNonceHash1.SequenceEqual(newNonceHashCalculated))
+                        {
+                            throw new InvalidOperationException("invalid new nonce hash");
+                        }
+
+                        //logger.info("generated new auth key: {0}", gab);
+                        //logger.info("saving time offset: {0}", timeOffset);
+                        //TelegramSession.Instance.TimeOffset = timeOffset;
+
+                        return new Step3_Response()
+                        {
+                            AuthKey = authKey,
+                            TimeOffset = timeOffset
+                        };
+                    }
+                    else if (code == 0x46dc1fb9)
+                    { // dh_gen_retry
+                        throw new NotImplementedException("dh_gen_retry");
+
+                    }
+                    else if (code == 0xa69dae02)
+                    {
+                        // dh_gen_fail
+                        throw new NotImplementedException("dh_gen_fail");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"dh_gen unknown: {code}");
+                    }
+                }
+            }
+        }
 
         public byte[] ToBytes(byte[] nonce, byte[] serverNonce, byte[] newNonce, byte[] encryptedAnswer)
         {
@@ -131,79 +200,12 @@ namespace TLSharp.Core.Auth
 
             return setclientDhParamsBytes;
         }
+    }
 
-        public Step3_Response FromBytes(byte[] response)
-        {
-            using (MemoryStream responseStream = new MemoryStream(response))
-            {
-                using (BinaryReader responseReader = new BinaryReader(responseStream))
-                {
-                    uint code = responseReader.ReadUInt32();
-                    if (code == 0x3bcbf734)
-                    { // dh_gen_ok
-                      //logger.debug("dh_gen_ok");
+    public class Step3_Response
+    {
+        public AuthKey AuthKey { get; set; }
 
-
-                        byte[] nonceFromServer = responseReader.ReadBytes(16);
-                        // TODO
-                        /*
-						if (!nonceFromServer.SequenceEqual(nonce))
-						{
-							logger.error("invalid nonce");
-							return null;
-						}
-						*/
-
-                        byte[] serverNonceFromServer = responseReader.ReadBytes(16);
-
-                        // TODO:
-
-                        /*
-						if (!serverNonceFromServer.SequenceEqual(serverNonce))
-						{
-							logger.error("invalid server nonce");
-							return null;
-						}
-						*/
-
-                        byte[] newNonceHash1 = responseReader.ReadBytes(16);
-                        //logger.debug("new nonce hash 1: {0}", BitConverter.ToString(newNonceHash1));
-
-                        AuthKey authKey = new AuthKey(_gab);
-
-                        byte[] newNonceHashCalculated = authKey.CalcNewNonceHash(newNonce, 1);
-
-                        if (!newNonceHash1.SequenceEqual(newNonceHashCalculated))
-                        {
-                            throw new InvalidOperationException("invalid new nonce hash");
-                        }
-
-                        //logger.info("generated new auth key: {0}", gab);
-                        //logger.info("saving time offset: {0}", timeOffset);
-                        //TelegramSession.Instance.TimeOffset = timeOffset;
-
-                        return new Step3_Response()
-                        {
-                            AuthKey = authKey,
-                            TimeOffset = timeOffset
-                        };
-                    }
-                    else if (code == 0x46dc1fb9)
-                    { // dh_gen_retry
-                        throw new NotImplementedException("dh_gen_retry");
-
-                    }
-                    else if (code == 0xa69dae02)
-                    {
-                        // dh_gen_fail
-                        throw new NotImplementedException("dh_gen_fail");
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"dh_gen unknown: {code}");
-                    }
-                }
-            }
-        }
+        public int TimeOffset { get; set; }
     }
 }

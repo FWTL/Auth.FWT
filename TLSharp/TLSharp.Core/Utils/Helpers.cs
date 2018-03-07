@@ -8,25 +8,6 @@ namespace TLSharp.Core.Utils
     {
         private static Random random = new Random();
 
-        public static ulong GenerateRandomUlong()
-        {
-            ulong rand = (((ulong)random.Next()) << 32) | ((ulong)random.Next());
-            return rand;
-        }
-
-        public static long GenerateRandomLong()
-        {
-            long rand = (((long)random.Next()) << 32) | ((long)random.Next());
-            return rand;
-        }
-
-        public static byte[] GenerateRandomBytes(int num)
-        {
-            byte[] data = new byte[num];
-            random.NextBytes(data);
-            return data;
-        }
-
         public static AESKeyData CalcKey(byte[] sharedKey, byte[] msgKey, bool client)
         {
             int x = client ? 0 : 8;
@@ -75,6 +56,25 @@ namespace TLSharp.Core.Utils
             byte[] msgKey = new byte[16];
             Array.Copy(sha1(data, offset, limit), 4, msgKey, 0, 16);
             return msgKey;
+        }
+
+        public static byte[] GenerateRandomBytes(int num)
+        {
+            byte[] data = new byte[num];
+            random.NextBytes(data);
+            return data;
+        }
+
+        public static long GenerateRandomLong()
+        {
+            long rand = (((long)random.Next()) << 32) | ((long)random.Next());
+            return rand;
+        }
+
+        public static ulong GenerateRandomUlong()
+        {
+            ulong rand = (((ulong)random.Next()) << 32) | ((ulong)random.Next());
+            return rand;
         }
 
         public static byte[] sha1(byte[] data)

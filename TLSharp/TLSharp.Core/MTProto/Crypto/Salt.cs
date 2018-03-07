@@ -2,15 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TLSharp.Core.MTProto.Crypto
 {
+    public class GetFutureSaltsResponse
+    {
+        private int now;
+
+        private ulong requestId;
+
+        private SaltCollection salts;
+
+        public GetFutureSaltsResponse(ulong requestId, int now)
+        {
+            this.requestId = requestId;
+            this.now = now;
+        }
+
+        public int Now
+        {
+            get { return now; }
+        }
+
+        public ulong RequestId
+        {
+            get { return requestId; }
+        }
+
+        public SaltCollection Salts
+        {
+            get { return salts; }
+        }
+
+        public void AddSalt(Salt salt)
+        {
+            salts.Add(salt);
+        }
+    }
+
     public class Salt : IComparable<Salt>
     {
-        private int validSince;
-        private int validUntil;
         private ulong salt;
+
+        private int validSince;
+
+        private int validUntil;
 
         public Salt(int validSince, int validUntil, ulong salt)
         {
@@ -44,11 +80,6 @@ namespace TLSharp.Core.MTProto.Crypto
     {
         private SortedSet<Salt> salts;
 
-        public void Add(Salt salt)
-        {
-            salts.Add(salt);
-        }
-
         public int Count
         {
             get
@@ -56,39 +87,10 @@ namespace TLSharp.Core.MTProto.Crypto
                 return salts.Count;
             }
         }
-        // TODO: get actual salt and other...
-    }
 
-    public class GetFutureSaltsResponse
-    {
-        private ulong requestId;
-        private int now;
-        private SaltCollection salts;
-
-        public GetFutureSaltsResponse(ulong requestId, int now)
-        {
-            this.requestId = requestId;
-            this.now = now;
-        }
-
-        public void AddSalt(Salt salt)
+        public void Add(Salt salt)
         {
             salts.Add(salt);
-        }
-
-        public ulong RequestId
-        {
-            get { return requestId; }
-        }
-
-        public int Now
-        {
-            get { return now; }
-        }
-
-        public SaltCollection Salts
-        {
-            get { return salts; }
         }
     }
 }

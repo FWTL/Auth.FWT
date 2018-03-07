@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace TLSharp.Core.Network
 {
@@ -26,15 +25,18 @@ namespace TLSharp.Core.Network
                 _tcpClient = handler(address, port);
         }
 
-        public void Send(byte[] packet)
+        public bool IsConnected
         {
-            if (!_tcpClient.Connected)
-                throw new InvalidOperationException("Client not connected to server.");
+            get
+            {
+                return this._tcpClient.Connected;
+            }
+        }
 
-            var tcpMessage = new TcpMessage(sendCounter, packet);
-
-            _tcpClient.GetStream().Write(tcpMessage.Encode(), 0, tcpMessage.Encode().Length);
-            sendCounter++;
+        public void Dispose()
+        {
+            if (_tcpClient.Connected)
+                _tcpClient.Close();
         }
 
         public TcpMessage Receieve()
@@ -87,18 +89,15 @@ namespace TLSharp.Core.Network
             return new TcpMessage(seq, body);
         }
 
-        public bool IsConnected
+        public void Send(byte[] packet)
         {
-            get
-            {
-                return this._tcpClient.Connected;
-            }
-        }
+            if (!_tcpClient.Connected)
+                throw new InvalidOperationException("Client not connected to server.");
 
-        public void Dispose()
-        {
-            if (_tcpClient.Connected)
-                _tcpClient.Close();
+            var tcpMessage = new TcpMessage(sendCounter, packet);
+
+            _tcpClient.GetStream().Write(tcpMessage.Encode(), 0, tcpMessage.Encode().Length);
+            sendCounter++;
         }
     }
 }

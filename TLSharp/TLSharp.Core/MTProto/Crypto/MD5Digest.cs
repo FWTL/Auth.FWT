@@ -13,27 +13,6 @@ namespace TLSharp.Core.MTProto.Crypto
         string AlgorithmName { get; }
 
         /**
-* return the size, in bytes, of the digest produced by this message digest.
-*
-* @return the size, in bytes, of the digest produced by this message digest.
-*/
-        int GetDigestSize();
-
-        /**
-* return the size, in bytes, of the internal buffer used by this digest.
-*
-* @return the size, in bytes, of the internal buffer used by this digest.
-*/
-        int GetByteLength();
-
-        /**
-* update the message digest with a single byte.
-*
-* @param inByte the input byte to be entered.
-*/
-        void Update(byte input);
-
-        /**
 * update the message digest with a block of bytes.
 *
 * @param input the byte array containing the data.
@@ -52,47 +31,30 @@ namespace TLSharp.Core.MTProto.Crypto
         int DoFinal(byte[] output, int outOff);
 
         /**
+* return the size, in bytes, of the internal buffer used by this digest.
+*
+* @return the size, in bytes, of the internal buffer used by this digest.
+*/
+        int GetByteLength();
+
+        /**
+* return the size, in bytes, of the digest produced by this message digest.
+*
+* @return the size, in bytes, of the digest produced by this message digest.
+*/
+        int GetDigestSize();
+
+        /**
 * reset the digest back to it's initial state.
 */
         void Reset();
-    }
 
-    public class MD5
-    {
-
-        public static string GetMd5String(string data)
-        {
-            return BitConverter.ToString(GetMd5Bytes(Encoding.UTF8.GetBytes(data))).Replace("-", "").ToLower();
-        }
-
-        public static byte[] GetMd5Bytes(byte[] data)
-        {
-            MD5Digest digest = new MD5Digest();
-            digest.BlockUpdate(data, 0, data.Length);
-            byte[] hash = new byte[16];
-            digest.DoFinal(hash, 0);
-
-            return hash;
-        }
-
-        private MD5Digest digest = new MD5Digest();
-
-        public void Update(byte[] chunk)
-        {
-            digest.BlockUpdate(chunk, 0, chunk.Length);
-        }
-
-        public void Update(byte[] chunk, int offset, int limit)
-        {
-            digest.BlockUpdate(chunk, offset, limit);
-        }
-
-        public string FinalString()
-        {
-            byte[] hash = new byte[16];
-            digest.DoFinal(hash, 0);
-            return BitConverter.ToString(hash).Replace("-", "").ToLower();
-        }
+        /**
+* update the message digest with a single byte.
+*
+* @param inByte the input byte to be entered.
+*/
+        void Update(byte input);
     }
 
     public abstract class GeneralDigest
@@ -103,6 +65,7 @@ namespace TLSharp.Core.MTProto.Crypto
         private readonly byte[] xBuf;
 
         private long byteCount;
+
         private int xBufOff;
 
         internal GeneralDigest()
@@ -119,18 +82,7 @@ namespace TLSharp.Core.MTProto.Crypto
             byteCount = t.byteCount;
         }
 
-        public void Update(byte input)
-        {
-            xBuf[xBufOff++] = input;
-
-            if (xBufOff == xBuf.Length)
-            {
-                ProcessWord(xBuf, 0);
-                xBufOff = 0;
-            }
-
-            byteCount++;
-        }
+        public abstract string AlgorithmName { get; }
 
         public void BlockUpdate(
             byte[] input,
@@ -171,20 +123,6 @@ namespace TLSharp.Core.MTProto.Crypto
             }
         }
 
-        public virtual void Reset()
-        {
-            byteCount = 0;
-            xBufOff = 0;
-            Array.Clear(xBuf, 0, xBuf.Length);
-        }
-
-        public int GetByteLength()
-        {
-            return BYTE_LENGTH;
-        }
-
-        public abstract string AlgorithmName { get; }
-        public abstract int GetDigestSize();
         public abstract int DoFinal(byte[] output, int outOff);
 
         public void Finish()
@@ -201,9 +139,75 @@ namespace TLSharp.Core.MTProto.Crypto
             ProcessBlock();
         }
 
-        internal abstract void ProcessWord(byte[] input, int inOff);
-        internal abstract void ProcessLength(long bitLength);
+        public int GetByteLength()
+        {
+            return BYTE_LENGTH;
+        }
+
+        public abstract int GetDigestSize();
+
+        public virtual void Reset()
+        {
+            byteCount = 0;
+            xBufOff = 0;
+            Array.Clear(xBuf, 0, xBuf.Length);
+        }
+
+        public void Update(byte input)
+        {
+            xBuf[xBufOff++] = input;
+
+            if (xBufOff == xBuf.Length)
+            {
+                ProcessWord(xBuf, 0);
+                xBufOff = 0;
+            }
+
+            byteCount++;
+        }
+
         internal abstract void ProcessBlock();
+
+        internal abstract void ProcessLength(long bitLength);
+
+        internal abstract void ProcessWord(byte[] input, int inOff);
+    }
+
+    public class MD5
+    {
+        private MD5Digest digest = new MD5Digest();
+
+        public static byte[] GetMd5Bytes(byte[] data)
+        {
+            MD5Digest digest = new MD5Digest();
+            digest.BlockUpdate(data, 0, data.Length);
+            byte[] hash = new byte[16];
+            digest.DoFinal(hash, 0);
+
+            return hash;
+        }
+
+        public static string GetMd5String(string data)
+        {
+            return BitConverter.ToString(GetMd5Bytes(Encoding.UTF8.GetBytes(data))).Replace("-", "").ToLower();
+        }
+
+        public string FinalString()
+        {
+            byte[] hash = new byte[16];
+            digest.DoFinal(hash, 0);
+            return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        }
+
+        public void Update(byte[] chunk)
+        {
+            digest.BlockUpdate(chunk, 0, chunk.Length);
+        }
+
+        public void Update(byte[] chunk, int offset, int limit)
+        {
+            digest.BlockUpdate(chunk, offset, limit);
+        }
     }
 
     public class MD5Digest
@@ -215,35 +219,50 @@ namespace TLSharp.Core.MTProto.Crypto
         // round 1 left rotates
         //
         private static readonly int S11 = 7;
+
         private static readonly int S12 = 12;
+
         private static readonly int S13 = 17;
+
         private static readonly int S14 = 22;
 
         //
         // round 2 left rotates
         //
         private static readonly int S21 = 5;
+
         private static readonly int S22 = 9;
+
         private static readonly int S23 = 14;
+
         private static readonly int S24 = 20;
 
         //
         // round 3 left rotates
         //
         private static readonly int S31 = 4;
+
         private static readonly int S32 = 11;
+
         private static readonly int S33 = 16;
+
         private static readonly int S34 = 23;
 
         //
         // round 4 left rotates
         //
         private static readonly int S41 = 6;
+
         private static readonly int S42 = 10;
+
         private static readonly int S43 = 15;
+
         private static readonly int S44 = 21;
+
         private readonly int[] X = new int[16];
-        private int H1, H2, H3, H4; // IV's
+
+        private int H1, H2, H3, H4;// IV's
+
         private int xOff;
 
         public MD5Digest()
@@ -255,7 +274,6 @@ namespace TLSharp.Core.MTProto.Crypto
 * Copy constructor. This will copy the state of the provided
 * message digest.
 */
-
         public MD5Digest(MD5Digest t)
             : base(t)
         {
@@ -271,47 +289,6 @@ namespace TLSharp.Core.MTProto.Crypto
         public override string AlgorithmName
         {
             get { return "MD5"; }
-        }
-
-        public override int GetDigestSize()
-        {
-            return DigestLength;
-        }
-
-        internal override void ProcessWord(
-            byte[] input,
-            int inOff)
-        {
-            X[xOff++] = (input[inOff] & 0xff) | ((input[inOff + 1] & 0xff) << 8)
-                        | ((input[inOff + 2] & 0xff) << 16) | ((input[inOff + 3] & 0xff) << 24);
-
-            if (xOff == 16)
-            {
-                ProcessBlock();
-            }
-        }
-
-        internal override void ProcessLength(
-            long bitLength)
-        {
-            if (xOff > 14)
-            {
-                ProcessBlock();
-            }
-
-            X[14] = (int)(bitLength & 0xffffffff);
-            X[15] = (int)((ulong)bitLength >> 32);
-        }
-
-        private void UnpackWord(
-            int word,
-            byte[] outBytes,
-            int outOff)
-        {
-            outBytes[outOff] = (byte)word;
-            outBytes[outOff + 1] = (byte)((uint)word >> 8);
-            outBytes[outOff + 2] = (byte)((uint)word >> 16);
-            outBytes[outOff + 3] = (byte)((uint)word >> 24);
         }
 
         public override int DoFinal(
@@ -330,10 +307,14 @@ namespace TLSharp.Core.MTProto.Crypto
             return DigestLength;
         }
 
+        public override int GetDigestSize()
+        {
+            return DigestLength;
+        }
+
         /**
 * reset the chaining variables to the IV values.
 */
-
         public override void Reset()
         {
             base.Reset();
@@ -349,53 +330,6 @@ namespace TLSharp.Core.MTProto.Crypto
             {
                 X[i] = 0;
             }
-        }
-
-        /*
-* rotate int x left n bits.
-*/
-
-        private int RotateLeft(
-            int x,
-            int n)
-        {
-            return (x << n) | (int)((uint)x >> (32 - n));
-        }
-
-        /*
-* F, G, H and I are the basic MD5 functions.
-*/
-
-        private int F(
-            int u,
-            int v,
-            int w)
-        {
-            return (u & v) | (~u & w);
-        }
-
-        private int G(
-            int u,
-            int v,
-            int w)
-        {
-            return (u & w) | (v & ~w);
-        }
-
-        private int H(
-            int u,
-            int v,
-            int w)
-        {
-            return u ^ v ^ w;
-        }
-
-        private int K(
-            int u,
-            int v,
-            int w)
-        {
-            return v ^ (u | ~w);
         }
 
         internal override void ProcessBlock()
@@ -498,6 +432,87 @@ namespace TLSharp.Core.MTProto.Crypto
             {
                 X[i] = 0;
             }
+        }
+
+        internal override void ProcessLength(
+            long bitLength)
+        {
+            if (xOff > 14)
+            {
+                ProcessBlock();
+            }
+
+            X[14] = (int)(bitLength & 0xffffffff);
+            X[15] = (int)((ulong)bitLength >> 32);
+        }
+
+        internal override void ProcessWord(
+            byte[] input,
+            int inOff)
+        {
+            X[xOff++] = (input[inOff] & 0xff) | ((input[inOff + 1] & 0xff) << 8)
+                        | ((input[inOff + 2] & 0xff) << 16) | ((input[inOff + 3] & 0xff) << 24);
+
+            if (xOff == 16)
+            {
+                ProcessBlock();
+            }
+        }
+
+        /*
+* F, G, H and I are the basic MD5 functions.
+*/
+        private int F(
+            int u,
+            int v,
+            int w)
+        {
+            return (u & v) | (~u & w);
+        }
+
+        private int G(
+            int u,
+            int v,
+            int w)
+        {
+            return (u & w) | (v & ~w);
+        }
+
+        private int H(
+            int u,
+            int v,
+            int w)
+        {
+            return u ^ v ^ w;
+        }
+
+        private int K(
+            int u,
+            int v,
+            int w)
+        {
+            return v ^ (u | ~w);
+        }
+
+        /*
+* rotate int x left n bits.
+*/
+        private int RotateLeft(
+            int x,
+            int n)
+        {
+            return (x << n) | (int)((uint)x >> (32 - n));
+        }
+
+        private void UnpackWord(
+            int word,
+            byte[] outBytes,
+            int outOff)
+        {
+            outBytes[outOff] = (byte)word;
+            outBytes[outOff + 1] = (byte)((uint)word >> 8);
+            outBytes[outOff + 2] = (byte)((uint)word >> 16);
+            outBytes[outOff + 3] = (byte)((uint)word >> 24);
         }
     }
 }
