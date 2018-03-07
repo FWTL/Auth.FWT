@@ -261,7 +261,6 @@
     <Compile Include="Controllers\Jobs\GetMessages.cs" />
     <Compile Include="Controllers\Statistics\StatisticsController.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
-    <Compile Include="CQRS\EventDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
     <Compile Include="Global.asax.cs">

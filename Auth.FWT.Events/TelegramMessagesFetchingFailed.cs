@@ -5,7 +5,7 @@ using Auth.FWT.Core.Services.ServiceBus;
 
 namespace Auth.FWT.Events
 {
-    public class AllTelegramMessagesFetched : IEvent
+    public class TelegramMessagesFetchingFailed : IEvent
     {
         public Guid JobId { get; set; }
 

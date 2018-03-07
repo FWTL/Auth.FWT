@@ -31,40 +31,69 @@ namespace Auth.FWT.API.Controllers.Jobs
         [AutomaticRetry(Attempts = 0)]
         public void UserChatHistory(int userId, int chatId, int maxId, Guid jobId)
         {
-            var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
-            var result = _telegramClient.GetUserChatHistory(userSession, chatId, maxId);
-            maxId = ProcessMessages(result, jobId);
-
-            if (maxId > 0)
+            try
             {
-                BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
+                var result = _telegramClient.GetUserChatHistory(userSession, chatId, maxId);
+                maxId = ProcessMessages(result, jobId);
+
+                if (maxId > 0)
+                {
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.UserChatHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                }
+            }
+            catch
+            {
+                new TelegramMessagesFetchingFailed()
+                {
+                    JobId = jobId,
+                }.Send(_serviceBus);
             }
         }
 
         [AutomaticRetry(Attempts = 0)]
         public void ChannalHistory(int userId, int channalId, int maxId, Guid jobId)
         {
-            var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
-            var result = _telegramClient.GetChannalHistory(userSession, channalId, maxId);
-            maxId = ProcessMessages(result, jobId);
-
-            if (maxId > 0)
+            try
             {
-                BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, channalId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
-            }
+                var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
+                var result = _telegramClient.GetChannalHistory(userSession, channalId, maxId);
+                maxId = ProcessMessages(result, jobId);
 
+                if (maxId > 0)
+                {
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, channalId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                }
+            }
+            catch
+            {
+                new TelegramMessagesFetchingFailed()
+                {
+                    JobId = jobId,
+                }.Send(_serviceBus);
+            }
         }
 
         [AutomaticRetry(Attempts = 0)]
         public void ChatHistory(int userId, int chatId, int maxId, Guid jobId)
         {
-            var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
-            var result = _telegramClient.GetChatHistory(userSession, chatId, maxId);
-            maxId = ProcessMessages(result, jobId);
-
-            if (maxId > 0)
+            try
             {
-                BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(userId.ToString(), _sessionStore);
+                var result = _telegramClient.GetChatHistory(userSession, chatId, maxId);
+                maxId = ProcessMessages(result, jobId);
+
+                if (maxId > 0)
+                {
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChatHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                }
+            }
+            catch
+            {
+                new TelegramMessagesFetchingFailed()
+                {
+                    JobId = jobId,
+                }.Send(_serviceBus);
             }
         }
 
@@ -84,19 +113,19 @@ namespace Auth.FWT.API.Controllers.Jobs
 
                     maxId = messagesSlice.Messages[messagesSlice.Messages.Count - 1].GetStructValuesOf<int>("Id");
 
-                    _serviceBus.SendToQueue("processing", new TelegramMessagesFetched()
+                    new TelegramMessagesFetched()
                     {
                         JobId = jobId,
                         FetchedCount = messagesSlice.Messages.Count,
                         Total = messagesSlice.Count
-                    });
+                    }.Send(_serviceBus);
                 }
                 else
                 {
-                    _serviceBus.SendToQueue("processing", new AllTelegramMessagesFetched()
+                    new AllTelegramMessagesFetched()
                     {
                         JobId = jobId,
-                    });
+                    }.Send(_serviceBus);
                 }
             }
 

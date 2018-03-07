@@ -1,7 +1,10 @@
 ﻿using System.Reflection;
-using Auth.FWT.API.CQRS;
 using Auth.FWT.Core.CQRS;
+using Auth.FWT.Core.Data;
+using Auth.FWT.Data;
+using Auth.FWT.Events.Dispatcher;
 using Autofac;
+using NodaTime;
 using StackExchange.Redis;
 
 namespace QueueReceiver
@@ -12,8 +15,19 @@ namespace QueueReceiver
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<EventDispatcher>().As<IEventDispatcher>().InstancePerDependency();
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsClosedTypesOf(typeof(IEventHandler<>)).InstancePerDependency();
+            builder.RegisterGeneric(typeof(EntityRepository<,>)).As(typeof(IRepository<,>)).InstancePerDependency();
+            builder.RegisterType(typeof(UnitOfWork)).As(typeof(IUnitOfWork)).InstancePerDependency();
+
+            builder.Register<IEntitiesContext>(b =>
+            {
+                var context = new AppContext("name=AppContext");
+                return context;
+            }).InstancePerDependency();
+
+            builder.Register<IClock>(b =>
+            {
+                return SystemClock.Instance;
+            }).SingleInstance();
 
             builder.Register(b =>
             {
@@ -25,6 +39,9 @@ namespace QueueReceiver
                 var redis = b.Resolve<ConnectionMultiplexer>();
                 return redis.GetDatabase();
             }).InstancePerDependency();
+
+            builder.RegisterType<EventDispatcher>().As<IEventDispatcher>().InstancePerDependency();
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsClosedTypesOf(typeof(IEventHandler<>)).InstancePerDependency();
 
             builder.RegisterType<Job>().InstancePerDependency();
 

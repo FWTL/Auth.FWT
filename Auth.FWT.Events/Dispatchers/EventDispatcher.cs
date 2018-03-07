@@ -5,7 +5,7 @@ using Auth.FWT.Core.CQRS;
 using Auth.FWT.Core.Events;
 using Autofac;
 
-namespace Auth.FWT.API.CQRS
+namespace Auth.FWT.Events.Dispatcher
 {
     public class EventDispatcher : IEventDispatcher
     {

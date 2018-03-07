@@ -60,7 +60,7 @@ namespace Auth.FWT.Infrastructure.Telegram
             return true;
         }
 
-        private void ReconnectToDcAsync(UserSession userSession, int dcId)
+        private void ReconnectToDc(UserSession userSession, int dcId)
         {
             if (TLContext.DcOptions == null || !TLContext.DcOptions.Any())
             {
@@ -120,7 +120,7 @@ namespace Auth.FWT.Infrastructure.Telegram
                 }
                 catch (DataCenterMigrationException e)
                 {
-                    ReconnectToDcAsync(userSession, e.DC);
+                    ReconnectToDc(userSession, e.DC);
                     //// prepare the request for another try
                     request.ConfirmReceived = false;
                 }

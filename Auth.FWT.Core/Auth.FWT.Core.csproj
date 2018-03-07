@@ -145,6 +145,7 @@
     <Compile Include="Entities\Identity\UserLogin.cs" />
     <Compile Include="Entities\Identity\UserRole.cs" />
     <Compile Include="Entities\TelegramCode.cs" />
+    <Compile Include="Entities\TelegramJob.cs" />
     <Compile Include="Entities\TelegramSession.cs" />
     <Compile Include="Enums\DomainEnums.cs" />
     <Compile Include="Enums\Enums.cs" />

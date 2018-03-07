@@ -1,7 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
+using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Helpers;
 using Auth.FWT.Core.Services.Telegram;
@@ -40,6 +43,8 @@ namespace Auth.FWT.API.Controllers.Account
                 _userManager = userManager;
                 _sessionStore = sessionStore;
             }
+
+            public List<IEvent> Events { get; set; } = new List<IEvent>();
 
             public async Task Execute(Command command)
             {

@@ -7,18 +7,28 @@ namespace QueueReceiver
     {
         private static void Main(string[] args)
         {
-            var jobHostConfiguration = new JobHostConfiguration
+            var config = new JobHostConfiguration
             {
                 JobActivator = new AutofacJobActivator(IocConfig.RegisterDependencies()),
             };
 
+            if (config.IsDevelopment)
+            {
+                config.UseDevelopmentSettings();
+            }
+
             ServiceBusConfiguration serviceBusConfig = new ServiceBusConfiguration
             {
                 ConnectionString = ConfigKeys.ServiceBus,
+                MessageOptions = new Microsoft.ServiceBus.Messaging.OnMessageOptions()
+                {
+                    AutoComplete = false,
+                    MaxConcurrentCalls = 1
+                }
             };
-            jobHostConfiguration.UseServiceBus(serviceBusConfig);
+            config.UseServiceBus(serviceBusConfig);
 
-            var host = new JobHost(jobHostConfiguration);
+            var host = new JobHost(config);
             host.RunAndBlock();
         }
     }

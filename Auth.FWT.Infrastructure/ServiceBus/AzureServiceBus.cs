@@ -31,12 +31,14 @@ namespace Auth.FWT.Infrastructure.ServiceBus
 
         public void SendToQueue<TResult>(string name, TResult value)
         {
-            _clients[name].Send(CreateBrokeredMessage(name, value));
+            var msg = CreateBrokeredMessage(name, value);
+            _clients[name].Send(msg);
         }
 
         public async Task SendToQueueAsync<TResult>(string name, TResult value)
         {
-            await _clients[name].SendAsync(CreateBrokeredMessage(name, value));
+            var msg = CreateBrokeredMessage(name, value);
+            await _clients[name].SendAsync(msg);
         }
 
         public Task SendToTopicMessageAsync<TResult>(string name, TResult value)
@@ -50,6 +52,7 @@ namespace Auth.FWT.Infrastructure.ServiceBus
             {
                 ContentType = "application/json",
             };
+            message.Properties.Add("type", typeof(TResult).FullName);
 
             if (!_clients.ContainsKey(name))
             {

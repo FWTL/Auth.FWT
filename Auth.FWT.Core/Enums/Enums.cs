@@ -85,5 +85,14 @@ namespace Auth.FWT.Core.Enums
             ScreenshotTaken = 17,
             ActionCustomAction = 18,
         }
+
+        public enum TelegramJobStatus
+        {
+            Started = 1,
+            Fetching = 2,
+            Processing = 3,
+            Finished = 4,
+            Error = 5
+        }
     }
 }
