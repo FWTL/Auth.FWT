@@ -16,6 +16,7 @@ namespace Auth.FWT.API.Controllers.Statistics
         public class StartFeetchingUserChatHistory : ICommand
         {
             public int CurrentUserId { get; set; }
+            public string Title { get; internal set; }
             public int UserId { get; set; }
         }
 
@@ -58,7 +59,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     JobId = jobId,
                     InvokedBy = command.CurrentUserId,
                     ChannalType = ChannalType.Channal,
-                    ChannalId = command.ChannelId
+                    ChannalId = command.ChannelId,
                 }.Send(_serviceBus);
 
                 BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChannelId, int.MaxValue, jobId));
@@ -73,7 +74,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     JobId = jobId,
                     InvokedBy = command.CurrentUserId,
                     ChannalType = ChannalType.Chat,
-                    ChannalId = command.ChatId
+                    ChannalId = command.ChatId,
                 }.Send(_serviceBus);
 
                 BackgroundJob.Enqueue<GetMessages>(gm => gm.ChatHistory(command.CurrentUserId, command.ChatId, int.MaxValue, jobId));
@@ -88,7 +89,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     JobId = jobId,
                     InvokedBy = command.CurrentUserId,
                     ChannalType = ChannalType.User,
-                    ChannalId = command.UserId
+                    ChannalId = command.UserId,
                 }.Send(_serviceBus);
 
                 BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId));

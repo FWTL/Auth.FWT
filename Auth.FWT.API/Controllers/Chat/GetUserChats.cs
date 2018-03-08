@@ -17,12 +17,12 @@ namespace Auth.FWT.API.Controllers.Chat
     {
         public class Query : IQuery
         {
-            public int Userid { get; set; }
+            public int UserId { get; set; }
             public bool DoRefresh { get; private set; }
 
             public Query(int userId, bool doRefresh)
             {
-                Userid = userId;
+                UserId = userId;
                 DoRefresh = doRefresh;
             }
         }
@@ -31,7 +31,7 @@ namespace Auth.FWT.API.Controllers.Chat
         {
             public Cache(IDatabase redis) : base(redis)
             {
-                KeyFn = query => { return "GetUserChats" + query.Userid; };
+                KeyFn = query => { return "GetUserChats" + query.UserId; };
             }
 
             public override async Task<List<Result>> Read(Query query)

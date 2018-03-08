@@ -34,7 +34,12 @@ namespace Auth.FWT.Infrastructure.Handlers
 
         public virtual async Task Save(TQuery query, TResult result, TimeSpan? ttl = null)
         {
-            await _redis.StringSetAsync(KeyFn(query), JsonConvert.SerializeObject(result), ttl);
+            await _redis.StringSetAsync(KeyFn(query), JsonConvert.SerializeObject(result), Ttl(query));
+        }
+
+        public virtual TimeSpan? Ttl(TQuery query)
+        {
+            return null;
         }
 
         public Func<TQuery, string> KeyFn { get; set; }

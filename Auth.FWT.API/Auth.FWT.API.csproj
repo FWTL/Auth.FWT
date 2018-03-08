@@ -249,6 +249,8 @@
     <Compile Include="App_Start\ContainerJobActivator.cs" />
     <Compile Include="Controllers\Chat\ChatController.cs" />
     <Compile Include="Controllers\Chat\GetUserChats.cs" />
+    <Compile Include="Controllers\Dashboard\DashboardController.cs" />
+    <Compile Include="Controllers\Dashboard\GetDashboard.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\SwaggerDefaultValueAttribute.cs" />
     <Compile Include="SwaggerExtensions\DefaultValueOperationFilter.cs" />
   </ItemGroup>
   <ItemGroup>

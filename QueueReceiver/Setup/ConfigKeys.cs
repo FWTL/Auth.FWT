@@ -16,6 +16,11 @@ namespace QueueReceiver
             get { return ConfigurationManager.ConnectionStrings["ServiceBus"].ConnectionString; }
         }
 
+        public static string RedisServer
+        {
+            get { return Setting("RedisServer"); }
+        }
+
         private static T Setting<T>(string name) where T : struct
         {
             string value = ConfigurationManager.AppSettings[name];

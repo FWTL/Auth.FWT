@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using Auth.FWT.API.Controllers.Statistics;
 using Auth.FWT.Core.Providers;
 using Auth.FWT.CQRS;
@@ -21,7 +22,7 @@ namespace Auth.FWT.API.Controllers.Reporting
         [Authorize]
         [HttpPost]
         [Route("api/FetchChatHistory")]
-        public async void FetchChatHistory(int chatId)
+        public async Task FetchChatHistory(int chatId)
         {
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChatHistory()
             {
@@ -33,7 +34,7 @@ namespace Auth.FWT.API.Controllers.Reporting
         [Authorize]
         [HttpPost]
         [Route("api/fetchUserChatHistory")]
-        public async void FetchUserChatHistory(int userId)
+        public async Task FetchUserChatHistory(int userId)
         {
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingUserChatHistory()
             {
@@ -45,7 +46,7 @@ namespace Auth.FWT.API.Controllers.Reporting
         [Authorize]
         [HttpPost]
         [Route("api/fetchChannelHistory")]
-        public async void FetchChannelHistory(int channelId)
+        public async Task FetchChannelHistory(int channelId)
         {
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChannalHistory()
             {

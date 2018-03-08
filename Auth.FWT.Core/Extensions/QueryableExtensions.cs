@@ -23,7 +23,7 @@ namespace Auth.FWT.Core.Extensions
 
         public static IOrderedQueryable<TSource> OrderWithDirection<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector, OrderBy direction = Auth.FWT.Core.Data.OrderBy.Ascending)
         {
-            if (direction == Auth.FWT.Core.Data.OrderBy.Ascending)
+            if (direction == OrderBy.Ascending)
             {
                 return source.OrderBy(keySelector);
             }

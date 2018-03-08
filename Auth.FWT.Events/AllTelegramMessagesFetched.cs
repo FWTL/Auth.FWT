@@ -8,6 +8,7 @@ namespace Auth.FWT.Events
     public class AllTelegramMessagesFetched : IEvent
     {
         public Guid JobId { get; set; }
+        public int InvokedBy { get; set; }
 
         public Task Send(IServiceBus serviceBus)
         {

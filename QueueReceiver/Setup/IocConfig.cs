@@ -40,6 +40,12 @@ namespace QueueReceiver
                 return redis.GetDatabase();
             }).InstancePerDependency();
 
+            builder.Register(b =>
+            {
+                var redis = b.Resolve<ConnectionMultiplexer>();
+                return redis.GetServer(ConfigKeys.RedisServer);
+            }).InstancePerDependency();
+
             builder.RegisterType<EventDispatcher>().As<IEventDispatcher>().InstancePerDependency();
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsClosedTypesOf(typeof(IEventHandler<>)).InstancePerDependency();
 
