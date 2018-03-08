@@ -22,10 +22,6 @@ namespace Auth.FWT.Events.Dispatcher
             foreach (var handler in handlers)
             {
                 await handler.Execute(@event);
-                foreach (var postEvent in handler.Events)
-                {
-                    await Dispatch(postEvent);
-                }
             }
         }
     }

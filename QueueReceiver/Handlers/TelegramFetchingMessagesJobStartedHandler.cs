@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Auth.FWT.Core.CQRS;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Entities;
-using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Events;
 using NodaTime;
@@ -13,15 +11,15 @@ namespace QueueReceiver.Handlers
     public class TelegramFetchingMessagesJobStartedHandler : IEventHandler<TelegramFetchingMessagesJobStarted>
     {
         private IClock _clock;
+        private IEventDispatcher _eventDispatcher;
         private IUnitOfWork _unitOfWork;
 
-        public TelegramFetchingMessagesJobStartedHandler(IUnitOfWork unitOfWork, IClock clock)
+        public TelegramFetchingMessagesJobStartedHandler(IUnitOfWork unitOfWork, IClock clock, IEventDispatcher eventDispatcher)
         {
             _unitOfWork = unitOfWork;
             _clock = clock;
+            _eventDispatcher = eventDispatcher;
         }
-
-        public List<IEvent> Events { get; set; } = new List<IEvent>();
 
         public async Task Execute(TelegramFetchingMessagesJobStarted @event)
         {
@@ -37,7 +35,7 @@ namespace QueueReceiver.Handlers
             _unitOfWork.TelegramJobRepository.Insert(newJob);
             await _unitOfWork.SaveChangesAsync();
 
-            Events.Add(new TelegramJobModified()
+            await _eventDispatcher.Dispatch(new TelegramJobModified()
             {
                 UserId = newJob.UserId,
                 TelegramJobId = newJob.Id

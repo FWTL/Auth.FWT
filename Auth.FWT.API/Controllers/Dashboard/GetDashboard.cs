@@ -39,10 +39,10 @@ namespace Auth.FWT.API.Controllers.Dashboard
             public long Id { get; set; }
 
             public DateTime CreateDate { get; set; }
-            public int Fetched { get; internal set; }
+            public int Fetched { get; set; }
             public DateTime LastStatusUpdateDate { get; set; }
             public string Status { get; set; }
-            public int Total { get; internal set; }
+            public int Total { get; set; }
         }
 
         public class Cache : RedisJsonHandler<Query, List<Result>>

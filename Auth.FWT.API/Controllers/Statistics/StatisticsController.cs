@@ -21,7 +21,7 @@ namespace Auth.FWT.API.Controllers.Reporting
 
         [Authorize]
         [HttpPost]
-        [Route("api/FetchChatHistory")]
+        [Route("api/fetchChatHistory")]
         public async Task FetchChatHistory(int chatId)
         {
             await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChatHistory()
