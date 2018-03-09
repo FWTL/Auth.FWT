@@ -18,6 +18,7 @@ namespace Auth.FWT.API.Controllers.Chat
         public class Query : IQuery
         {
             public int UserId { get; set; }
+
             public bool DoRefresh { get; private set; }
 
             public Query(int userId, bool doRefresh)

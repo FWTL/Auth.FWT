@@ -15,36 +15,6 @@ namespace Auth.FWT.API.Controllers.Dashboard
 {
     public class GetDashboard
     {
-        public class Query : IQuery
-        {
-            public int UserId { get; set; }
-            public int Offset { get; set; }
-            public int Limit { get; set; }
-        }
-
-        public class Result
-        {
-            public Result()
-            {
-            }
-
-            public Result(TelegramJob telegramJob)
-            {
-                Id = telegramJob.Id;
-                CreateDate = telegramJob.CreatedDateUTC.ToLocalTime();
-                LastStatusUpdateDate = telegramJob.LastStatusUpdateDateUTC.ToLocalTime();
-                Status = telegramJob.Status.GetDescription();
-            }
-
-            public long Id { get; set; }
-
-            public DateTime CreateDate { get; set; }
-            public int Fetched { get; set; }
-            public DateTime LastStatusUpdateDate { get; set; }
-            public string Status { get; set; }
-            public int Total { get; set; }
-        }
-
         public class Cache : RedisJsonHandler<Query, List<Result>>
         {
             public Cache(IDatabase cache) : base(cache)
@@ -66,6 +36,7 @@ namespace Auth.FWT.API.Controllers.Dashboard
         public class Handler : IQueryHandler<Query, List<Result>>
         {
             private IDatabase _cache;
+
             private IUnitOfWork _unitOfWork;
 
             public Handler(IUnitOfWork unitOfWork, IDatabase cache)
@@ -98,6 +69,42 @@ namespace Auth.FWT.API.Controllers.Dashboard
 
                 return results;
             }
+        }
+
+        public class Query : IQuery
+        {
+            public int Limit { get; set; }
+
+            public int Offset { get; set; }
+
+            public int UserId { get; set; }
+        }
+
+        public class Result
+        {
+            public Result()
+            {
+            }
+
+            public Result(TelegramJob telegramJob)
+            {
+                Id = telegramJob.Id;
+                CreateDate = telegramJob.CreatedDateUTC.ToLocalTime();
+                LastStatusUpdateDate = telegramJob.LastStatusUpdateDateUTC.ToLocalTime();
+                Status = telegramJob.Status.GetDescription();
+            }
+
+            public DateTime CreateDate { get; set; }
+
+            public int Fetched { get; set; }
+
+            public long Id { get; set; }
+
+            public DateTime LastStatusUpdateDate { get; set; }
+
+            public string Status { get; set; }
+
+            public int Total { get; set; }
         }
     }
 }

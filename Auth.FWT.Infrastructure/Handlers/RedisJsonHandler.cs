@@ -9,7 +9,7 @@ namespace Auth.FWT.Infrastructure.Handlers
 {
     public class RedisJsonHandler<TQuery, TResult> : IReadCacheHandler<TQuery, TResult>, IWriteCacheHandler<TQuery, TResult> where TQuery : IQuery where TResult : class
     {
-        protected IDatabase _redis;
+        private IDatabase _redis;
 
         public RedisJsonHandler(IDatabase redis)
         {

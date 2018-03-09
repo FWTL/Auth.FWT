@@ -1,5 +1,4 @@
 ﻿using Auth.FWT.API.Controllers.Jobs;
-using Auth.FWT.API.Controllers.Statistics;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Providers;
@@ -26,7 +25,6 @@ namespace Auth.FWT.API.App_Start
 
             builder.RegisterGeneric(typeof(EntityRepository<,>)).As(typeof(IRepository<,>)).InstancePerDependency();
             builder.RegisterType(typeof(UnitOfWork)).As(typeof(IUnitOfWork)).InstancePerDependency();
-
 
             builder.Register<IDapperConnector>(b =>
             {

@@ -13,32 +13,15 @@ namespace Auth.FWT.API.Controllers.Statistics
 {
     public class StartFeetchingHistory
     {
-        public class StartFeetchingUserChatHistory : ICommand
-        {
-            public int CurrentUserId { get; set; }
-            public string Title { get; internal set; }
-            public int UserId { get; set; }
-        }
-
-        public class StartFeetchingChatHistory : ICommand
-        {
-            public int CurrentUserId { get; set; }
-            public int ChatId { get; set; }
-        }
-
-        public class StartFeetchingChannalHistory : ICommand
-        {
-            public int CurrentUserId { get; set; }
-            public int ChannelId { get; set; }
-        }
-
         public class Handler :
             ICommandHandler<StartFeetchingUserChatHistory>,
             ICommandHandler<StartFeetchingChatHistory>,
             ICommandHandler<StartFeetchingChannalHistory>
         {
             private IServiceBus _serviceBus;
+
             private ITelegramClient _telegramClient;
+
             private UserSession _userSession;
 
             public Handler(ITelegramClient telegramClient, UserSession userSession, IServiceBus serviceBus)
@@ -94,6 +77,29 @@ namespace Auth.FWT.API.Controllers.Statistics
 
                 BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId));
             }
+        }
+
+        public class StartFeetchingChannalHistory : ICommand
+        {
+            public int ChannelId { get; set; }
+
+            public int CurrentUserId { get; set; }
+        }
+
+        public class StartFeetchingChatHistory : ICommand
+        {
+            public int ChatId { get; set; }
+
+            public int CurrentUserId { get; set; }
+        }
+
+        public class StartFeetchingUserChatHistory : ICommand
+        {
+            public int CurrentUserId { get; set; }
+
+            public string Title { get; internal set; }
+
+            public int UserId { get; set; }
         }
     }
 }
