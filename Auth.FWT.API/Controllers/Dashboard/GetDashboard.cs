@@ -66,33 +66,35 @@ namespace Auth.FWT.API.Controllers.Dashboard
         public class Handler : IQueryHandler<Query, List<Result>>
         {
             private IDatabase _cache;
-            private ConnectionMultiplexer _conn;
             private IUnitOfWork _unitOfWork;
 
-            public Handler(IUnitOfWork unitOfWork, IDatabase cache, ConnectionMultiplexer conn)
+            public Handler(IUnitOfWork unitOfWork, IDatabase cache)
             {
                 _unitOfWork = unitOfWork;
                 _cache = cache;
-                _conn = conn;
             }
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
 
             public async Task<List<Result>> Handle(Query query)
             {
-                var resultQuery = _unitOfWork.TelegramJobRepository.Query()
+                var resultQuery = await _unitOfWork.TelegramJobRepository.Query()
                     .Where(tj => tj.UserId == query.UserId)
                     .OrderByDescending(tj => tj.Id)
-                    .Paginate(query.Offset, query.Limit);
+                    .Paginate(query.Offset, query.Limit).ToListAsync();
 
-                var results = (await resultQuery.ToListAsync()).Select(tj => new Result(tj)).ToList();
-
-                foreach (var item in resultQuery.Where(r => r.Status == Core.Enums.Enum.TelegramJobStatus.Fetching))
+                var results = resultQuery.Where(tj => tj.Status == Core.Enums.Enum.TelegramJobStatus.Fetching).Select(tj =>
                 {
-                    var result = results.FirstOrDefault(r => r.Id == item.Id);
-                    result.Fetched = (await _cache.StringGetAsync($"Fetching{item.JobId}")).ToN<int>() ?? 0;
-                    result.Total = (await _cache.StringGetAsync($"FetchingTotal{item.JobId}")).ToN<int>() ?? 0;
-                }
+                    if (tj.Status == Core.Enums.Enum.TelegramJobStatus.Fetching)
+                    {
+                        var item = new Result(tj);
+                        item.Fetched = _cache.StringGet($"Fetching{tj.JobId}").ToN<int>() ?? 0;
+                        item.Total = _cache.StringGet($"FetchingTotal{tj.JobId}").ToN<int>() ?? 0;
+                        return item;
+                    }
+
+                    return new Result(tj);
+                }).ToList();
 
                 return results;
             }
