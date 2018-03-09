@@ -54,7 +54,7 @@ namespace Auth.FWT.API.Controllers.Dashboard
                     .OrderByDescending(tj => tj.Id)
                     .Paginate(query.Offset, query.Limit).ToListAsync();
 
-                var results = resultQuery.Where(tj => tj.Status == Core.Enums.Enum.TelegramJobStatus.Fetching).Select(tj =>
+                var results = resultQuery.Select(tj =>
                 {
                     if (tj.Status == Core.Enums.Enum.TelegramJobStatus.Fetching)
                     {

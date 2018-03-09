@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TeleSharp.TL;
 
-namespace Auth.FWT.API.Controllers.Jobs
+namespace Auth.FWT.API.Controllers.Job
 {
     public static class MediaParser
     {

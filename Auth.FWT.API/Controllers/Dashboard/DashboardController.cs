@@ -24,7 +24,7 @@ namespace Auth.FWT.API.Controllers.Dashboard
         [HttpGet]
         [SwaggerDefaultValue("offset", 0)]
         [SwaggerDefaultValue("limit", 10)]
-        public async Task<List<GetDashboard.Result>> FetchChannelHistory(int offset, int limit)
+        public async Task<List<GetDashboard.Result>> Dashboard(int offset, int limit)
         {
             return await _queryDispatcher.Dispatch<GetDashboard.Query, List<GetDashboard.Result>>(new GetDashboard.Query()
             {

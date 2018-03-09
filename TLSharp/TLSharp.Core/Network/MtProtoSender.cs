@@ -112,7 +112,7 @@ namespace TLSharp.Core.Network
         public void Send(TeleSharp.TL.TLMethod request)
         {
             // TODO: refactor
-            if (/*needConfirmation.Any()*/ false)
+            if (needConfirmation.Any())
             {
                 var ackRequest = new AckRequest(needConfirmation);
                 using (var memory = new MemoryStream())

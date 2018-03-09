@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Auth.FWT.API.Controllers.Jobs;
+using Auth.FWT.API.Controllers.Job;
 using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;

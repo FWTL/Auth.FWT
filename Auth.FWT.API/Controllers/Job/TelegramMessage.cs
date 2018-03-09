@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TeleSharp.TL;
 using static Auth.FWT.Core.Enums.Enum;
 
-namespace Auth.FWT.API.Controllers.Jobs
+namespace Auth.FWT.API.Controllers.Job
 {
     public class TelegramMessage
     {

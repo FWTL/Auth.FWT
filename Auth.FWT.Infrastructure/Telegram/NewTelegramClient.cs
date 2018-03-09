@@ -8,6 +8,7 @@ using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
 using TeleSharp.TL.Messages;
+using TeleSharp.TL.Upload;
 using TLSharp.Core;
 using TLSharp.Core.Auth;
 using TLSharp.Core.Network;
@@ -265,6 +266,19 @@ namespace Auth.FWT.Infrastructure.Telegram
             }
 
             return null;
+        }
+
+        public TLFile GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
+        {
+            TLFile result = null;
+            result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
+            {
+                Location = location,
+                Limit = (int)Math.Pow(2, Math.Ceiling(Math.Log(size, 2))),
+                Offset = 0
+            });
+
+            return result;
         }
     }
 }

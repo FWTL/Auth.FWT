@@ -9,7 +9,7 @@ using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
 
-namespace Auth.FWT.API.Controllers.Jobs
+namespace Auth.FWT.API.Controllers.Job
 {
     public class GetMessages
     {

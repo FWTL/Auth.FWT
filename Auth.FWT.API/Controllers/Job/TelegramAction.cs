@@ -1,4 +1,4 @@
-﻿namespace Auth.FWT.API.Controllers.Jobs
+﻿namespace Auth.FWT.API.Controllers.Job
 {
     public class TelegramMessageAction
     {
