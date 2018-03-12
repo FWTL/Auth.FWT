@@ -1,16 +1,19 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace TLSharp.Core.Network
 {
     public class MtProtoPlainSender
     {
-        private int sequence = 0;
-        private int timeOffset;
-        private long lastMessageId;
-        private Random random;
         private TcpTransport _transport;
+
+        private long lastMessageId;
+
+        private Random random;
+
+        private int sequence = 0;
+
+        private int timeOffset;
 
         public MtProtoPlainSender(TcpTransport transport)
         {
@@ -18,27 +21,9 @@ namespace TLSharp.Core.Network
             random = new Random();
         }
 
-        public async Task Send(byte[] data)
+        public byte[] Receive()
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var binaryWriter = new BinaryWriter(memoryStream))
-                {
-                    binaryWriter.Write((long)0);
-                    binaryWriter.Write(GetNewMessageId());
-                    binaryWriter.Write(data.Length);
-                    binaryWriter.Write(data);
-
-                    byte[] packet = memoryStream.ToArray();
-
-                    await _transport.Send(packet);
-                }
-            }
-        }
-
-        public async Task<byte[]> Receive()
-        {
-            var result = await _transport.Receieve();
+            var result = _transport.Receieve();
 
             using (var memoryStream = new MemoryStream(result.Body))
             {
@@ -51,6 +36,24 @@ namespace TLSharp.Core.Network
                     byte[] response = binaryReader.ReadBytes(messageLength);
 
                     return response;
+                }
+            }
+        }
+
+        public void Send(byte[] data)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write((long)0);
+                    binaryWriter.Write(GetNewMessageId());
+                    binaryWriter.Write(data.Length);
+                    binaryWriter.Write(data);
+
+                    byte[] packet = memoryStream.ToArray();
+
+                    _transport.Send(packet);
                 }
             }
         }
@@ -71,7 +74,5 @@ namespace TLSharp.Core.Network
             lastMessageId = newMessageId;
             return newMessageId;
         }
-
-
     }
 }

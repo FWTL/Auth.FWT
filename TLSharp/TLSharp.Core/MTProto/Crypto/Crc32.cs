@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Ionic.Crc;
 
 namespace TLSharp.Core.MTProto.Crypto
@@ -11,12 +10,16 @@ namespace TLSharp.Core.MTProto.Crypto
     public class Crc32 : HashAlgorithm
     {
         public const UInt32 DefaultPolynomial = 0xedb88320u;
+
         public const UInt32 DefaultSeed = 0xffffffffu;
 
-        private UInt32 hash;
-        private UInt32 seed;
-        private UInt32[] table;
         private static UInt32[] defaultTable;
+
+        private UInt32 hash;
+
+        private UInt32 seed;
+
+        private UInt32[] table;
 
         public Crc32()
         {
@@ -30,6 +33,26 @@ namespace TLSharp.Core.MTProto.Crypto
             table = InitializeTable(polynomial);
             this.seed = seed;
             hash = seed;
+        }
+
+        public override int HashSize
+        {
+            get { return 32; }
+        }
+
+        public static UInt32 Compute(byte[] buffer)
+        {
+            return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
+        }
+
+        public static UInt32 Compute(UInt32 polynomial, UInt32 seed, byte[] buffer)
+        {
+            return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
+        }
+
+        public static UInt32 Compute(UInt32 seed, byte[] buffer)
+        {
+            return ~CalculateHash(InitializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
         }
 
         public override void Initialize()
@@ -53,24 +76,15 @@ namespace TLSharp.Core.MTProto.Crypto
             return hashBuffer;
         }
 
-        public override int HashSize
+        private static UInt32 CalculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
         {
-            get { return 32; }
-        }
-
-        public static UInt32 Compute(byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
-        }
-
-        public static UInt32 Compute(UInt32 seed, byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(DefaultPolynomial), seed, buffer, 0, buffer.Length);
-        }
-
-        public static UInt32 Compute(UInt32 polynomial, UInt32 seed, byte[] buffer)
-        {
-            return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.Length);
+            UInt32 crc = seed;
+            for (int i = start; i < size; i++)
+                unchecked
+                {
+                    crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
+                }
+            return crc;
         }
 
         private static UInt32[] InitializeTable(UInt32 polynomial)
@@ -94,17 +108,6 @@ namespace TLSharp.Core.MTProto.Crypto
                 defaultTable = createTable;
 
             return createTable;
-        }
-
-        private static UInt32 CalculateHash(UInt32[] table, UInt32 seed, byte[] buffer, int start, int size)
-        {
-            UInt32 crc = seed;
-            for (int i = start; i < size; i++)
-                unchecked
-                {
-                    crc = (crc >> 8) ^ table[buffer[i] ^ crc & 0xff];
-                }
-            return crc;
         }
 
         private byte[] UInt32ToBigEndianBytes(UInt32 x)

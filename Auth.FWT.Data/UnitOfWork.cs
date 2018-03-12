@@ -63,6 +63,14 @@ namespace Auth.FWT.Data
             }
         }
 
+        public IRepository<TelegramJob, long> TelegramJobRepository
+        {
+            get
+            {
+                return Repository<TelegramJob, long>();
+            }
+        }
+
         public IRepository<TelegramSession, int> TelegramSessionRepository
         {
             get

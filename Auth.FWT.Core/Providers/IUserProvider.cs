@@ -1,4 +1,4 @@
-﻿namespace GitGud.Web.Core.Providers
+﻿namespace Auth.FWT.Core.Providers
 {
     public interface IUserProvider
     {

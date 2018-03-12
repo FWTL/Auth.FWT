@@ -6,6 +6,15 @@ namespace TLSharp.Core.MTProto
 {
     public class Serializers
     {
+        public static string VectorToString<T>(List<T> list)
+        {
+            string[] tokens = new string[list.Count];
+            for (int i = 0; i < list.Count; i++)
+            {
+                tokens[i] = list[i].ToString();
+            }
+            return "[" + System.String.Join(", ", tokens) + "]";
+        }
 
         public static class Bytes
         {
@@ -18,7 +27,8 @@ namespace TLSharp.Core.MTProto
                     len = binaryReader.ReadByte() | (binaryReader.ReadByte() << 8) | (binaryReader.ReadByte() << 16);
                     padding = len % 4;
                 }
-                else {
+                else
+                {
                     len = firstByte;
                     padding = (len + 1) % 4;
                 }
@@ -47,7 +57,8 @@ namespace TLSharp.Core.MTProto
                     binaryWriter.Write((byte)data.Length);
                     binaryWriter.Write(data);
                 }
-                else {
+                else
+                {
                     padding = (data.Length) % 4;
                     if (padding != 0)
                     {
@@ -83,16 +94,6 @@ namespace TLSharp.Core.MTProto
             {
                 return Bytes.write(writer, Encoding.UTF8.GetBytes(str));
             }
-        }
-
-        public static string VectorToString<T>(List<T> list)
-        {
-            string[] tokens = new string[list.Count];
-            for (int i = 0; i < list.Count; i++)
-            {
-                tokens[i] = list[i].ToString();
-            }
-            return "[" + System.String.Join(", ", tokens) + "]";
         }
     }
 }

@@ -1,10 +1,13 @@
-﻿using Auth.FWT.Core.Extensions;
-using Auth.FWT.Core.Services.Telegram;
-using Auth.FWT.CQRS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Auth.FWT.Core.Events;
+using Auth.FWT.Core.Extensions;
+using Auth.FWT.Core.Services.Telegram;
+using Auth.FWT.CQRS;
+using Auth.FWT.Infrastructure.Handlers;
+using StackExchange.Redis;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 
@@ -14,11 +17,32 @@ namespace Auth.FWT.API.Controllers.Chat
     {
         public class Query : IQuery
         {
-            public int Userid { get; set; }
+            public int UserId { get; set; }
 
-            public Query(int userId)
+            public bool DoRefresh { get; private set; }
+
+            public Query(int userId, bool doRefresh)
             {
-                Userid = userId;
+                UserId = userId;
+                DoRefresh = doRefresh;
+            }
+        }
+
+        public class Cache : RedisJsonHandler<Query, List<Result>>
+        {
+            public Cache(IDatabase redis) : base(redis)
+            {
+                KeyFn = query => { return "GetUserChats" + query.UserId; };
+            }
+
+            public override async Task<List<Result>> Read(Query query)
+            {
+                if (query.DoRefresh)
+                {
+                    return null;
+                }
+
+                return await base.Read(query);
             }
         }
 
@@ -33,9 +57,11 @@ namespace Auth.FWT.API.Controllers.Chat
                 _userSession = userSession;
             }
 
-            public async Task<List<Result>> Handle(Query query)
+            public List<IEvent> Events { get; set; } = new List<IEvent>();
+
+            public Task<List<Result>> Handle(Query query)
             {
-                TLAbsDialogs absDialogs = await _telegramClient.GetUserDialogsAsync(_userSession);
+                TLAbsDialogs absDialogs = _telegramClient.GetUserDialogs(_userSession);
                 if (absDialogs is TLDialogsSlice)
                 {
                     throw new Exception("TLDialogsSlice not supported");
@@ -44,8 +70,8 @@ namespace Auth.FWT.API.Controllers.Chat
                 TLDialogs dialogs = absDialogs as TLDialogs;
                 var results = new List<Result>();
 
-                var chats = dialogs.Chats.GetValuesOf("Id", "Title", "MigratedTo");
-                var users = dialogs.Users.GetValuesOf("Id", "FirstName", "LastName", "Username");
+                var chats = dialogs.Chats.GetListOfValuesOf("Id", "Title", "MigratedTo", "Photo");
+                var users = dialogs.Users.GetListOfValuesOf("Id", "FirstName", "LastName", "Username", "Photo");
 
                 foreach (var dialog in dialogs.Dialogs)
                 {
@@ -53,12 +79,13 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+
                         if (chat["MigratedTo"] == null)
                         {
                             results.Add(new Result()
                             {
-                                Id = (int)chat["Id"],
-                                Title = (string)chat["Title"]
+                                Title = (string)chat["Title"],
+                                ChatId = peer.ChatId
                             });
                         }
                     }
@@ -67,10 +94,11 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChannel;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChannelId);
+
                         results.Add(new Result()
                         {
-                            Id = (int)chat["Id"],
-                            Title = (string)chat["Title"]
+                            Title = (string)chat["Title"],
+                            ChannelId = peer.ChannelId
                         });
                     }
 
@@ -83,8 +111,8 @@ namespace Auth.FWT.API.Controllers.Chat
 
                         results.Add(new Result()
                         {
-                            Id = (int)user["Id"],
-                            Title = name
+                            Title = name,
+                            UserId = peer.UserId,
                         });
                     }
                 }
@@ -95,24 +123,27 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+
                         if (chat["MigratedTo"] != null && chat["MigratedTo"] is TLInputChannel)
                         {
                             var inputChannel = chat["MigratedTo"] as TLInputChannel;
-                            var channel = results.FirstOrDefault(c => c.Id == inputChannel.ChannelId);
-                            channel.MigratedFrom = peer.ChatId;
+                            var channel = results.FirstOrDefault(c => c.ChannelId == inputChannel.ChannelId);
+                            channel.ChatId = peer.ChatId;
                         }
                     }
                 }
 
-                return results;
+                return Task.FromResult(results);
             }
         }
 
         public class Result
         {
-            public int Id { get; set; }
+            public int? ChatId { get; set; }
 
-            public int? MigratedFrom { get; set; }
+            public int? ChannelId { get; set; }
+
+            public int? UserId { get; set; }
 
             public string Title { get; set; }
         }

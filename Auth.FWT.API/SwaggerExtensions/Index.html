@@ -168,6 +168,7 @@
                       console.log(response["access_token"]);
                       localStorage.setItem('auth', response["access_token"]);
                       window.swaggerUi.api.clientAuthorizations.add("key", new SwaggerClient.ApiKeyAuthorization("Authorization", "Bearer " + response["access_token"], "header"));
+                      alert("Authorized");
                   }
                   , error: function (request, status, error) {
                       alert(request.responseText);

@@ -1,11 +1,11 @@
-﻿using Auth.FWT.API.Models;
+﻿using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Auth.FWT.API.Models;
 using Auth.FWT.Core.Data;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Telegram;
 using Swashbuckle.Swagger.Annotations;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Auth.FWT.API.Controllers.Account
 {
@@ -33,6 +33,7 @@ namespace Auth.FWT.API.Controllers.Account
         public void Reset()
         {
             AppUserSessionManager.Instance.UserSessionManager.Sessions.Clear();
+            AppUserSessionManager.Instance.UserSessionManager.Connections.Clear();
         }
     }
 }

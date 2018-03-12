@@ -7,14 +7,6 @@ using TLSharp.Core.MTProto.Crypto;
 
 namespace TLSharp.Core.Auth
 {
-    public class Step1_Response
-    {
-        public byte[] Nonce { get; set; }
-        public byte[] ServerNonce { get; set; }
-        public BigInteger Pq { get; set; }
-        public List<byte[]> Fingerprints { get; set; }
-    }
-
     public class Step1_PQRequest
     {
         private byte[] nonce;
@@ -22,23 +14,6 @@ namespace TLSharp.Core.Auth
         public Step1_PQRequest()
         {
             nonce = new byte[16];
-        }
-
-        public byte[] ToBytes()
-        {
-            new Random().NextBytes(nonce);
-            const int constructorNumber = 0x60469778;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var binaryWriter = new BinaryWriter(memoryStream))
-                {
-                    binaryWriter.Write(constructorNumber);
-                    binaryWriter.Write(nonce);
-
-                    return memoryStream.ToArray();
-                }
-            }
         }
 
         public Step1_Response FromBytes(byte[] bytes)
@@ -92,5 +67,33 @@ namespace TLSharp.Core.Auth
                 }
             }
         }
+
+        public byte[] ToBytes()
+        {
+            new Random().NextBytes(nonce);
+            const int constructorNumber = 0x60469778;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write(constructorNumber);
+                    binaryWriter.Write(nonce);
+
+                    return memoryStream.ToArray();
+                }
+            }
+        }
+    }
+
+    public class Step1_Response
+    {
+        public List<byte[]> Fingerprints { get; set; }
+
+        public byte[] Nonce { get; set; }
+
+        public BigInteger Pq { get; set; }
+
+        public byte[] ServerNonce { get; set; }
     }
 }

@@ -3,12 +3,13 @@ using FluentValidation;
 using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
 using TeleSharp.TL.Messages;
+using TeleSharp.TL.Upload;
 using TLSharp.Core;
 using TLSharp.Core.Auth;
 using TLSharp.Core.Network;
@@ -30,11 +31,11 @@ namespace Auth.FWT.Infrastructure.Telegram
             _sessionManager = sessionManager;
         }
 
-        public async Task<bool> ConnectAsync(UserSession userSession, bool reconnect = false)
+        public bool Connect(UserSession userSession, bool reconnect = false)
         {
             if (userSession.Session.AuthKey == null || reconnect)
             {
-                var result = await Authenticator.DoAuthentication(userSession.TcpTransport);
+                var result = Authenticator.DoAuthentication(userSession.TcpTransport);
                 userSession.Session.AuthKey = result.AuthKey;
                 userSession.Session.TimeOffset = result.TimeOffset;
             }
@@ -53,15 +54,15 @@ namespace Auth.FWT.Infrastructure.Telegram
             };
 
             var invokewithLayer = new TLRequestInvokeWithLayer() { Layer = 66, Query = request };
-            await userSession.Sender.Send(invokewithLayer);
-            await userSession.Sender.Receive(invokewithLayer);
+            userSession.Sender.Send(invokewithLayer);
+            userSession.Sender.Receive(invokewithLayer);
 
             TLContext.DcOptions = ((TLConfig)invokewithLayer.Response).DcOptions.ToList();
 
             return true;
         }
 
-        private async Task ReconnectToDcAsync(UserSession userSession, int dcId)
+        private void ReconnectToDc(UserSession userSession, int dcId)
         {
             if (TLContext.DcOptions == null || !TLContext.DcOptions.Any())
             {
@@ -72,7 +73,7 @@ namespace Auth.FWT.Infrastructure.Telegram
             if (userSession.Session.TLUser != null)
             {
                 TLRequestExportAuthorization exportAuthorization = new TLRequestExportAuthorization() { DcId = dcId };
-                exported = await SendRequestAsync<TLExportedAuthorization>(userSession, exportAuthorization);
+                exported = SendRequest<TLExportedAuthorization>(userSession, exportAuthorization);
             }
 
             var dc = TLContext.DcOptions.First(d => d.Id == dcId);
@@ -81,24 +82,24 @@ namespace Auth.FWT.Infrastructure.Telegram
             userSession.Session.ServerAddress = dc.IpAddress;
             userSession.Session.Port = dc.Port;
 
-            await ConnectAsync(userSession, true);
+            Connect(userSession, true);
 
             if (userSession.Session.TLUser != null)
             {
                 TLRequestImportAuthorization importAuthorization = new TLRequestImportAuthorization() { Id = exported.Id, Bytes = exported.Bytes };
-                var imported = await SendRequestAsync<TeleSharp.TL.Auth.TLAuthorization>(userSession, importAuthorization);
+                var imported = SendRequest<TeleSharp.TL.Auth.TLAuthorization>(userSession, importAuthorization);
                 OnUserAuthenticated(userSession, (TLUser)imported.User);
             }
         }
 
-        private void OnUserAuthenticated(UserSession userSession, TLUser TLUser)
+        private void OnUserAuthenticated(UserSession userSession, TLUser user)
         {
-            userSession.Session.TLUser = TLUser;
+            userSession.Session.TLUser = user;
             userSession.Session.SessionExpires = int.MaxValue;
             _store.Save(userSession.Session);
         }
 
-        private async Task RequestWithDcMigration(UserSession userSession, TLMethod request)
+        private void RequestWithDcMigration(UserSession userSession, TLMethod request)
         {
             if (!userSession.TcpTransport.IsConnected)
             {
@@ -107,7 +108,7 @@ namespace Auth.FWT.Infrastructure.Telegram
 
             if (userSession.Sender == null)
             {
-                await ConnectAsync(userSession);
+                Connect(userSession);
             }
 
             var completed = false;
@@ -115,14 +116,14 @@ namespace Auth.FWT.Infrastructure.Telegram
             {
                 try
                 {
-                    await userSession.Sender.Send(request);
-                    await userSession.Sender.Receive(request);
+                    userSession.Sender.Send(request);
+                    userSession.Sender.Receive(request);
                     completed = true;
                 }
                 catch (DataCenterMigrationException e)
                 {
-                    await ReconnectToDcAsync(userSession, e.DC);
-                    // prepare the request for another try
+                    ReconnectToDc(userSession, e.DC);
+                    //// prepare the request for another try
                     request.ConfirmReceived = false;
                 }
             }
@@ -133,9 +134,9 @@ namespace Auth.FWT.Infrastructure.Telegram
             return userSession.Session.TLUser != null;
         }
 
-        public async Task<T> SendRequestAsync<T>(UserSession userSession, TLMethod methodToExecute)
+        public T SendRequest<T>(UserSession userSession, TLMethod methodToExecute)
         {
-            await RequestWithDcMigration(userSession, methodToExecute);
+            RequestWithDcMigration(userSession, methodToExecute);
             var result = methodToExecute.GetType().GetProperty("Response").GetValue(methodToExecute);
 
             _store.Save(userSession.Session);
@@ -143,12 +144,12 @@ namespace Auth.FWT.Infrastructure.Telegram
             return (T)result;
         }
 
-        public async Task<string> SendCodeRequestAsync(UserSession userSession, string phoneNumber)
+        public string SendCodeRequest(UserSession userSession, string phoneNumber)
         {
             try
             {
                 var request = new TLRequestSendCode() { PhoneNumber = phoneNumber, ApiId = _apiId, ApiHash = _apiHash };
-                await RequestWithDcMigration(userSession, request);
+                RequestWithDcMigration(userSession, request);
 
                 return request.Response.PhoneCodeHash;
             }
@@ -179,32 +180,116 @@ namespace Auth.FWT.Infrastructure.Telegram
 
         public void ThrowValidationError(Exception ex)
         {
-            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("phoneNumber", ex.Message) });
+            throw new ValidationException(new List<ValidationFailure>() { new ValidationFailure("Error", ex.Message) });
         }
 
-        public async Task<UserSession> MakeAuthAsync(UserSession userSession, string phoneNumber, string phoneCodeHash, string code)
+        public UserSession MakeAuth(UserSession userSession, string phoneNumber, string phoneCodeHash, string code)
         {
             var request = new TLRequestSignIn() { PhoneNumber = phoneNumber, PhoneCodeHash = phoneCodeHash, PhoneCode = code };
 
-            await RequestWithDcMigration(userSession, request);
-
+            RequestWithDcMigration(userSession, request);
             OnUserAuthenticated(userSession, ((TLUser)request.Response.User));
 
             return userSession;
         }
 
-        public async Task<bool> IsPhoneRegisteredAsync(UserSession session, string phoneNumber)
+        public bool IsPhoneRegistered(UserSession session, string phoneNumber)
         {
             var authCheckPhoneRequest = new TLRequestCheckPhone() { PhoneNumber = phoneNumber };
-            await RequestWithDcMigration(session, authCheckPhoneRequest);
+            RequestWithDcMigration(session, authCheckPhoneRequest);
 
             return authCheckPhoneRequest.Response.PhoneRegistered;
         }
 
-        public async Task<TLAbsDialogs> GetUserDialogsAsync(UserSession session)
+        public TLAbsDialogs GetUserDialogs(UserSession session)
         {
             var peer = new TLInputPeerSelf();
-            return await SendRequestAsync<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 10000 });
+            return SendRequest<TLAbsDialogs>(session, new TLRequestGetDialogs() { OffsetDate = 0, OffsetPeer = peer, Limit = 10000 });
+        }
+
+        public TLAbsMessages GetUserChatHistory(UserSession session, int userChatId, int maxId = int.MaxValue, int limit = 100)
+        {
+            var userPeer = new TLInputPeerUser() { UserId = userChatId };
+            return GetHistory(session, userPeer, maxId, limit);
+        }
+
+        public TLAbsMessages GetChannalHistory(UserSession session, int channalId, int maxId, int limit = 100)
+        {
+            var channalPeer = new TLInputPeerChannel() { ChannelId = channalId };
+            return GetHistory(session, channalPeer, maxId, limit);
+        }
+
+        public TLAbsMessages GetChatHistory(UserSession session, int chatId, int maxId, int limit = 100)
+        {
+            var chatPeer = new TLInputPeerChat() { ChatId = chatId };
+            return GetHistory(session, chatPeer, maxId, limit);
+        }
+
+        private TLAbsMessages GetHistory(UserSession session, TLAbsInputPeer peer, int maxId, int limit = 100)
+        {
+            try
+            {
+                var req = new TLRequestGetHistory()
+                {
+                    Peer = peer,
+                    MaxId = maxId,
+                    OffsetId = maxId,
+                    Limit = limit
+                };
+
+                var results = SendRequest<TLAbsMessages>(session, req);
+                return results;
+            }
+            catch (FloodException ex)
+            {
+                ThrowValidationError(ex);
+            }
+            catch (Exception ex)
+            {
+                switch (ex.Message)
+                {
+                    case ("CHANNEL_INVALID	"):
+                    case ("CHANNEL_PRIVATE"):
+                    case ("CHAT_ID_INVALID"):
+                    case ("PEER_ID_INVALID"):
+                    case ("AUTH_KEY_PERM_EMPTY"):
+                    case ("Timeout"):
+                        {
+                            ThrowValidationError(ex);
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new Exception("Unexpected error", ex);
+                        }
+                }
+            }
+
+            return null;
+        }
+
+        public byte[] GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
+        {
+            int filePart = 512 * 1024;
+            int offset = 0;
+
+            TLFile result = null;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                while (offset < size)
+                {
+                    result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
+                    {
+                        Location = location,
+                        Limit = (int)Math.Pow(2, Math.Ceiling(Math.Log(size, 2))),
+                        Offset = offset
+                    });
+                    ms.Write(result.Bytes, 0, result.Bytes.Length);
+                    offset += filePart;
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

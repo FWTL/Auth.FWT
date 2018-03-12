@@ -8,22 +8,25 @@ namespace TLSharp.Core
 {
     public interface ISessionStore
     {
-        void Save(Session session);
-
         Session Load(string sessionUserId);
+
+        void Save(Session session);
+    }
+
+    public class FakeSessionStore : ISessionStore
+    {
+        public Session Load(string sessionUserId)
+        {
+            return null;
+        }
+
+        public void Save(Session session)
+        {
+        }
     }
 
     public class FileSessionStore : ISessionStore
     {
-        public void Save(Session session)
-        {
-            using (var stream = new FileStream($"{session.SessionUserId}.dat", FileMode.OpenOrCreate))
-            {
-                var result = session.ToBytes();
-                stream.Write(result, 0, result.Length);
-            }
-        }
-
         public Session Load(string sessionUserId)
         {
             var sessionFileName = $"{sessionUserId}.dat";
@@ -38,17 +41,14 @@ namespace TLSharp.Core
                 return Session.FromBytes(buffer, this, sessionUserId);
             }
         }
-    }
 
-    public class FakeSessionStore : ISessionStore
-    {
         public void Save(Session session)
         {
-        }
-
-        public Session Load(string sessionUserId)
-        {
-            return null;
+            using (var stream = new FileStream($"{session.SessionUserId}.dat", FileMode.OpenOrCreate))
+            {
+                var result = session.ToBytes();
+                stream.Write(result, 0, result.Length);
+            }
         }
     }
 
@@ -58,20 +58,9 @@ namespace TLSharp.Core
 
         private const int defaultConnectionPort = 443;
 
-        public string SessionUserId { get; set; }
-        public string ServerAddress { get; set; }
-        public int Port { get; set; }
-        public AuthKey AuthKey { get; set; }
-        public ulong Id { get; set; }
-        public int Sequence { get; set; }
-        public ulong Salt { get; set; }
-        public int TimeOffset { get; set; }
-        public long LastMessageId { get; set; }
-        public int SessionExpires { get; set; }
-        public TLUser TLUser { get; set; }
-        private Random random;
-
         private ISessionStore _store;
+
+        private Random random;
 
         public Session(ISessionStore store)
         {
@@ -79,35 +68,27 @@ namespace TLSharp.Core
             _store = store;
         }
 
-        public byte[] ToBytes()
-        {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
-            {
-                writer.Write(Id);
-                writer.Write(Sequence);
-                writer.Write(Salt);
-                writer.Write(LastMessageId);
-                writer.Write(TimeOffset);
-                Serializers.String.write(writer, ServerAddress);
-                writer.Write(Port);
+        public AuthKey AuthKey { get; set; }
 
-                if (TLUser != null)
-                {
-                    writer.Write(1);
-                    writer.Write(SessionExpires);
-                    ObjectUtils.SerializeObject(TLUser, writer);
-                }
-                else
-                {
-                    writer.Write(0);
-                }
+        public ulong Id { get; set; }
 
-                Serializers.Bytes.write(writer, AuthKey.Data);
+        public long LastMessageId { get; set; }
 
-                return stream.ToArray();
-            }
-        }
+        public int Port { get; set; }
+
+        public ulong Salt { get; set; }
+
+        public int Sequence { get; set; }
+
+        public string ServerAddress { get; set; }
+
+        public int SessionExpires { get; set; }
+
+        public string SessionUserId { get; set; }
+
+        public int TimeOffset { get; set; }
+
+        public TLUser TLUser { get; set; }
 
         public static Session FromBytes(byte[] buffer, ISessionStore store, string sessionUserId)
         {
@@ -161,13 +142,6 @@ namespace TLSharp.Core
             };
         }
 
-        private static ulong GenerateRandomUlong()
-        {
-            var random = new Random();
-            ulong rand = (((ulong)random.Next()) << 32) | ((ulong)random.Next());
-            return rand;
-        }
-
         public long GetNewMessageId()
         {
             long time = Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
@@ -183,6 +157,43 @@ namespace TLSharp.Core
 
             LastMessageId = newMessageId;
             return newMessageId;
+        }
+
+        public byte[] ToBytes()
+        {
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                writer.Write(Id);
+                writer.Write(Sequence);
+                writer.Write(Salt);
+                writer.Write(LastMessageId);
+                writer.Write(TimeOffset);
+                Serializers.String.write(writer, ServerAddress);
+                writer.Write(Port);
+
+                if (TLUser != null)
+                {
+                    writer.Write(1);
+                    writer.Write(SessionExpires);
+                    ObjectUtils.SerializeObject(TLUser, writer);
+                }
+                else
+                {
+                    writer.Write(0);
+                }
+
+                Serializers.Bytes.write(writer, AuthKey.Data);
+
+                return stream.ToArray();
+            }
+        }
+
+        private static ulong GenerateRandomUlong()
+        {
+            var random = new Random();
+            ulong rand = (((ulong)random.Next()) << 32) | ((ulong)random.Next());
+            return rand;
         }
     }
 }

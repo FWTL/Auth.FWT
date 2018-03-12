@@ -1,17 +1,25 @@
-﻿using System.Threading.Tasks;
-using TeleSharp.TL;
+﻿using TeleSharp.TL;
 using TeleSharp.TL.Messages;
+using TeleSharp.TL.Upload;
 
 namespace Auth.FWT.Core.Services.Telegram
 {
     public interface ITelegramClient
     {
-        Task<string> SendCodeRequestAsync(UserSession userSession, string phoneNumber);
+        TLAbsMessages GetChannalHistory(UserSession userSession, int channalId, int maxId, int limit = 100);
 
-        Task<UserSession> MakeAuthAsync(UserSession userSession, string phoneNumber, string phoneCodeHash, string code);
+        TLAbsMessages GetChatHistory(UserSession userSession, int chatId, int maxId, int limit = 100);
 
-        Task<bool> IsPhoneRegisteredAsync(UserSession userSession, string phoneNumber);
+        byte[] GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size);
 
-        Task<TLAbsDialogs> GetUserDialogsAsync(UserSession session);
+        TLAbsMessages GetUserChatHistory(UserSession session, int userChatId, int maxId, int limit = 100);
+
+        TLAbsDialogs GetUserDialogs(UserSession session);
+
+        bool IsPhoneRegistered(UserSession userSession, string phoneNumber);
+
+        UserSession MakeAuth(UserSession userSession, string phoneNumber, string phoneCodeHash, string code);
+
+        string SendCodeRequest(UserSession userSession, string phoneNumber);
     }
 }

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FWT.Core", "Auth.FWT.Core\Auth.FWT.Core.csproj", "{0ED2E479-2353-59A2-C8FB-880112959A8C}"
 EndProject
@@ -21,6 +21,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TLSharp.Core", "TLSharp\TLSharp.Core\TLSharp.Core.csproj", "{400D2544-1CC6-4D8A-A62C-2292D9947A16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSharp.TL", "TLSharp\TeleSharp.TL\TeleSharp.TL.csproj", "{D6144517-91D2-4880-86DF-E9FF5D7F383A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebJobs", "WebJobs", "{E5046EC2-BDDD-47C0-8E9A-C300237E8378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueReceiver", "QueueReceiver\QueueReceiver.csproj", "{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.FWT.Events", "Auth.FWT.Events\Auth.FWT.Events.csproj", "{C1C787D3-0662-46F7-83EC-48D58513EF0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +85,18 @@ Global
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.DEVELOPMENT|Any CPU.Build.0 = DEVELOPMENT|Any CPU
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.DEVELOPMENT|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.DEVELOPMENT|Any CPU.Build.0 = Debug|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.DEVELOPMENT|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.DEVELOPMENT|Any CPU.Build.0 = Debug|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C787D3-0662-46F7-83EC-48D58513EF0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +104,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{400D2544-1CC6-4D8A-A62C-2292D9947A16} = {CC926EB8-0195-4B19-A4C0-6F2DB67856C5}
 		{D6144517-91D2-4880-86DF-E9FF5D7F383A} = {CC926EB8-0195-4B19-A4C0-6F2DB67856C5}
+		{E0FB28E5-E3F7-4CD9-8EBC-13462E996CA8} = {E5046EC2-BDDD-47C0-8E9A-C300237E8378}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7F7B345C-687F-46BD-A4D1-9BE00B7EF22D}

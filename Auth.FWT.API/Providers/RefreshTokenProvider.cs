@@ -14,7 +14,7 @@ namespace Auth.FWT.API.Providers
             throw new NotImplementedException();
         }
 
-        public async Task CreateAsync(AuthenticationTokenCreateContext context)
+        public Task CreateAsync(AuthenticationTokenCreateContext context)
         {
             var unitOfWork = new UnitOfWork(new Data.AppContext());
 
@@ -22,7 +22,7 @@ namespace Auth.FWT.API.Providers
 
             if (string.IsNullOrEmpty(clientid))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var refreshTokenId = Guid.NewGuid().ToString("n");
@@ -48,6 +48,7 @@ namespace Auth.FWT.API.Providers
             unitOfWork.Commit();
 
             context.SetToken(refreshTokenId);
+            return Task.CompletedTask;
         }
 
         public void Receive(AuthenticationTokenReceiveContext context)

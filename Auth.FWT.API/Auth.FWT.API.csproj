@@ -80,6 +80,14 @@
       <HintPath>..\packages\FluentValidation.WebApi.7.2.1\lib\net45\FluentValidation.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.6.17\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.6.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.SqlServer.1.6.17\lib\net45\Hangfire.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -141,6 +149,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.2.6\lib\net46\StackExchange.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StyleCop, Version=5.0.0.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
       <HintPath>..\packages\StyleCop.5.0.0\lib\net40\StyleCop.dll</HintPath>
       <Private>True</Private>
@@ -153,6 +165,7 @@
       <HintPath>..\packages\Swashbuckle.Examples.3.7.0\lib\net40\Swashbuckle.Examples.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
@@ -226,17 +239,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\AutomapperConfig.cs" />
+    <Compile Include="App_Start\HangfireIocConfig.cs" />
     <Compile Include="App_Start\FiltersConfig.cs" />
     <Compile Include="App_Start\IocConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\ContainerJobActivator.cs" />
     <Compile Include="Controllers\Chat\ChatController.cs" />
     <Compile Include="Controllers\Chat\GetUserChats.cs" />
+    <Compile Include="Controllers\Dashboard\DashboardController.cs" />
+    <Compile Include="Controllers\Dashboard\GetDashboard.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\Account\SendCode.cs" />
     <Compile Include="Controllers\Account\AccountController.cs" />
+    <Compile Include="Controllers\File\FileController.cs" />
+    <Compile Include="Controllers\File\GetFile.cs" />
+    <Compile Include="Controllers\Job\MediaInfo.cs" />
+    <Compile Include="Controllers\Job\MediaParser.cs" />
+    <Compile Include="Controllers\Job\MessageActionParser.cs" />
+    <Compile Include="Controllers\Job\MessageEntityParser.cs" />
+    <Compile Include="Controllers\Job\TelegramAction.cs" />
+    <Compile Include="Controllers\Job\TelegramMessage.cs" />
+    <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
+    <Compile Include="Controllers\Job\GetMessages.cs" />
+    <Compile Include="Controllers\Statistics\StatisticsController.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
@@ -250,6 +278,10 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\UpdateFileDownloadOperations.cs" />
+    <Compile Include="SwaggerExtensions\SwaggerFileResponseAttribute.cs" />
+    <Compile Include="SwaggerExtensions\SwaggerDefaultValueAttribute.cs" />
+    <Compile Include="SwaggerExtensions\DefaultValueOperationFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -278,6 +310,10 @@
     <ProjectReference Include="..\Auth.FWT.Data\Auth.FWT.Data.csproj">
       <Project>{876a790e-8b16-7f15-c15c-403770183ade}</Project>
       <Name>Auth.FWT.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Auth.FWT.Events\Auth.FWT.Events.csproj">
+      <Project>{C1C787D3-0662-46F7-83EC-48D58513EF0F}</Project>
+      <Name>Auth.FWT.Events</Name>
     </ProjectReference>
     <ProjectReference Include="..\Auth.FWT.Infrastructure\Auth.FWT.Infrastructure.csproj">
       <Project>{1bcacce6-43ce-f2de-3b26-75460eb06bd2}</Project>
