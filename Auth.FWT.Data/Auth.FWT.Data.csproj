@@ -201,14 +201,6 @@
     <Compile Include="Migrations\201803071256168_Add_Telegram_Job_Table.Designer.cs">
       <DependentUpon>201803071256168_Add_Telegram_Job_Table.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.cs" />
-    <Compile Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.Designer.cs">
-      <DependentUpon>201803121051361_Guid_To_Int_JobId_TelegramJob.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.cs" />
-    <Compile Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.Designer.cs">
-      <DependentUpon>201803121123369_JobId_To_Id_TelegramJob.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201803121245190_Add_Table_TelegramJobData.cs" />
     <Compile Include="Migrations\201803121245190_Add_Table_TelegramJobData.Designer.cs">
       <DependentUpon>201803121245190_Add_Table_TelegramJobData.cs</DependentUpon>
@@ -239,12 +231,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803071256168_Add_Telegram_Job_Table.resx">
       <DependentUpon>201803071256168_Add_Telegram_Job_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.resx">
-      <DependentUpon>201803121051361_Guid_To_Int_JobId_TelegramJob.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.resx">
-      <DependentUpon>201803121123369_JobId_To_Id_TelegramJob.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803121245190_Add_Table_TelegramJobData.resx">
       <DependentUpon>201803121245190_Add_Table_TelegramJobData.cs</DependentUpon>

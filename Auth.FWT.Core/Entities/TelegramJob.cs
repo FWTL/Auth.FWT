@@ -8,14 +8,16 @@ namespace Auth.FWT.Core.Entities
     {
         public DateTime CreatedDateUTC { get; set; }
 
+        public Guid JobId { get; set; }
+
         public DateTime LastStatusUpdateDateUTC { get; set; }
 
         public TelegramJobStatus Status { get; set; }
 
+        public virtual TelegramJobData TelegramJobData { get; set; }
+
         public virtual User User { get; set; }
 
         public int UserId { get; set; }
-
-        public virtual TelegramJobData TelegramJobData { get; set; }
     }
 }

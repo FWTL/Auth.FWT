@@ -45,7 +45,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.ChannelId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChannelId, int.MaxValue, jobId));
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChannelId, int.MaxValue, jobId, null));
             }
 
             public async Task Execute(StartFeetchingChatHistory command)
@@ -60,7 +60,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.ChatId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChatHistory(command.CurrentUserId, command.ChatId, int.MaxValue, jobId));
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChatHistory(command.CurrentUserId, command.ChatId, int.MaxValue, jobId, null));
             }
 
             public async Task Execute(StartFeetchingUserChatHistory command)
@@ -75,7 +75,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.UserId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId));
+                BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId, null));
             }
         }
 

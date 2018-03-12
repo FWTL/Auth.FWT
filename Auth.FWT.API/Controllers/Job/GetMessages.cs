@@ -5,6 +5,7 @@ using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.Events;
 using Auth.FWT.Infrastructure.Telegram;
 using Hangfire;
+using Hangfire.Server;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
@@ -29,7 +30,7 @@ namespace Auth.FWT.API.Controllers.Job
         }
 
         [AutomaticRetry(Attempts = 0)]
-        public void UserChatHistory(int userId, int chatId, int maxId, Guid jobId)
+        public void UserChatHistory(int userId, int chatId, int maxId, Guid jobId, PerformingContext hangfireContext)
         {
             try
             {
@@ -39,7 +40,7 @@ namespace Auth.FWT.API.Controllers.Job
 
                 if (maxId > 0)
                 {
-                    BackgroundJob.Schedule<GetMessages>(gm => gm.UserChatHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.UserChatHistory(userId, chatId, maxId, jobId, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                 }
             }
             catch
@@ -47,12 +48,13 @@ namespace Auth.FWT.API.Controllers.Job
                 new TelegramMessagesFetchingFailed()
                 {
                     JobId = jobId,
+                    SubJobId = hangfireContext.BackgroundJob.Id.To<long>()
                 }.Send(_serviceBus);
             }
         }
 
         [AutomaticRetry(Attempts = 0)]
-        public void ChannalHistory(int userId, int channalId, int maxId, Guid jobId)
+        public void ChannalHistory(int userId, int channalId, int maxId, Guid jobId, PerformContext hangfireContext)
         {
             try
             {
@@ -62,7 +64,7 @@ namespace Auth.FWT.API.Controllers.Job
 
                 if (maxId > 0)
                 {
-                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, channalId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChannalHistory(userId, channalId, maxId, jobId, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                 }
             }
             catch
@@ -70,12 +72,13 @@ namespace Auth.FWT.API.Controllers.Job
                 new TelegramMessagesFetchingFailed()
                 {
                     JobId = jobId,
+                    SubJobId = hangfireContext.BackgroundJob.Id.To<long>()
                 }.Send(_serviceBus);
             }
         }
 
         [AutomaticRetry(Attempts = 0)]
-        public void ChatHistory(int userId, int chatId, int maxId, Guid jobId)
+        public void ChatHistory(int userId, int chatId, int maxId, Guid jobId, PerformContext hangfireContext)
         {
             try
             {
@@ -85,7 +88,7 @@ namespace Auth.FWT.API.Controllers.Job
 
                 if (maxId > 0)
                 {
-                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChatHistory(userId, chatId, maxId, jobId), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                    BackgroundJob.Schedule<GetMessages>(gm => gm.ChatHistory(userId, chatId, maxId, jobId, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                 }
             }
             catch
@@ -93,6 +96,7 @@ namespace Auth.FWT.API.Controllers.Job
                 new TelegramMessagesFetchingFailed()
                 {
                     JobId = jobId,
+                    SubJobId = hangfireContext.BackgroundJob.Id.To<long>()
                 }.Send(_serviceBus);
             }
         }

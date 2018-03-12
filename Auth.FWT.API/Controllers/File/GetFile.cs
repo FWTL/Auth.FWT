@@ -11,26 +11,10 @@ namespace Auth.FWT.API.Controllers.File
 {
     public class GetFile
     {
-        public class Query : IQuery
-        {
-            public long AccessHash { get; set; }
-            public long Id { get; set; }
-            public int Size { get; set; }
-            public int Version { get; set; }
-        }
-
-        public class Validator : AbstractValidator<Query>
-        {
-            public Validator()
-            {
-                RuleFor(x => x.AccessHash).NotEmpty();
-                RuleFor(x => x.Version).GreaterThanOrEqualTo(0);
-            }
-        }
-
         public class Handler : IQueryHandler<Query, Result>
         {
             private ITelegramClient _telegramClient;
+
             private UserSession _userSession;
 
             public Handler(ITelegramClient telegramClient, UserSession userSession)
@@ -49,15 +33,36 @@ namespace Auth.FWT.API.Controllers.File
                     AccessHash = query.AccessHash,
                     Id = query.Id,
                     Version = query.Version
-                }, query.Size);
+                },
+                query.Size);
 
                 return Task.FromResult(new Result() { File = file });
             }
         }
 
+        public class Query : IQuery
+        {
+            public long AccessHash { get; set; }
+
+            public long Id { get; set; }
+
+            public int Size { get; set; }
+
+            public int Version { get; set; }
+        }
+
         public class Result
         {
             public TLFile File { get; set; }
+        }
+
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.AccessHash).NotEmpty();
+                RuleFor(x => x.Version).GreaterThanOrEqualTo(0);
+            }
         }
     }
 }

@@ -271,6 +271,7 @@ namespace Auth.FWT.Infrastructure.Telegram
         public TLFile GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
         {
             TLFile result = null;
+
             result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
             {
                 Location = location,

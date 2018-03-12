@@ -8,6 +8,7 @@ namespace Auth.FWT.Events
     public class TelegramMessagesFetchingFailed : IEvent
     {
         public Guid JobId { get; set; }
+        public long SubJobId { get; set; }
 
         public Task Send(IServiceBus serviceBus)
         {
