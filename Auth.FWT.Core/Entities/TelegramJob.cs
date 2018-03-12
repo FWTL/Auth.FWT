@@ -14,8 +14,6 @@ namespace Auth.FWT.Core.Entities
 
         public TelegramJobStatus Status { get; set; }
 
-        public virtual TelegramJobData TelegramJobData { get; set; }
-
         public virtual User User { get; set; }
 
         public int UserId { get; set; }

@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Auth.FWT.Core.Data;
+using Auth.FWT.Core.Entities;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;
@@ -6,6 +11,7 @@ using Auth.FWT.Events;
 using Auth.FWT.Infrastructure.Telegram;
 using Hangfire;
 using Hangfire.Server;
+using Newtonsoft.Json;
 using TeleSharp.TL;
 using TeleSharp.TL.Messages;
 using TLSharp.Core;
@@ -19,18 +25,20 @@ namespace Auth.FWT.API.Controllers.Job
         private ITelegramClient _telegramClient;
         private IUserSessionManager _userSessionManager;
         private IServiceBus _serviceBus;
-
-        public GetMessages(ITelegramClient telegramClient, IUserSessionManager userSessionManager, ISessionStore sessionStore, IServiceBus serviceBus)
+        private IUnitOfWork _unitOfWork;
+        
+        public GetMessages(ITelegramClient telegramClient, IUserSessionManager userSessionManager, ISessionStore sessionStore, IServiceBus serviceBus, IUnitOfWork unitOfWork)
         {
             _telegramClient = telegramClient;
             _userSessionManager = userSessionManager;
             _sessionStore = sessionStore;
             _serviceBus = serviceBus;
+            _unitOfWork = unitOfWork;
             _random = new Random();
         }
 
         [AutomaticRetry(Attempts = 0)]
-        public void UserChatHistory(int userId, int chatId, int maxId, Guid jobId, PerformingContext hangfireContext)
+        public void UserChatHistory(int userId, int chatId, int maxId, Guid jobId, PerformContext hangfireContext)
         {
             try
             {
@@ -110,10 +118,18 @@ namespace Auth.FWT.API.Controllers.Job
                 var messagesSlice = result as TLMessagesSlice;
                 if (messagesSlice.Messages.Count > 0)
                 {
+                    var parsedMessages = new List<TelegramMessage>();
                     foreach (var message in messagesSlice.Messages)
                     {
-                        ProcessMessages(message);
+                        parsedMessages.Add(ProcessMessages(message));
                     }
+
+                    _unitOfWork.TelegramJobDataRepository.Insert(new TelegramJobData()
+                    {
+                        Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(parsedMessages)),
+                        JobId = jobId
+                    });
+                    _unitOfWork.SaveChanges();
 
                     maxId = messagesSlice.Messages[messagesSlice.Messages.Count - 1].GetStructValuesOf<int>("Id");
 
@@ -136,19 +152,21 @@ namespace Auth.FWT.API.Controllers.Job
             return maxId;
         }
 
-        private void ProcessMessages(TLAbsMessage message)
+        private TelegramMessage ProcessMessages(TLAbsMessage message)
         {
             if (message is TLMessage)
             {
-                new TelegramMessage(message as TLMessage);
+                return new TelegramMessage(message as TLMessage);
             }
             else if (message is TLMessageService)
             {
-                new TelegramMessage(message as TLMessageService);
+                return new TelegramMessage(message as TLMessageService);
             }
             else if (message is TLMessageEmpty)
             {
             }
+
+            return null;
         }
     }
 }

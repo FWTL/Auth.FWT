@@ -1,6 +1,8 @@
-﻿using Auth.FWT.API.App_Start;
+﻿using System;
+using Auth.FWT.API.App_Start;
 using Auth.FWT.Core;
 using Hangfire;
+using Hangfire.Server;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;

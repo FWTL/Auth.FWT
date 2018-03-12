@@ -18,16 +18,29 @@ namespace Auth.FWT.Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.TelegramSession",
+                "dbo.TelegramJobData",
                 c => new
                     {
-                        Id = c.Int(nullable: false),
-                        ExpireDateUtc = c.DateTime(nullable: false),
-                        Session = c.Binary(),
+                        Id = c.Long(nullable: false, identity: true),
+                        Data = c.Binary(),
+                        JobId = c.Guid(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.TelegramJob",
+                c => new
+                    {
+                        Id = c.Long(nullable: false, identity: true),
+                        CreatedDateUTC = c.DateTime(nullable: false),
+                        JobId = c.Guid(nullable: false),
+                        LastStatusUpdateDateUTC = c.DateTime(nullable: false),
+                        Status = c.Int(nullable: false),
+                        UserId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.User", t => t.Id)
-                .Index(t => t.Id);
+                .ForeignKey("dbo.User", t => t.UserId)
+                .Index(t => t.UserId);
             
             CreateTable(
                 "dbo.User",
@@ -76,6 +89,18 @@ namespace Auth.FWT.Data.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.UserRole", t => t.RoleId)
                 .Index(t => t.RoleId);
+            
+            CreateTable(
+                "dbo.TelegramSession",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        ExpireDateUtc = c.DateTime(nullable: false),
+                        Session = c.Binary(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.User", t => t.Id)
+                .Index(t => t.Id);
             
             CreateTable(
                 "dbo.UserLogin",
@@ -131,12 +156,14 @@ namespace Auth.FWT.Data.Migrations
                 .ForeignKey("dbo.User", t => t.User_Id)
                 .Index(t => t.UserRole_Id)
                 .Index(t => t.User_Id);
+            
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.RefreshToken", "ClientAPIId", "dbo.ClientAPI");
             DropForeignKey("dbo.UserLogin", "UserId", "dbo.User");
+            DropForeignKey("dbo.TelegramJob", "UserId", "dbo.User");
             DropForeignKey("dbo.TelegramSession", "Id", "dbo.User");
             DropForeignKey("dbo.UserRoleUser", "User_Id", "dbo.User");
             DropForeignKey("dbo.UserRoleUser", "UserRole_Id", "dbo.UserRole");
@@ -146,18 +173,21 @@ namespace Auth.FWT.Data.Migrations
             DropIndex("dbo.UserRoleUser", new[] { "UserRole_Id" });
             DropIndex("dbo.RefreshToken", new[] { "ClientAPIId" });
             DropIndex("dbo.UserLogin", new[] { "UserId" });
+            DropIndex("dbo.TelegramSession", new[] { "Id" });
             DropIndex("dbo.RoleClaim", new[] { "RoleId" });
             DropIndex("dbo.UserClaim", new[] { "UserId" });
-            DropIndex("dbo.TelegramSession", new[] { "Id" });
+            DropIndex("dbo.TelegramJob", new[] { "UserId" });
             DropTable("dbo.UserRoleUser");
             DropTable("dbo.RefreshToken");
             DropTable("dbo.ClientAPI");
             DropTable("dbo.UserLogin");
+            DropTable("dbo.TelegramSession");
             DropTable("dbo.RoleClaim");
             DropTable("dbo.UserRole");
             DropTable("dbo.UserClaim");
             DropTable("dbo.User");
-            DropTable("dbo.TelegramSession");
+            DropTable("dbo.TelegramJob");
+            DropTable("dbo.TelegramJobData");
             DropTable("dbo.TelegramCode");
         }
     }
