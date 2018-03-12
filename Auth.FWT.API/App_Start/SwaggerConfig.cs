@@ -18,6 +18,7 @@ namespace Auth.FWT.API
                 {
                     c.SingleApiVersion("v1", "Auth.FWT.API");
                     c.OperationFilter<DefaultValueOperationFilter>();
+                    c.OperationFilter<UpdateFileDownloadOperations>();
                     c.UseFullTypeNameInSchemaIds();
                 })
             .EnableSwaggerUi(c =>

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Auth.FWT.Core.Events;
+﻿using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using FluentValidation;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TeleSharp.TL;
-using TeleSharp.TL.Upload;
 
 namespace Auth.FWT.API.Controllers.File
 {
@@ -14,8 +13,11 @@ namespace Auth.FWT.API.Controllers.File
         public class Query : IQuery
         {
             public long AccessHash { get; set; }
+
             public long Id { get; set; }
+
             public int Size { get; set; }
+
             public int Version { get; set; }
         }
 
@@ -25,10 +27,11 @@ namespace Auth.FWT.API.Controllers.File
             {
                 RuleFor(x => x.AccessHash).NotEmpty();
                 RuleFor(x => x.Version).GreaterThanOrEqualTo(0);
+                RuleFor(x => x.Size).GreaterThan(0);
             }
         }
 
-        public class Handler : IQueryHandler<Query, Result>
+        public class Handler : IQueryHandler<Query, byte[]>
         {
             private ITelegramClient _telegramClient;
             private UserSession _userSession;
@@ -41,9 +44,9 @@ namespace Auth.FWT.API.Controllers.File
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
 
-            public Task<Result> Handle(Query query)
+            public Task<byte[]> Handle(Query query)
             {
-                TLFile file = _telegramClient.GetFile(_userSession,
+                var bytes = _telegramClient.GetFile(_userSession,
                 new TLInputDocumentFileLocation()
                 {
                     AccessHash = query.AccessHash,
@@ -51,13 +54,8 @@ namespace Auth.FWT.API.Controllers.File
                     Version = query.Version
                 }, query.Size);
 
-                return Task.FromResult(new Result() { File = file });
+                return Task.FromResult(bytes);
             }
-        }
-
-        public class Result
-        {
-            public TLFile File { get; set; }
         }
     }
 }

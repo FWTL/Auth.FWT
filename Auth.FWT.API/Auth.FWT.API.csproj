@@ -256,6 +256,7 @@
     <Compile Include="Controllers\Account\AccountController.cs" />
     <Compile Include="Controllers\File\FileController.cs" />
     <Compile Include="Controllers\File\GetFile.cs" />
+    <Compile Include="Controllers\Job\MediaInfo.cs" />
     <Compile Include="Controllers\Job\MediaParser.cs" />
     <Compile Include="Controllers\Job\MessageActionParser.cs" />
     <Compile Include="Controllers\Job\MessageEntityParser.cs" />
@@ -277,6 +278,8 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\UpdateFileDownloadOperations.cs" />
+    <Compile Include="SwaggerExtensions\SwaggerFileResponseAttribute.cs" />
     <Compile Include="SwaggerExtensions\SwaggerDefaultValueAttribute.cs" />
     <Compile Include="SwaggerExtensions\DefaultValueOperationFilter.cs" />
   </ItemGroup>

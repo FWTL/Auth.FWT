@@ -1,8 +1,13 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using System.Web.Http;
+using Auth.FWT.API.SwaggerExtensions;
+using Auth.FWT.Core.Helpers;
 using Auth.FWT.Core.Providers;
 using Auth.FWT.CQRS;
 
@@ -24,9 +29,10 @@ namespace Auth.FWT.API.Controllers.File
         [Authorize]
         [HttpGet]
         [Route("api/file")]
+        [SwaggerFileResponse(HttpStatusCode.OK)]
         public async Task<HttpResponseMessage> File(long accessHash, long id, int version, int size)
         {
-            var result = await _queryDispatcher.Dispatch<GetFile.Query, GetFile.Result>(new GetFile.Query()
+            var result = await _queryDispatcher.Dispatch<GetFile.Query, byte[]>(new GetFile.Query()
             {
                 AccessHash = accessHash,
                 Id = id,
@@ -34,12 +40,7 @@ namespace Auth.FWT.API.Controllers.File
                 Size = size
             });
 
-            HttpResponseMessage xyz = new HttpResponseMessage(HttpStatusCode.OK);
-            xyz.Content = new StringContent(System.Text.Encoding.Default.GetString(result.File.Bytes));
-            xyz.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            xyz.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-            xyz.Content.Headers.ContentDisposition.FileName = "test.jpg";
-            return xyz;
+            return ResponseHelper.FileResult(Guid.NewGuid().ToString("n"), result);
         }
     }
 }
