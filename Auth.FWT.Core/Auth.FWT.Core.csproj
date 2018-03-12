@@ -136,7 +136,7 @@
     <Compile Include="Data\OrderBy.cs" />
     <Compile Include="Entities\API\ClientAPI.cs" />
     <Compile Include="Entities\API\RefreshToken.cs" />
-    <Compile Include="Entities\BaseEntity.cs" />
+    <Compile Include="Entities\Identity\BaseEntity.cs" />
     <Compile Include="Entities\Identity\AppClaims.cs" />
     <Compile Include="Entities\Identity\AppRole.cs" />
     <Compile Include="Entities\Identity\RoleClaim.cs" />
@@ -146,6 +146,7 @@
     <Compile Include="Entities\Identity\UserRole.cs" />
     <Compile Include="Entities\TelegramCode.cs" />
     <Compile Include="Entities\TelegramJob.cs" />
+    <Compile Include="Entities\TelegramJobData.cs" />
     <Compile Include="Entities\TelegramSession.cs" />
     <Compile Include="Enums\DomainEnums.cs" />
     <Compile Include="Enums\Enums.cs" />

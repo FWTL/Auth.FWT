@@ -179,6 +179,7 @@
     <Compile Include="Configuration\Base\UserConfiguration.cs" />
     <Compile Include="Configuration\Base\UserLoginConfiguration.cs" />
     <Compile Include="Configuration\Base\UserRoleConfiguration.cs" />
+    <Compile Include="Configuration\TelegramJobConfiguration.cs" />
     <Compile Include="Conventions\DecimalConventions.cs" />
     <Compile Include="Conventions\IndexesConvention.cs" />
     <Compile Include="Conventions\StringConventions.cs" />
@@ -199,6 +200,18 @@
     <Compile Include="Migrations\201803071256168_Add_Telegram_Job_Table.cs" />
     <Compile Include="Migrations\201803071256168_Add_Telegram_Job_Table.Designer.cs">
       <DependentUpon>201803071256168_Add_Telegram_Job_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.cs" />
+    <Compile Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.Designer.cs">
+      <DependentUpon>201803121051361_Guid_To_Int_JobId_TelegramJob.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.cs" />
+    <Compile Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.Designer.cs">
+      <DependentUpon>201803121123369_JobId_To_Id_TelegramJob.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803121245190_Add_Table_TelegramJobData.cs" />
+    <Compile Include="Migrations\201803121245190_Add_Table_TelegramJobData.Designer.cs">
+      <DependentUpon>201803121245190_Add_Table_TelegramJobData.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -226,6 +239,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803071256168_Add_Telegram_Job_Table.resx">
       <DependentUpon>201803071256168_Add_Telegram_Job_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803121051361_Guid_To_Int_JobId_TelegramJob.resx">
+      <DependentUpon>201803121051361_Guid_To_Int_JobId_TelegramJob.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803121123369_JobId_To_Id_TelegramJob.resx">
+      <DependentUpon>201803121123369_JobId_To_Id_TelegramJob.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803121245190_Add_Table_TelegramJobData.resx">
+      <DependentUpon>201803121245190_Add_Table_TelegramJobData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

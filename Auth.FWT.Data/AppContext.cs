@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Data.Base.Configuration;
+using Auth.FWT.Data.Configuration;
 using Auth.FWT.Data.Conventions;
 
 namespace Auth.FWT.Data
@@ -44,7 +45,7 @@ namespace Auth.FWT.Data
 
         public DbSet<TelegramSession> TelegramSessions { get; set; }
 
-        public DbSet<TelegramJob> TelegramJobs { get; set; }
+        public DbSet<TelegramJobData> TelegramJobData { get; set; }
 
         public void BeginTransaction()
         {
@@ -198,6 +199,8 @@ namespace Auth.FWT.Data
 
             modelBuilder.Configurations.Add(new ClientAPIConfiguration());
             modelBuilder.Configurations.Add(new RefreshTokenConfiguration());
+
+            modelBuilder.Configurations.Add(new TelegramJobConfiguration());
         }
 
         private DbEntityEntry GetDbEntityEntrySafely<TEntity, TKey>(TEntity entity, EntityState state) where TEntity : BaseEntity<TKey>
