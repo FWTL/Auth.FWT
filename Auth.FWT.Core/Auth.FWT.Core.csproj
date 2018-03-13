@@ -179,6 +179,7 @@
     <Compile Include="Identity\IApplicationUserManager.cs" />
     <Compile Include="Identity\IRoleClaimStore.cs" />
     <Compile Include="Identity\SignInStatus.cs" />
+    <Compile Include="Json\TelegramMediaConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IUserProvider.cs" />
     <Compile Include="Services\Api\IApiKeyGenerator.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Services\Logging\ILogger.cs" />
     <Compile Include="Services\ServiceBus\IServiceBus.cs" />
     <Compile Include="Services\Telegram\ITelegramClient.cs" />
+    <Compile Include="Services\Telegram\ITelegramMedia.cs" />
     <Compile Include="Services\Telegram\ITelegramMessagesParser.cs" />
     <Compile Include="Services\Telegram\IUserSessionManager.cs" />
     <Compile Include="Services\Telegram\MediaInfo.cs" />

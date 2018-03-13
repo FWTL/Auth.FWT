@@ -2,8 +2,12 @@
 
 namespace Auth.FWT.Core.Services.Telegram
 {
-    public class MediaInfo
+    public class MediaInfo : ITelegramMedia
     {
+        public MediaInfo()
+        {
+        }
+
         public MediaInfo(TLDocument document)
         {
             AccessHash = document.AccessHash;
@@ -11,6 +15,11 @@ namespace Auth.FWT.Core.Services.Telegram
             Size = document.Size;
             MimeType = document.MimeType;
             Id = document.Id;
+        }
+
+        public MediaInfo(TLDocument document, TLInputStickerSetID stickerSet) : this(document)
+        {
+            StickerPackId = stickerSet.Id;
         }
 
         public long AccessHash { get; set; }
@@ -22,7 +31,9 @@ namespace Auth.FWT.Core.Services.Telegram
         public string MimeType { get; set; }
 
         public int Size { get; set; }
-
+        public long StickerPackId { get; set; }
         public int Version { get; set; }
+
+        public string _ { get; set; } = typeof(MediaInfo).FullName;
     }
 }

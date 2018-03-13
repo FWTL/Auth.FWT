@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Auth.FWT.Core.Services.Telegram;
 using TeleSharp.TL;
 using static Auth.FWT.Core.Enums.Enum;
@@ -13,26 +12,17 @@ namespace Auth.FWT.Infrastructure.Telegram.Parsers
             if (message is TLMessage)
             {
                 var tlmessage = message as TLMessage;
-                var parsedMessage = new TelegramMessage()
-                {
-                    Id = tlmessage.Id,
-                    CreatDateUTC = DateTimeOffset.FromUnixTimeSeconds(tlmessage.Date).UtcDateTime,
-                    EditDateUTC = tlmessage.EditDate.HasValue ? DateTimeOffset.FromUnixTimeSeconds(tlmessage.Date).UtcDateTime : (DateTime?)null,
-                    FromId = tlmessage.FromId ?? tlmessage.ViaBotId ?? -1,
-                    Message = tlmessage.Message,
-                };
+                var parsedMessage = new TelegramMessage(tlmessage);
+                parsedMessage.Entities = ParseEntities(tlmessage.Entities);
+                parsedMessage.Media = ParseMedia(tlmessage.Media);
+                return parsedMessage;
             }
             else if (message is TLMessageService)
             {
                 var tlmessage = message as TLMessageService;
-                var parsedMessage = new TelegramMessage()
-                {
-                    Id = tlmessage.Id,
-                    CreatDateUTC = DateTimeOffset.FromUnixTimeSeconds(tlmessage.Date).UtcDateTime,
-                    FromId = tlmessage.FromId ?? -1,
-                };
-
+                var parsedMessage = new TelegramMessage(tlmessage);
                 parsedMessage.MessageAction = ParseAction(tlmessage.Action);
+                return parsedMessage;
             }
 
             return null;
@@ -62,12 +52,14 @@ namespace Auth.FWT.Infrastructure.Telegram.Parsers
             return parsedEntities;
         }
 
-        private void ParseMedia(TLAbsMessageMedia media)
+        private ITelegramMedia ParseMedia(TLAbsMessageMedia media)
         {
             if (media != null)
             {
-                MediaParser.Parse(media);
+                return MediaParser.Parse(media);
             }
+
+            return null;
         }
     }
 }

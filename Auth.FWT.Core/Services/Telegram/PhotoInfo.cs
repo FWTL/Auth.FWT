@@ -4,8 +4,12 @@ using TeleSharp.TL;
 
 namespace Auth.FWT.Core.Services.Telegram
 {
-    public class PhotoInfo
+    public class PhotoInfo : ITelegramMedia
     {
+        public PhotoInfo()
+        {
+        }
+
         public PhotoInfo(TLPhoto photo)
         {
             var sizes = photo.Sizes.GetListOfValuesOf("Size", "Type", "Location");
@@ -25,5 +29,7 @@ namespace Auth.FWT.Core.Services.Telegram
         public long Secret { get; set; }
 
         public long VolumeId { get; set; }
+
+        public string _ { get; set; } = typeof(PhotoInfo).FullName;
     }
 }

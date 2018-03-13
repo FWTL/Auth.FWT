@@ -89,7 +89,7 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
                         CurrentUserId = command.CurrentUserId,
                         JobId = command.JobId,
                         MaxId = maxId,
-                    }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                    }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
                 }
 
                 return Task.CompletedTask;
@@ -111,7 +111,7 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
                             CurrentUserId = command.CurrentUserId,
                             JobId = command.JobId,
                             MaxId = maxId,
-                        }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                        }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
                     }
                 }
                 catch
@@ -142,10 +142,10 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
                             CurrentUserId = command.CurrentUserId,
                             JobId = command.JobId,
                             MaxId = maxId,
-                        }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
+                        }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
                     }
                 }
-                catch
+               catch(Exception ex)
                 {
                     Events.Add(new TelegramMessagesFetchingFailed()
                     {

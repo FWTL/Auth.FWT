@@ -282,7 +282,7 @@ namespace Auth.FWT.Infrastructure.Telegram
                     result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
                     {
                         Location = location,
-                        Limit = (int)Math.Pow(2, Math.Ceiling(Math.Log(size, 2))),
+                        Limit = filePart,
                         Offset = offset
                     });
                     ms.Write(result.Bytes, 0, result.Bytes.Length);
