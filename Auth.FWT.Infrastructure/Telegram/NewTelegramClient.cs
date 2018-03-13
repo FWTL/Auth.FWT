@@ -1,10 +1,10 @@
-﻿using Auth.FWT.Core.Services.Telegram;
-using FluentValidation;
-using FluentValidation.Results;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Auth.FWT.Core.Services.Telegram;
+using FluentValidation;
+using FluentValidation.Results;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
@@ -288,6 +288,7 @@ namespace Auth.FWT.Infrastructure.Telegram
                     ms.Write(result.Bytes, 0, result.Bytes.Length);
                     offset += filePart;
                 }
+
                 return ms.ToArray();
             }
         }

@@ -1,8 +1,8 @@
-﻿using Auth.FWT.Core.Extensions;
-using System.Linq;
+﻿using System.Linq;
+using Auth.FWT.Core.Extensions;
 using TeleSharp.TL;
 
-namespace Auth.FWT.API.Controllers.Job
+namespace Auth.FWT.Core.Services.Telegram
 {
     public class PhotoInfo
     {
@@ -25,29 +25,5 @@ namespace Auth.FWT.API.Controllers.Job
         public long Secret { get; set; }
 
         public long VolumeId { get; set; }
-    }
-
-    public class MediaInfo
-    {
-        public MediaInfo(TLDocument document)
-        {
-            AccessHash = document.AccessHash;
-            Version = document.Version;
-            Size = document.Size;
-            MimeType = document.MimeType;
-            Id = document.Id;
-        }
-
-        public long AccessHash { get; set; }
-
-        public int Version { get; set; }
-
-        public int Size { get; set; }
-
-        public string MimeType { get; set; }
-
-        public long Id { get; set; }
-
-        public string Message { get; set; }
     }
 }

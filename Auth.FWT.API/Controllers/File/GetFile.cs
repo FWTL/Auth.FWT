@@ -1,9 +1,9 @@
-﻿using Auth.FWT.Core.Events;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using FluentValidation;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TeleSharp.TL;
 
 namespace Auth.FWT.API.Controllers.File
@@ -57,15 +57,6 @@ namespace Auth.FWT.API.Controllers.File
                 query.Size);
 
                 return Task.FromResult(bytes);
-            }
-        }
-
-        public class Validator : AbstractValidator<Query>
-        {
-            public Validator()
-            {
-                RuleFor(x => x.AccessHash).NotEmpty();
-                RuleFor(x => x.Version).GreaterThanOrEqualTo(0);
             }
         }
     }

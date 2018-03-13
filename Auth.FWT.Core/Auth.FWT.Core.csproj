@@ -189,6 +189,8 @@
     <Compile Include="Services\Telegram\ITelegramClient.cs" />
     <Compile Include="Services\Telegram\ITelegramMessagesParser.cs" />
     <Compile Include="Services\Telegram\IUserSessionManager.cs" />
+    <Compile Include="Services\Telegram\MediaInfo.cs" />
+    <Compile Include="Services\Telegram\PhotoInfo.cs" />
     <Compile Include="Services\Telegram\TelegramAction.cs" />
     <Compile Include="Services\Telegram\TelegramMessage.cs" />
     <Compile Include="Services\Telegram\UserSession.cs" />

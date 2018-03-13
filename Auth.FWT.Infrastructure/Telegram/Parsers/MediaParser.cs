@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Auth.FWT.Core.Services.Telegram;
 using TeleSharp.TL;
-using TeleSharp.TL.Photos;
 
 namespace Auth.FWT.Infrastructure.Telegram.Parsers
 {
@@ -54,8 +54,9 @@ namespace Auth.FWT.Infrastructure.Telegram.Parsers
 
         private static MediaInfo Parse(TLMessageMediaPhoto media)
         {
-            var photo = media.Photo as TeleSharp.TL.TLPhoto;
-            return new MediaInfo(photo);
+            var photo = media.Photo as TLPhoto;
+            //return new PhotoInfo(photo);
+            return null;
         }
 
         private static MediaInfo Parse(TLMessageMediaUnsupported media)

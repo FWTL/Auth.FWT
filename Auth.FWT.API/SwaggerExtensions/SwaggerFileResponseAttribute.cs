@@ -1,9 +1,6 @@
-﻿using Swashbuckle.Swagger.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net;
-using System.Web;
+using Swashbuckle.Swagger.Annotations;
 
 namespace Auth.FWT.API.SwaggerExtensions
 {
@@ -18,6 +15,7 @@ namespace Auth.FWT.API.SwaggerExtensions
             : base(statusCode, description, type)
         {
         }
+
         public SwaggerFileResponseAttribute(int statusCode) : base(statusCode)
         {
         }

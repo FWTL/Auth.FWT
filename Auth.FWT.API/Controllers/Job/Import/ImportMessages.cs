@@ -82,14 +82,14 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                 if (maxId > 0)
                 {
-                    BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => 
+                    BackgroundJob.Schedule<HangfireCommandDispatcher>(gm =>
                     gm.Dispatch(new FetChannalMessages()
                     {
                         ChannalId = command.ChannalId,
                         CurrentUserId = command.CurrentUserId,
                         JobId = command.JobId,
                         MaxId = maxId,
-                    }, null), TimeSpan.FromSeconds(_random.Next(5,40)));
+                    }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                 }
 
                 return Task.CompletedTask;
