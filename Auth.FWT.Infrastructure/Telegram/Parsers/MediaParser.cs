@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TeleSharp.TL;
 
-namespace Auth.FWT.API.Controllers.Job
+namespace Auth.FWT.Infrastructure.Telegram.Parsers
 {
     public static class MediaParser
     {

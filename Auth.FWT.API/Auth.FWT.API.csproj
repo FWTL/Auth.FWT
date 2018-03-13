@@ -256,14 +256,12 @@
     <Compile Include="Controllers\Account\AccountController.cs" />
     <Compile Include="Controllers\File\FileController.cs" />
     <Compile Include="Controllers\File\GetFile.cs" />
-    <Compile Include="Controllers\Job\MediaParser.cs" />
-    <Compile Include="Controllers\Job\MessageActionParser.cs" />
-    <Compile Include="Controllers\Job\MessageEntityParser.cs" />
-    <Compile Include="Controllers\Job\TelegramAction.cs" />
-    <Compile Include="Controllers\Job\TelegramMessage.cs" />
+    <Compile Include="Controllers\Job\Fetch\FetchMessages.cs" />
+    <Compile Include="Controllers\Job\Index\IndexMessages.cs" />
+    <Compile Include="Controllers\Job\JobController.cs" />
     <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
-    <Compile Include="Controllers\Job\GetMessages.cs" />
     <Compile Include="Controllers\Statistics\StatisticsController.cs" />
+    <Compile Include="CQRS\HangfireCommandDispatcher.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
     <Compile Include="Filters\ApiExceptionAttribute.cs" />
@@ -297,6 +295,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Controllers\Job\Parse\" />
     <Folder Include="SwaggerExtensions\Examples\" />
   </ItemGroup>
   <ItemGroup>

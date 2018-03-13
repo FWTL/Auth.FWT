@@ -59,6 +59,10 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.6.17\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -122,6 +126,7 @@
     <Compile Include="ConfigKeys.cs" />
     <Compile Include="CQRS\IEventDispatcher.cs" />
     <Compile Include="CQRS\IEventHandler.cs" />
+    <Compile Include="CQRS\IPerformContext.cs" />
     <Compile Include="CQRS\IWriteCacheHandler.cs" />
     <Compile Include="CQRS\IReadCacheHandler.cs" />
     <Compile Include="CQRS\ICommand.cs" />
@@ -180,7 +185,10 @@
     <Compile Include="Services\Logging\ILogger.cs" />
     <Compile Include="Services\ServiceBus\IServiceBus.cs" />
     <Compile Include="Services\Telegram\ITelegramClient.cs" />
+    <Compile Include="Services\Telegram\ITelegramMessagesParser.cs" />
     <Compile Include="Services\Telegram\IUserSessionManager.cs" />
+    <Compile Include="Services\Telegram\TelegramAction.cs" />
+    <Compile Include="Services\Telegram\TelegramMessage.cs" />
     <Compile Include="Services\Telegram\UserSession.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -172,6 +172,10 @@
     <Compile Include="ServiceBus\AzureServiceBus.cs" />
     <Compile Include="Telegram\AppUserSessionManager.cs" />
     <Compile Include="Telegram\NewTelegramClient.cs" />
+    <Compile Include="Telegram\Parsers\MediaParser.cs" />
+    <Compile Include="Telegram\Parsers\MessageActionParser.cs" />
+    <Compile Include="Telegram\Parsers\MessageEntityParser.cs" />
+    <Compile Include="Telegram\Parsers\TelegramMessagesParser.cs" />
     <Compile Include="Telegram\UserSessionManager.cs" />
     <Compile Include="Telegram\SQLSessionStore.cs" />
   </ItemGroup>

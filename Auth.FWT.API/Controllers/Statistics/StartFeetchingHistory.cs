@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Auth.FWT.API.Controllers.Job;
+using Auth.FWT.API.CQRS;
 using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
 using Auth.FWT.Events;
 using Hangfire;
+using static Auth.FWT.API.Controllers.Job.Fetch.FetchMessages;
 
 namespace Auth.FWT.API.Controllers.Statistics
 {
@@ -45,7 +46,13 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.ChannelId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChannalHistory(command.CurrentUserId, command.ChannelId, int.MaxValue, jobId, null));
+                BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetChannalMessages()
+                {
+                    ChannalId = command.ChannelId,
+                    CurrentUserId = command.CurrentUserId,
+                    JobId = jobId,
+                    MaxId = int.MaxValue
+                }, null));
             }
 
             public async Task Execute(StartFeetchingChatHistory command)
@@ -60,7 +67,13 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.ChatId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.ChatHistory(command.CurrentUserId, command.ChatId, int.MaxValue, jobId, null));
+                BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetChatMessages()
+                {
+                    ChatId = command.ChatId,
+                    CurrentUserId = command.CurrentUserId,
+                    JobId = jobId,
+                    MaxId = int.MaxValue
+                }, null));
             }
 
             public async Task Execute(StartFeetchingUserChatHistory command)
@@ -75,7 +88,13 @@ namespace Auth.FWT.API.Controllers.Statistics
                     ChannalId = command.UserId,
                 }.Send(_serviceBus);
 
-                BackgroundJob.Enqueue<GetMessages>(gm => gm.UserChatHistory(command.CurrentUserId, command.UserId, int.MaxValue, jobId, null));
+                BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetchUserMessages()
+                {
+                    UserId = command.UserId,
+                    CurrentUserId = command.CurrentUserId,
+                    JobId = jobId,
+                    MaxId = int.MaxValue
+                }, null));
             }
         }
 

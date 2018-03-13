@@ -2,7 +2,7 @@
 using TeleSharp.TL;
 using static Auth.FWT.Core.Enums.Enum;
 
-namespace Auth.FWT.API.Controllers.Job
+namespace Auth.FWT.Infrastructure.Telegram.Parsers
 {
     public static class MessageEntityParser
     {

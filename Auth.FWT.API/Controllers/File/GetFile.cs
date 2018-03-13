@@ -27,7 +27,8 @@ namespace Auth.FWT.API.Controllers.File
 
             public Task<Result> Handle(Query query)
             {
-                TLFile file = _telegramClient.GetFile(_userSession,
+                TLFile file = _telegramClient.GetFile(
+                _userSession,
                 new TLInputDocumentFileLocation()
                 {
                     AccessHash = query.AccessHash,

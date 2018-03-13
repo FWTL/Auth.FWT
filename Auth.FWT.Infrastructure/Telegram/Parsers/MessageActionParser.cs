@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Auth.FWT.Core.Services.Telegram;
 using TeleSharp.TL;
 
-namespace Auth.FWT.API.Controllers.Job
+namespace Auth.FWT.Infrastructure.Telegram.Parsers
 {
     public static class MessageActionParser
     {

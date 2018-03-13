@@ -1,10 +1,11 @@
-﻿using Auth.FWT.API.Controllers.Job;
+﻿using Auth.FWT.API.CQRS;
 using Auth.FWT.Core;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Providers;
 using Auth.FWT.Core.Services.Dapper;
 using Auth.FWT.Core.Services.ServiceBus;
 using Auth.FWT.Core.Services.Telegram;
+using Auth.FWT.CQRS;
 using Auth.FWT.Data;
 using Auth.FWT.Data.Dapper;
 using Auth.FWT.Infrastructure.Logging;
@@ -12,6 +13,7 @@ using Auth.FWT.Infrastructure.ServiceBus;
 using Auth.FWT.Infrastructure.Telegram;
 using Autofac;
 using NodaTime;
+using Rws.Web.Core.CQRS;
 using StackExchange.Redis;
 using TLSharp.Core;
 
@@ -25,6 +27,14 @@ namespace Auth.FWT.API.App_Start
 
             builder.RegisterGeneric(typeof(EntityRepository<,>)).As(typeof(IRepository<,>)).InstancePerDependency();
             builder.RegisterType(typeof(UnitOfWork)).As(typeof(IUnitOfWork)).InstancePerDependency();
+
+            builder.RegisterType<CommandDispatcher>().As<ICommandDispatcher>().InstancePerDependency();
+            builder.Register(b =>
+            {
+                return new HangfireCommandDispatcher(b.Resolve<ICommandDispatcher>());
+            }).InstancePerDependency();
+
+            builder.RegisterAssemblyTypes(typeof(WebApiApplication).Assembly).AsClosedTypesOf(typeof(ICommandHandler<>)).InstancePerDependency();
 
             builder.Register<IDapperConnector>(b =>
             {
@@ -79,8 +89,6 @@ namespace Auth.FWT.API.App_Start
             {
                 return new AzureServiceBus();
             }).InstancePerDependency();
-
-            builder.RegisterType(typeof(GetMessages)).InstancePerDependency();
 
             var container = builder.Build();
             return container;
