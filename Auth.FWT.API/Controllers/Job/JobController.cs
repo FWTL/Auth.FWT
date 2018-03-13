@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Auth.FWT.API.Controllers.Job.Index;
+using Auth.FWT.API.Controllers.Statistics;
 using Auth.FWT.Core.Providers;
 using Auth.FWT.CQRS;
 
@@ -22,12 +23,48 @@ namespace Auth.FWT.API.Controllers.Job
 
         [Authorize]
         [HttpPost]
-        [Route("api/job/index")]
+        [Route("api/index")]
         public async Task Index(Guid jobId)
         {
             await _commandDispatcher.Dispatch(new IndexMessages.Command()
             {
                 JobId = jobId
+            });
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/ChatHistory")]
+        public async Task ChatHistory(int chatId)
+        {
+            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChatHistory()
+            {
+                ChatId = chatId,
+                CurrentUserId = _userProvider.CurrentUserId
+            });
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/UserChatHistory")]
+        public async Task UserChatHistory(int userId)
+        {
+            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingUserChatHistory()
+            {
+                UserId = userId,
+                CurrentUserId = _userProvider.CurrentUserId
+            });
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/ChannelHistory")]
+        public async Task ChannelHistory(int channelId)
+        {
+            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChannalHistory()
+            {
+                ChannelId = channelId,
+                CurrentUserId = _userProvider.CurrentUserId
             });
         }
     }

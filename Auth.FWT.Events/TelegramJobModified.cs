@@ -12,7 +12,8 @@ namespace Auth.FWT.Events
 
         public Task Send(IServiceBus serviceBus)
         {
-            throw new NotImplementedException();
+            serviceBus.SendToQueue("processing", this);
+            return Task.CompletedTask;
         }
     }
 }

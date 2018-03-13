@@ -259,8 +259,7 @@
     <Compile Include="Controllers\Job\Fetch\FetchMessages.cs" />
     <Compile Include="Controllers\Job\Index\IndexMessages.cs" />
     <Compile Include="Controllers\Job\JobController.cs" />
-    <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
-    <Compile Include="Controllers\Statistics\StatisticsController.cs" />
+    <Compile Include="Controllers\Job\Fetch\StartFeetchingHistory.cs" />
     <Compile Include="CQRS\HangfireCommandDispatcher.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
