@@ -82,14 +82,14 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                 if (maxId > 0)
                 {
-                    BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => 
+                    BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => 
                     gm.Dispatch(new FetChannalMessages()
                     {
                         ChannalId = command.ChannalId,
                         CurrentUserId = command.CurrentUserId,
                         JobId = command.JobId,
                         MaxId = maxId,
-                    }, null));
+                    }, null), TimeSpan.FromSeconds(_random.Next(5,40)));
                 }
 
                 return Task.CompletedTask;
@@ -105,13 +105,13 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                     if (maxId > 0)
                     {
-                        BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetChatMessages()
+                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetChatMessages()
                         {
                             ChatId = command.ChatId,
                             CurrentUserId = command.CurrentUserId,
                             JobId = command.JobId,
                             MaxId = maxId,
-                        }, null));
+                        }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                     }
                 }
                 catch
@@ -136,13 +136,13 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                     if (maxId > 0)
                     {
-                        BackgroundJob.Enqueue<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetchUserMessages()
+                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetchUserMessages()
                         {
                             UserId = command.UserId,
                             CurrentUserId = command.CurrentUserId,
                             JobId = command.JobId,
                             MaxId = maxId,
-                        }, null));
+                        }, null), TimeSpan.FromSeconds(_random.Next(5, 40)));
                     }
                 }
                 catch

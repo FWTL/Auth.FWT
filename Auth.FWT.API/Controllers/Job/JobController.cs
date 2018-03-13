@@ -34,10 +34,10 @@ namespace Auth.FWT.API.Controllers.Job
 
         [Authorize]
         [HttpPost]
-        [Route("api/ChatHistory")]
+        [Route("api/ImportChatHistory")]
         public async Task ChatHistory(int chatId)
         {
-            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChatHistory()
+            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingChatHistory()
             {
                 ChatId = chatId,
                 CurrentUserId = _userProvider.CurrentUserId
@@ -46,10 +46,10 @@ namespace Auth.FWT.API.Controllers.Job
 
         [Authorize]
         [HttpPost]
-        [Route("api/UserChatHistory")]
+        [Route("api/ImportUserChatHistory")]
         public async Task UserChatHistory(int userId)
         {
-            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingUserChatHistory()
+            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingUserChatHistory()
             {
                 UserId = userId,
                 CurrentUserId = _userProvider.CurrentUserId
@@ -58,10 +58,10 @@ namespace Auth.FWT.API.Controllers.Job
 
         [Authorize]
         [HttpPost]
-        [Route("api/ChannelHistory")]
+        [Route("api/ImportChannelHistory")]
         public async Task ChannelHistory(int channelId)
         {
-            await _commandDispatcher.Dispatch(new StartFeetchingHistory.StartFeetchingChannalHistory()
+            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingChannalHistory()
             {
                 ChannelId = channelId,
                 CurrentUserId = _userProvider.CurrentUserId

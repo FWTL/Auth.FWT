@@ -12,12 +12,12 @@ using static Auth.FWT.API.Controllers.Job.Fetch.FetchMessages;
 
 namespace Auth.FWT.API.Controllers.Statistics
 {
-    public class StartFeetchingHistory
+    public class StartImportingHistory
     {
         public class Handler :
-            ICommandHandler<StartFeetchingUserChatHistory>,
-            ICommandHandler<StartFeetchingChatHistory>,
-            ICommandHandler<StartFeetchingChannalHistory>
+            ICommandHandler<StartImportingUserChatHistory>,
+            ICommandHandler<StartImportingChatHistory>,
+            ICommandHandler<StartImportingChannalHistory>
         {
             private IServiceBus _serviceBus;
 
@@ -34,7 +34,7 @@ namespace Auth.FWT.API.Controllers.Statistics
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
 
-            public async Task Execute(StartFeetchingChannalHistory command)
+            public async Task Execute(StartImportingChannalHistory command)
             {
                 var jobId = Guid.NewGuid();
 
@@ -55,7 +55,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                 }, null));
             }
 
-            public async Task Execute(StartFeetchingChatHistory command)
+            public async Task Execute(StartImportingChatHistory command)
             {
                 var jobId = Guid.NewGuid();
 
@@ -76,7 +76,7 @@ namespace Auth.FWT.API.Controllers.Statistics
                 }, null));
             }
 
-            public async Task Execute(StartFeetchingUserChatHistory command)
+            public async Task Execute(StartImportingUserChatHistory command)
             {
                 var jobId = Guid.NewGuid();
 
@@ -98,21 +98,21 @@ namespace Auth.FWT.API.Controllers.Statistics
             }
         }
 
-        public class StartFeetchingChannalHistory : ICommand
+        public class StartImportingChannalHistory : ICommand
         {
             public int ChannelId { get; set; }
 
             public int CurrentUserId { get; set; }
         }
 
-        public class StartFeetchingChatHistory : ICommand
+        public class StartImportingChatHistory : ICommand
         {
             public int ChatId { get; set; }
 
             public int CurrentUserId { get; set; }
         }
 
-        public class StartFeetchingUserChatHistory : ICommand
+        public class StartImportingUserChatHistory : ICommand
         {
             public int CurrentUserId { get; set; }
 

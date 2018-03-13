@@ -256,10 +256,10 @@
     <Compile Include="Controllers\Account\AccountController.cs" />
     <Compile Include="Controllers\File\FileController.cs" />
     <Compile Include="Controllers\File\GetFile.cs" />
-    <Compile Include="Controllers\Job\Fetch\FetchMessages.cs" />
+    <Compile Include="Controllers\Job\Import\ImportMessages.cs" />
     <Compile Include="Controllers\Job\Index\IndexMessages.cs" />
     <Compile Include="Controllers\Job\JobController.cs" />
-    <Compile Include="Controllers\Job\Fetch\StartFeetchingHistory.cs" />
+    <Compile Include="Controllers\Job\Import\StartImportingHistory.cs" />
     <Compile Include="CQRS\HangfireCommandDispatcher.cs" />
     <Compile Include="CQRS\CommandDispatcher.cs" />
     <Compile Include="CQRS\QueryDispatcher.cs" />
