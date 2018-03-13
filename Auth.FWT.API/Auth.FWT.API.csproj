@@ -256,6 +256,15 @@
     <Compile Include="Controllers\Account\AccountController.cs" />
     <Compile Include="Controllers\File\FileController.cs" />
     <Compile Include="Controllers\File\GetFile.cs" />
+    <Compile Include="Controllers\Job\MediaInfo.cs" />
+    <Compile Include="Controllers\Job\MediaParser.cs" />
+    <Compile Include="Controllers\Job\MessageActionParser.cs" />
+    <Compile Include="Controllers\Job\MessageEntityParser.cs" />
+    <Compile Include="Controllers\Job\TelegramAction.cs" />
+    <Compile Include="Controllers\Job\TelegramMessage.cs" />
+    <Compile Include="Controllers\Statistics\StartFeetchingHistory.cs" />
+    <Compile Include="Controllers\Job\GetMessages.cs" />
+    <Compile Include="Controllers\Statistics\StatisticsController.cs" />
     <Compile Include="Controllers\Job\Import\ImportMessages.cs" />
     <Compile Include="Controllers\Job\Index\IndexMessages.cs" />
     <Compile Include="Controllers\Job\JobController.cs" />
@@ -274,6 +283,8 @@
     <Compile Include="Providers\RefreshTokenProvider.cs" />
     <Compile Include="Providers\UserProvider.cs" />
     <Compile Include="SwaggerExtensions\ApplyDocumentVendorExtensions.cs" />
+    <Compile Include="SwaggerExtensions\UpdateFileDownloadOperations.cs" />
+    <Compile Include="SwaggerExtensions\SwaggerFileResponseAttribute.cs" />
     <Compile Include="SwaggerExtensions\SwaggerDefaultValueAttribute.cs" />
     <Compile Include="SwaggerExtensions\DefaultValueOperationFilter.cs" />
   </ItemGroup>

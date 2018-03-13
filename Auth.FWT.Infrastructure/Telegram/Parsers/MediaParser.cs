@@ -1,64 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using TeleSharp.TL;
+using TeleSharp.TL.Photos;
 
 namespace Auth.FWT.Infrastructure.Telegram.Parsers
 {
     public static class MediaParser
     {
-        private static readonly Dictionary<string, Action<TLAbsMessageMedia>> Switch = new Dictionary<string, Action<TLAbsMessageMedia>>()
+        private static readonly Dictionary<string, Func<TLAbsMessageMedia, MediaInfo>> Switch = new Dictionary<string, Func<TLAbsMessageMedia, MediaInfo>>()
         {
-            { typeof(TLMessageMediaEmpty).FullName, x => { } },
-            { typeof(TLMessageMediaPhoto).FullName, x => { Parse(x as TLMessageMediaPhoto); } },
-            { typeof(TLMessageMediaGeo).FullName, x => { Parse(x as TLMessageMediaGeo); } },
-            { typeof(TLMessageMediaContact).FullName, x => { Parse(x as TLMessageMediaContact); } },
-            { typeof(TLMessageMediaUnsupported).FullName, x => { Parse(x as TLMessageMediaUnsupported); } },
-            { typeof(TLMessageMediaDocument).FullName, x => { Parse(x as TLMessageMediaDocument); } },
-            { typeof(TLMessageMediaWebPage).FullName, x => { Parse(x as TLMessageMediaWebPage); } },
-            { typeof(TLMessageMediaVenue).FullName, x => { Parse(x as TLMessageMediaVenue); } },
-            { typeof(TLMessageMediaGame).FullName, x => { Parse(x as TLMessageMediaGame); } },
-            { typeof(TLMessageMediaInvoice).FullName, x => { Parse(x as TLMessageMediaInvoice); } },
+            { typeof(TLMessageMediaEmpty).FullName, x => { return null; } },
+            { typeof(TLMessageMediaPhoto).FullName, x => { return Parse(x as TLMessageMediaPhoto); } },
+            { typeof(TLMessageMediaGeo).FullName, x => { return Parse(x as TLMessageMediaGeo); } },
+            { typeof(TLMessageMediaContact).FullName, x => { return Parse(x as TLMessageMediaContact); } },
+            { typeof(TLMessageMediaUnsupported).FullName, x => { return Parse(x as TLMessageMediaUnsupported); } },
+            { typeof(TLMessageMediaDocument).FullName, x => { return Parse(x as TLMessageMediaDocument); } },
+            { typeof(TLMessageMediaWebPage).FullName, x => { return Parse(x as TLMessageMediaWebPage); } },
+            { typeof(TLMessageMediaVenue).FullName, x => { return Parse(x as TLMessageMediaVenue); } },
+            { typeof(TLMessageMediaGame).FullName, x => { return Parse(x as TLMessageMediaGame); } },
+            { typeof(TLMessageMediaInvoice).FullName, x => { return Parse(x as TLMessageMediaInvoice); } },
         };
 
-        public static void Parse(TLAbsMessageMedia media)
+        public static MediaInfo Parse(TLAbsMessageMedia media)
         {
-            Switch[media.GetType().FullName](media);
+            return Switch[media.GetType().FullName](media);
         }
 
-        private static void Parse(TLMessageMediaContact media)
+        private static MediaInfo Parse(TLMessageMediaContact media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaDocument media)
+        private static MediaInfo Parse(TLMessageMediaDocument media)
         {
+            var document = media.Document as TLDocument;
+            return new MediaInfo(document);
         }
 
-        private static void Parse(TLMessageMediaGame tLMessageMediaGame)
+        private static MediaInfo Parse(TLMessageMediaGame media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaGeo media)
+        private static MediaInfo Parse(TLMessageMediaGeo media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaInvoice tLMessageMediaInvoice)
+        private static MediaInfo Parse(TLMessageMediaInvoice media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaPhoto media)
+        private static MediaInfo Parse(TLMessageMediaPhoto media)
         {
+            var photo = media.Photo as TeleSharp.TL.TLPhoto;
+            return new MediaInfo(photo);
         }
 
-        private static void Parse(TLMessageMediaUnsupported media)
+        private static MediaInfo Parse(TLMessageMediaUnsupported media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaVenue tLMessageMediaVenue)
+        private static MediaInfo Parse(TLMessageMediaVenue media)
         {
+            return null;
         }
 
-        private static void Parse(TLMessageMediaWebPage media)
+        private static MediaInfo Parse(TLMessageMediaWebPage media)
         {
+            return null;
         }
     }
 }

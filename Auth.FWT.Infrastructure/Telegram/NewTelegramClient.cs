@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Auth.FWT.Core.Services.Telegram;
+﻿using Auth.FWT.Core.Services.Telegram;
 using FluentValidation;
 using FluentValidation.Results;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TeleSharp.TL;
 using TeleSharp.TL.Auth;
 using TeleSharp.TL.Help;
@@ -268,18 +269,27 @@ namespace Auth.FWT.Infrastructure.Telegram
             return null;
         }
 
-        public TLFile GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
+        public byte[] GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
         {
+            int filePart = 512 * 1024;
+            int offset = 0;
+
             TLFile result = null;
-
-            result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
+            using (MemoryStream ms = new MemoryStream())
             {
-                Location = location,
-                Limit = (int)Math.Pow(2, Math.Ceiling(Math.Log(size, 2))),
-                Offset = 0
-            });
-
-            return result;
+                while (offset < size)
+                {
+                    result = SendRequest<TLFile>(userSession, new TLRequestGetFile()
+                    {
+                        Location = location,
+                        Limit = (int)Math.Pow(2, Math.Ceiling(Math.Log(size, 2))),
+                        Offset = offset
+                    });
+                    ms.Write(result.Bytes, 0, result.Bytes.Length);
+                    offset += filePart;
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

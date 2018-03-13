@@ -10,7 +10,7 @@ namespace Auth.FWT.Core.Services.Telegram
 
         TLAbsMessages GetChatHistory(UserSession userSession, int chatId, int maxId, int limit = 100);
 
-        TLFile GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size);
+        byte[] GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size);
 
         TLAbsMessages GetUserChatHistory(UserSession session, int userChatId, int maxId, int limit = 100);
 
