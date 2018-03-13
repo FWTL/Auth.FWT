@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Auth.FWT.Core.Services.Telegram;
+﻿using Auth.FWT.Core.Services.Telegram;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace Auth.FWT.Infrastructure.Json
 {
@@ -19,11 +19,12 @@ namespace Auth.FWT.Infrastructure.Json
         }
 
         public override bool CanWrite => false;
+
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(ITelegramMedia);
+            return objectType.FullName == typeof(ITelegramMedia).FullName;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -33,13 +34,14 @@ namespace Auth.FWT.Infrastructure.Json
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (existingValue != null)
+            if (reader.TokenType != JsonToken.Null)
             {
                 var jsonObject = JObject.Load(reader);
                 var typeName = jsonObject["_"].Value<string>();
                 Type type = _types[typeName];
-                return serializer.Deserialize(reader, type);
+                return jsonObject.ToObject(type);
             }
+
             return null;
         }
     }
