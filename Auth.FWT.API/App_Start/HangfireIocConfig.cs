@@ -11,6 +11,7 @@ using Auth.FWT.Data.Dapper;
 using Auth.FWT.Infrastructure.Logging;
 using Auth.FWT.Infrastructure.ServiceBus;
 using Auth.FWT.Infrastructure.Telegram;
+using Auth.FWT.Infrastructure.Telegram.Parsers;
 using Autofac;
 using NodaTime;
 using Rws.Web.Core.CQRS;
@@ -89,6 +90,8 @@ namespace Auth.FWT.API.App_Start
             {
                 return new AzureServiceBus();
             }).InstancePerDependency();
+
+            builder.RegisterType<TelegramMessagesParser>().AsImplementedInterfaces();
 
             var container = builder.Build();
             return container;
