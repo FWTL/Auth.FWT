@@ -5,9 +5,9 @@ using Auth.FWT.Core.Services.ServiceBus;
 
 namespace Auth.FWT.Events
 {
-    public class TelegramFetchingMessagesJobStarted : IEvent
+    public class TelegramJobCreated : IEvent
     {
-        public Guid JobId { get; set; }
+        public long JobId { get; set; }
         public int InvokedBy { get; set; }
         public ChannalType ChannalType { get; set; }
         public int ChannalId { get; set; }

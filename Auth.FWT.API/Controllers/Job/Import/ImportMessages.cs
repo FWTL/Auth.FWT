@@ -20,7 +20,7 @@ using TLSharp.Core;
 
 namespace Auth.FWT.API.Controllers.Job.Fetch
 {
-    public class FetchMessages
+    public class ImportMessages
     {
         public class BaseCommand : ICommand, IPerformContext
         {
@@ -33,22 +33,22 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
             public PerformContext PerformContext { get; set; }
         }
 
-        public class FetChannalMessages : BaseCommand
+        public class ImportChannalMessages : BaseCommand
         {
             public int ChannalId { get; set; }
         }
 
-        public class FetChatMessages : BaseCommand
+        public class ImportChatMessages : BaseCommand
         {
             public int ChatId { get; set; }
         }
 
-        public class FetchUserMessages : BaseCommand
+        public class ImportUserMessages : BaseCommand
         {
             public int UserId { get; set; }
         }
 
-        public class Handler : ICommandHandler<FetchUserMessages>, ICommandHandler<FetChatMessages>, ICommandHandler<FetChannalMessages>
+        public class Handler : ICommandHandler<ImportUserMessages>, ICommandHandler<ImportChatMessages>, ICommandHandler<ImportChannalMessages>
         {
             private ITelegramMessagesParser _parser;
 
@@ -74,28 +74,41 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
             public List<IEvent> Events { get; set; } = new List<IEvent>();
 
-            public Task Execute(FetChannalMessages command)
+            public Task Execute(ImportChannalMessages command)
             {
-                var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(command.CurrentUserId.ToString(), _sessionStore);
-                var result = _telegramClient.GetChannalHistory(userSession, command.ChannalId, command.MaxId);
-                var maxId = ProcessMessages(result, command.JobId);
-
-                if (maxId > 0)
+                try
                 {
-                    BackgroundJob.Schedule<HangfireCommandDispatcher>(gm =>
-                    gm.Dispatch(new FetChannalMessages()
+                    var userSession = AppUserSessionManager.Instance.UserSessionManager.Get(command.CurrentUserId.ToString(), _sessionStore);
+                    var result = _telegramClient.GetChannalHistory(userSession, command.ChannalId, command.MaxId);
+                    var maxId = ProcessMessages(result, command.JobId);
+
+                    if (maxId > 0)
                     {
-                        ChannalId = command.ChannalId,
-                        CurrentUserId = command.CurrentUserId,
+                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm =>
+                        gm.Dispatch(new ImportChannalMessages()
+                        {
+                            ChannalId = command.ChannalId,
+                            CurrentUserId = command.CurrentUserId,
+                            JobId = command.JobId,
+                            MaxId = maxId,
+                        }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
+                    }
+                }
+                catch
+                {
+                    Events.Add(new TelegramMessagesFetchingFailed()
+                    {
                         JobId = command.JobId,
-                        MaxId = maxId,
-                    }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
+                        SubJobId = command.PerformContext.BackgroundJob.Id.To<long>()
+                    });
+
+                    throw;
                 }
 
                 return Task.CompletedTask;
             }
 
-            public Task Execute(FetChatMessages command)
+            public Task Execute(ImportChatMessages command)
             {
                 try
                 {
@@ -105,7 +118,7 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                     if (maxId > 0)
                     {
-                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetChatMessages()
+                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new ImportChatMessages()
                         {
                             ChatId = command.ChatId,
                             CurrentUserId = command.CurrentUserId,
@@ -121,12 +134,14 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
                         JobId = command.JobId,
                         SubJobId = command.PerformContext.BackgroundJob.Id.To<long>()
                     });
+
+                    throw;
                 }
 
                 return Task.CompletedTask;
             }
 
-            public Task Execute(FetchUserMessages command)
+            public Task Execute(ImportUserMessages command)
             {
                 try
                 {
@@ -136,7 +151,7 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
 
                     if (maxId > 0)
                     {
-                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new FetchUserMessages()
+                        BackgroundJob.Schedule<HangfireCommandDispatcher>(gm => gm.Dispatch(new ImportUserMessages()
                         {
                             UserId = command.UserId,
                             CurrentUserId = command.CurrentUserId,
@@ -145,13 +160,15 @@ namespace Auth.FWT.API.Controllers.Job.Fetch
                         }, null), TimeSpan.FromSeconds(_random.Next(20, 40)));
                     }
                 }
-               catch(Exception ex)
+                catch
                 {
                     Events.Add(new TelegramMessagesFetchingFailed()
                     {
                         JobId = command.JobId,
                         SubJobId = command.PerformContext.BackgroundJob.Id.To<long>()
                     });
+
+                    throw;
                 }
 
                 return Task.CompletedTask;

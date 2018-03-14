@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Auth.FWT.API.Controllers.Job.Index;
-using Auth.FWT.API.Controllers.Statistics;
+using Auth.FWT.API.Controllers.Job.Import;
 using Auth.FWT.Core.Providers;
 using Auth.FWT.CQRS;
 
@@ -26,7 +26,7 @@ namespace Auth.FWT.API.Controllers.Job
         [Route("api/index")]
         public async Task Index(Guid jobId)
         {
-            await _commandDispatcher.Dispatch(new IndexMessages.Command()
+            await _commandDispatcher.Dispatch(new BeginIndexingMessages.Command()
             {
                 JobId = jobId
             });
@@ -37,7 +37,7 @@ namespace Auth.FWT.API.Controllers.Job
         [Route("api/ImportChatHistory")]
         public async Task ChatHistory(int chatId)
         {
-            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingChatHistory()
+            await _commandDispatcher.Dispatch(new BeginImportingMessages.ImportChatHistory()
             {
                 ChatId = chatId,
                 CurrentUserId = _userProvider.CurrentUserId
@@ -49,7 +49,7 @@ namespace Auth.FWT.API.Controllers.Job
         [Route("api/ImportUserChatHistory")]
         public async Task UserChatHistory(int userId)
         {
-            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingUserChatHistory()
+            await _commandDispatcher.Dispatch(new BeginImportingMessages.ImportUserChatHistory()
             {
                 UserId = userId,
                 CurrentUserId = _userProvider.CurrentUserId
@@ -61,7 +61,7 @@ namespace Auth.FWT.API.Controllers.Job
         [Route("api/ImportChannelHistory")]
         public async Task ChannelHistory(int channelId)
         {
-            await _commandDispatcher.Dispatch(new StartImportingHistory.StartImportingChannalHistory()
+            await _commandDispatcher.Dispatch(new BeginImportingMessages.ImportChannalHistory()
             {
                 ChannelId = channelId,
                 CurrentUserId = _userProvider.CurrentUserId

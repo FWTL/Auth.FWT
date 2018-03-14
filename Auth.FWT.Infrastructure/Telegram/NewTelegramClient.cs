@@ -269,7 +269,7 @@ namespace Auth.FWT.Infrastructure.Telegram
             return null;
         }
 
-        public byte[] GetFile(UserSession userSession, TLInputDocumentFileLocation location, int size)
+        public byte[] GetFile(UserSession userSession, TLAbsInputFileLocation location, int size)
         {
             int filePart = 512 * 1024;
             int offset = 0;

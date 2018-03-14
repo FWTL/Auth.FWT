@@ -9,6 +9,7 @@ using Auth.FWT.Core.Events;
 using Auth.FWT.Core.Extensions;
 using Auth.FWT.CQRS;
 using Auth.FWT.Infrastructure.Handlers;
+using FluentValidation;
 using StackExchange.Redis;
 
 namespace Auth.FWT.API.Controllers.Dashboard
@@ -30,6 +31,15 @@ namespace Auth.FWT.API.Controllers.Dashboard
                 }
 
                 return TimeSpan.FromMinutes(5);
+            }
+        }
+
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.Offset).GreaterThanOrEqualTo(0);
+                RuleFor(x => x.Limit).InclusiveBetween(1, 50);
             }
         }
 

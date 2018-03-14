@@ -1,8 +1,7 @@
-﻿using System;
-using Auth.FWT.API.App_Start;
+﻿using Auth.FWT.API.App_Start;
 using Auth.FWT.Core;
 using Hangfire;
-using Hangfire.Server;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Owin;
@@ -36,6 +35,10 @@ namespace Auth.FWT.API.Bootstrapper
             GlobalConfiguration.Configuration.UseSqlServerStorage(ConfigKeys.HangfireConnectionString);
             app.UseHangfireDashboard();
             app.UseHangfireServer();
+
+#if DEBUG
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+#endif
         }
     }
 }

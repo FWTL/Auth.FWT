@@ -112,17 +112,17 @@ namespace TLSharp.Core.Network
         public void Send(TeleSharp.TL.TLMethod request)
         {
             // TODO: refactor
-            if (needConfirmation.Any())
-            {
-                var ackRequest = new AckRequest(needConfirmation);
-                using (var memory = new MemoryStream())
-                using (var writer = new BinaryWriter(memory))
-                {
-                    ackRequest.SerializeBody(writer);
-                    Send(memory.ToArray(), ackRequest);
-                    needConfirmation.Clear();
-                }
-            }
+            //if (needConfirmation.Any())
+            //{
+            //    var ackRequest = new AckRequest(needConfirmation);
+            //    using (var memory = new MemoryStream())
+            //    using (var writer = new BinaryWriter(memory))
+            //    {
+            //        ackRequest.SerializeBody(writer);
+            //        Send(memory.ToArray(), ackRequest);
+            //        needConfirmation.Clear();
+            //    }
+            //}
 
             using (var memory = new MemoryStream())
             using (var writer = new BinaryWriter(memory))

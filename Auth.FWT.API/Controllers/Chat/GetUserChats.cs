@@ -79,13 +79,15 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+                        var photo = chat["Photo"]?.GetRefValuesOf<TLFileLocation>("PhotoBig");
 
                         if (chat["MigratedTo"] == null)
                         {
                             results.Add(new Result()
                             {
                                 Title = (string)chat["Title"],
-                                ChatId = peer.ChatId
+                                ChatId = peer.ChatId,
+                                PhotoLocation = photo.IsNotNull() ? new PhotoLocation(photo) : null
                             });
                         }
                     }
@@ -94,11 +96,13 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChannel;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChannelId);
+                        var photo = chat["Photo"]?.GetRefValuesOf<TLFileLocation>("PhotoBig");
 
                         results.Add(new Result()
                         {
                             Title = (string)chat["Title"],
-                            ChannelId = peer.ChannelId
+                            ChannelId = peer.ChannelId,
+                            PhotoLocation = photo.IsNotNull() ? new PhotoLocation(photo) : null
                         });
                     }
 
@@ -106,6 +110,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerUser;
                         var user = users.FirstOrDefault(c => (int)c["Id"] == peer.UserId);
+                        var photo = user["Photo"]?.GetRefValuesOf<TLFileLocation>("PhotoBig");
 
                         var name = $"{(string)user["FirstName"]} {(string)user["LastName"]}" ?? (string)user["Username"];
 
@@ -113,6 +118,7 @@ namespace Auth.FWT.API.Controllers.Chat
                         {
                             Title = name,
                             UserId = peer.UserId,
+                            PhotoLocation = photo.IsNotNull() ? new PhotoLocation(photo) : null
                         });
                     }
                 }
@@ -123,6 +129,7 @@ namespace Auth.FWT.API.Controllers.Chat
                     {
                         var peer = dialog.Peer as TLPeerChat;
                         var chat = chats.FirstOrDefault(c => (int)c["Id"] == peer.ChatId);
+                        var photo = chat.GetRefValuesOf<TLFileLocation>("PhotoBig");
 
                         if (chat["MigratedTo"] != null && chat["MigratedTo"] is TLInputChannel)
                         {
@@ -146,6 +153,28 @@ namespace Auth.FWT.API.Controllers.Chat
             public int? UserId { get; set; }
 
             public string Title { get; set; }
+
+            public PhotoLocation PhotoLocation { get; set; }
+        }
+
+        public class PhotoLocation
+        {
+            public PhotoLocation()
+            {
+            }
+
+            public PhotoLocation(TLFileLocation photo)
+            {
+                LocalId = photo.LocalId;
+                Secret = photo.Secret;
+                VolumeId = photo.VolumeId;
+            }
+
+            public int LocalId { get; set; }
+
+            public long Secret { get; set; }
+
+            public long VolumeId { get; set; }
         }
     }
 }

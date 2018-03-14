@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Auth.FWT.Core.Data;
 using Auth.FWT.Core.Events;
-using Auth.FWT.Core.Services.Telegram;
 using Auth.FWT.CQRS;
-using Newtonsoft.Json;
+using Auth.FWT.Events;
 
 namespace Auth.FWT.API.Controllers.Job.Index
 {
-    public class IndexMessages
+    public class BeginIndexingMessages
     {
         public class Command : ICommand
         {
@@ -23,7 +21,7 @@ namespace Auth.FWT.API.Controllers.Job.Index
         {
             private IUnitOfWork _unitOfWork;
 
-            public Handler(IUnitOfWork unitOfWork)
+            public Handler(IUnitOfWork unitOfWork, ICommandDispatcher commandDispatcher)
             {
                 _unitOfWork = unitOfWork;
             }
@@ -32,13 +30,13 @@ namespace Auth.FWT.API.Controllers.Job.Index
 
             public async Task Execute(Command command)
             {
-                var query = _unitOfWork.TelegramJobDataRepository.Query().Where(tjd => tjd.JobId == command.JobId);
-
-                var dataRowsCount = await query.CountAsync();
-                for (int i = 0; i < dataRowsCount; i++)
+                var ids = await _unitOfWork.TelegramJobDataRepository.Query().Where(tjd => tjd.JobId == command.JobId).Select(tjd => tjd.Id).ToListAsync();
+                foreach (var id in ids)
                 {
-                    var jobResult = await query.OrderBy(x => x.Id).Skip(i).FirstOrDefaultAsync();
-                    List<TelegramMessage> messages = JsonConvert.DeserializeObject<List<TelegramMessage>>(Encoding.UTF8.GetString(jobResult.Data));
+                    Events.Add(new IndexingDataInvoked()
+                    {
+                        TelegramJobId = id
+                    });
                 }
             }
         }

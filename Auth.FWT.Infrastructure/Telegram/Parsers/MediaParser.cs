@@ -38,14 +38,24 @@ namespace Auth.FWT.Infrastructure.Telegram.Parsers
             var document = media.Document as TLDocument;
 
             var strickerAttributeConsturctorId = new TLDocumentAttributeSticker().Constructor;
+
+            var mediaInfo = new MediaInfo(document);
+
             var tlStickerSet = document.Attributes.GetListOfValuesOf("Stickerset").Select(item => item["Stickerset"]).FirstOrDefault(item => item.IsNotNull());
             if (tlStickerSet != null)
             {
                 var stickerSet = tlStickerSet as TLInputStickerSetID;
-                return new MediaInfo(document, stickerSet);
+                mediaInfo.StickerPackId = stickerSet.Id;
             }
 
-            return new MediaInfo(document);
+            var tlFileName = document.Attributes.GetListOfValuesOf("FileName").Select(item => item["FileName"]).FirstOrDefault(item => item.IsNotNull());
+            if (tlFileName != null)
+            {
+                var fileName = (string)tlFileName;
+                mediaInfo.FileName = fileName;
+            }
+
+            return mediaInfo;
         }
 
         private static ITelegramMedia Parse(TLMessageMediaGame media)

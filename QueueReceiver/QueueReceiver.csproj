@@ -244,7 +244,8 @@
   <ItemGroup>
     <Compile Include="Handlers\AllTelegramMessagesFetchedHandler.cs" />
     <Compile Include="Handlers\CacheHandler.cs" />
-    <Compile Include="Handlers\TelegramFetchingMessagesJobStartedHandler.cs" />
+    <Compile Include="Handlers\IndexingDataInvokedHandler.cs" />
+    <Compile Include="Handlers\TelegramJobCreatedHandler.cs" />
     <Compile Include="Handlers\TelegramMessagesFetchedHandler.cs" />
     <Compile Include="Handlers\TelegramMessagesFetchingFailedHandler.cs" />
     <Compile Include="Setup\AutofacJobActivator.cs" />

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using System.Web.Http;
 using Auth.FWT.API.SwaggerExtensions;
 using Auth.FWT.Core.Helpers;
@@ -38,6 +35,22 @@ namespace Auth.FWT.API.Controllers.File
                 Id = id,
                 Version = version,
                 Size = size
+            });
+
+            return ResponseHelper.FileResult(Guid.NewGuid().ToString("n"), result);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("api/photo")]
+        [SwaggerFileResponse(HttpStatusCode.OK)]
+        public async Task<HttpResponseMessage> Photo(int localId, long secret, long volumeId)
+        {
+            var result = await _queryDispatcher.Dispatch<GetPhoto.Query, byte[]>(new GetPhoto.Query()
+            {
+                LocalId = localId,
+                Secret = secret,
+                VolumeId = volumeId,
             });
 
             return ResponseHelper.FileResult(Guid.NewGuid().ToString("n"), result);

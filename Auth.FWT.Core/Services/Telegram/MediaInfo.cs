@@ -17,12 +17,11 @@ namespace Auth.FWT.Core.Services.Telegram
             Id = document.Id;
         }
 
-        public MediaInfo(TLDocument document, TLInputStickerSetID stickerSet) : this(document)
-        {
-            StickerPackId = stickerSet.Id;
-        }
+        public string _ { get; set; } = typeof(MediaInfo).FullName;
 
         public long AccessHash { get; set; }
+
+        public string FileName { get; set; }
 
         public long Id { get; set; }
 
@@ -31,9 +30,9 @@ namespace Auth.FWT.Core.Services.Telegram
         public string MimeType { get; set; }
 
         public int Size { get; set; }
-        public long StickerPackId { get; set; }
-        public int Version { get; set; }
 
-        public string _ { get; set; } = typeof(MediaInfo).FullName;
+        public long? StickerPackId { get; set; }
+
+        public int Version { get; set; }
     }
 }

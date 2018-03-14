@@ -21,8 +21,9 @@ namespace QueueReceiver
         public async Task ProcessMessage([ServiceBusTrigger("processing")] BrokeredMessage message, TextWriter log)
         {
             string type = (string)message.Properties["type"];
-            await ProcessMessage<TelegramFetchingMessagesJobStarted>(message, type);
+            await ProcessMessage<TelegramJobCreated>(message, type);
             await ProcessMessage<TelegramMessagesFetched>(message, type);
+            await ProcessMessage<IndexingDataInvoked>(message, type);
             await ProcessMessage<AllTelegramMessagesFetched>(message, type);
             await ProcessMessage<TelegramMessagesFetchingFailed>(message, type);
         }
