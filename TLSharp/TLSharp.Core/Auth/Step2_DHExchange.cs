@@ -6,14 +6,6 @@ using TLSharp.Core.MTProto.Crypto;
 
 namespace TLSharp.Core.Auth
 {
-    public class Step2_Response
-    {
-        public byte[] Nonce { get; set; }
-        public byte[] ServerNonce { get; set; }
-        public byte[] NewNonce { get; set; }
-        public byte[] EncryptedAnswer { get; set; }
-    }
-
     public class Step2_DHExchange
     {
         public byte[] newNonce;
@@ -21,6 +13,63 @@ namespace TLSharp.Core.Auth
         public Step2_DHExchange()
         {
             newNonce = new byte[32];
+        }
+
+        public Step2_Response FromBytes(byte[] response)
+        {
+            byte[] encryptedAnswer;
+
+            using (MemoryStream responseStream = new MemoryStream(response, false))
+            {
+                using (BinaryReader responseReader = new BinaryReader(responseStream))
+                {
+                    uint responseCode = responseReader.ReadUInt32();
+
+                    if (responseCode == 0x79cb045d)
+                    {
+                        // server_DH_params_fail
+                        throw new InvalidOperationException("server_DH_params_fail: TODO");
+                    }
+
+                    if (responseCode != 0xd0e8075c)
+                    {
+                        throw new InvalidOperationException($"invalid response code: {responseCode}");
+                    }
+
+                    byte[] nonceFromServer = responseReader.ReadBytes(16);
+
+                    // TODO:!
+                    /*
+					if (!nonceFromServer.SequenceEqual(nonce))
+					{
+						logger.debug("invalid nonce from server");
+						return null;
+					}
+					*/
+
+
+                    byte[] serverNonceFromServer = responseReader.ReadBytes(16);
+
+                    // TODO: !
+                    /*
+					if (!serverNonceFromServer.SequenceEqual(serverNonce))
+					{
+						logger.error("invalid server nonce from server");
+						return null;
+					}
+					*/
+
+                    encryptedAnswer = Serializers.Bytes.read(responseReader);
+
+                    return new Step2_Response()
+                    {
+                        EncryptedAnswer = encryptedAnswer,
+                        ServerNonce = serverNonceFromServer,
+                        Nonce = nonceFromServer,
+                        NewNonce = newNonce
+                    };
+                }
+            }
         }
 
         public byte[] ToBytes(byte[] nonce, byte[] serverNonce, List<byte[]> fingerprints, BigInteger pq)
@@ -81,62 +130,16 @@ namespace TLSharp.Core.Auth
                 return reqDhParamsBytes;
             }
         }
+    }
 
-        public Step2_Response FromBytes(byte[] response)
-        {
-            byte[] encryptedAnswer;
+    public class Step2_Response
+    {
+        public byte[] EncryptedAnswer { get; set; }
 
-            using (MemoryStream responseStream = new MemoryStream(response, false))
-            {
-                using (BinaryReader responseReader = new BinaryReader(responseStream))
-                {
-                    uint responseCode = responseReader.ReadUInt32();
+        public byte[] NewNonce { get; set; }
 
-                    if (responseCode == 0x79cb045d)
-                    {
-                        // server_DH_params_fail
-                        throw new InvalidOperationException("server_DH_params_fail: TODO");
-                    }
+        public byte[] Nonce { get; set; }
 
-                    if (responseCode != 0xd0e8075c)
-                    {
-                        throw new InvalidOperationException($"invalid response code: {responseCode}");
-                    }
-
-                    byte[] nonceFromServer = responseReader.ReadBytes(16);
-
-                    // TODO:!
-                    /*
-					if (!nonceFromServer.SequenceEqual(nonce))
-					{
-						logger.debug("invalid nonce from server");
-						return null;
-					}
-					*/
-
-
-                    byte[] serverNonceFromServer = responseReader.ReadBytes(16);
-
-                    // TODO: !
-                    /*
-					if (!serverNonceFromServer.SequenceEqual(serverNonce))
-					{
-						logger.error("invalid server nonce from server");
-						return null;
-					}
-					*/
-
-                    encryptedAnswer = Serializers.Bytes.read(responseReader);
-
-                    return new Step2_Response()
-                    {
-                        EncryptedAnswer = encryptedAnswer,
-                        ServerNonce = serverNonceFromServer,
-                        Nonce = nonceFromServer,
-                        NewNonce = newNonce
-                    };
-                }
-            }
-        }
+        public byte[] ServerNonce { get; set; }
     }
 }

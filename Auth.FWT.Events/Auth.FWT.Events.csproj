@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B661832A-827F-4EBB-A57C-A6947A2AA230}</ProjectGuid>
+    <ProjectGuid>{C1C787D3-0662-46F7-83EC-48D58513EF0F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TLSharp.Custome</RootNamespace>
-    <AssemblyName>TLSharp.Custome</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>Auth.FWT.Events</RootNamespace>
+    <AssemblyName>Auth.FWT.Events</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +19,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>0</WarningLevel>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,35 +27,19 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>0</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DEV|AnyCPU'">
-    <OutputPath>bin\DEV\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <WarningLevel>0</WarningLevel>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DEVELOPMENT|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DEVELOPMENT\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>0</WarningLevel>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentValidation, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.7.4.0\lib\net45\FluentValidation.dll</HintPath>
+    <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,20 +48,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITelegramClient.cs" />
+    <Compile Include="AllTelegramMessagesFetched.cs" />
+    <Compile Include="Dispatchers\EventDispatcher.cs" />
+    <Compile Include="IndexingDataInvoked.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TelegramJobCreated.cs" />
+    <Compile Include="TelegramJobModified.cs" />
+    <Compile Include="TelegramMessagesFetched.cs" />
+    <Compile Include="TelegramMessagesFetchingFailed.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TLSharp\TeleSharp.TL\TeleSharp.TL.csproj">
-      <Project>{D6144517-91D2-4880-86DF-E9FF5D7F383A}</Project>
-      <Name>TeleSharp.TL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TLSharp\TLSharp.Core\TLSharp.Core.csproj">
-      <Project>{400D2544-1CC6-4D8A-A62C-2292D9947A16}</Project>
-      <Name>TLSharp.Core</Name>
+    <ProjectReference Include="..\Auth.FWT.Core\Auth.FWT.Core.csproj">
+      <Project>{0ED2E479-2353-59A2-C8FB-880112959A8C}</Project>
+      <Name>Auth.FWT.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

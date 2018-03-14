@@ -5,5 +5,7 @@
         public const string USER_READ = "user.read";
 
         public const string USER_WRITE = "user.write";
+
+        public const string ADMIN = "user.admin";
     }
 }

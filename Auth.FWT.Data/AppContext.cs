@@ -4,7 +4,6 @@ using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Infrastructure.Interception;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Diagnostics;
 using System.Linq;
@@ -13,7 +12,6 @@ using System.Threading.Tasks;
 using Auth.FWT.Core.Entities;
 using Auth.FWT.Data.Base.Configuration;
 using Auth.FWT.Data.Conventions;
-using Auth.FWT.Infrastructure.Logging;
 
 namespace Auth.FWT.Data
 {
@@ -45,6 +43,10 @@ namespace Auth.FWT.Data
         public DbSet<TelegramCode> TelegramCodes { get; set; }
 
         public DbSet<TelegramSession> TelegramSessions { get; set; }
+
+        public DbSet<TelegramJobData> TelegramJobData { get; set; }
+
+        public DbSet<TelegramJob> TelegramJobs { get; set; }
 
         public void BeginTransaction()
         {

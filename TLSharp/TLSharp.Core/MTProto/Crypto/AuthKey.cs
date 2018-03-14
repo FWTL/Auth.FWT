@@ -6,9 +6,12 @@ namespace TLSharp.Core.MTProto.Crypto
 {
     public class AuthKey
     {
-        private byte[] key;
-        private ulong keyId;
         private ulong auxHash;
+
+        private byte[] key;
+
+        private ulong keyId;
+
         public AuthKey(BigInteger gab)
         {
             key = gab.ToByteArrayUnsigned();
@@ -43,6 +46,22 @@ namespace TLSharp.Core.MTProto.Crypto
             }
         }
 
+        public byte[] Data
+        {
+            get
+            {
+                return key;
+            }
+        }
+
+        public ulong Id
+        {
+            get
+            {
+                return keyId;
+            }
+        }
+
         public byte[] CalcNewNonceHash(byte[] newNonce, int number)
         {
             using (MemoryStream buffer = new MemoryStream(100))
@@ -60,22 +79,6 @@ namespace TLSharp.Core.MTProto.Crypto
                         return newNonceHash;
                     }
                 }
-            }
-        }
-
-        public byte[] Data
-        {
-            get
-            {
-                return key;
-            }
-        }
-
-        public ulong Id
-        {
-            get
-            {
-                return keyId;
             }
         }
 

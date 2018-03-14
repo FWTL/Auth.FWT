@@ -23,6 +23,10 @@ namespace Auth.FWT.Core.Data
 
         IRepository<User, int> UserRepository { get; }
 
+        IRepository<TelegramJob, long> TelegramJobRepository { get; }
+
+        IRepository<TelegramJobData, long> TelegramJobDataRepository { get; }
+
         void BeginTransaction();
 
         int Commit();

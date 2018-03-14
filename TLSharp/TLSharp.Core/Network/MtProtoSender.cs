@@ -1,12 +1,11 @@
-﻿using Ionic.Zlib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+using Ionic.Zlib;
 using TLSharp.Core.MTProto;
 using TLSharp.Core.MTProto.Crypto;
 using TLSharp.Core.Requests;
@@ -14,14 +13,39 @@ using TLSharp.Core.Utils;
 
 namespace TLSharp.Core.Network
 {
+    public abstract class DataCenterMigrationException : Exception
+    {
+        private const string REPORT_MESSAGE =
+            " See: https://github.com/sochix/TLSharp#i-get-a-xxxmigrationexception-or-a-migrate_x-error";
+
+        protected DataCenterMigrationException(string msg, int dc) : base(msg + REPORT_MESSAGE)
+        {
+            DC = dc;
+        }
+
+        public int DC { get; private set; }
+    }
+
+    public class FloodException : Exception
+    {
+        internal FloodException(TimeSpan timeToWait)
+            : base($"Flood prevention. Telegram now requires your program to do requests again only after {timeToWait.TotalSeconds} seconds have passed ({nameof(TimeToWait)} property)." +
+                    " If you think the culprit of this problem may lie in TLSharp's implementation, open a Github issue please.")
+        {
+            TimeToWait = timeToWait;
+        }
+
+        public TimeSpan TimeToWait { get; private set; }
+    }
+
     public class MtProtoSender
     {
-        //private ulong sessionId = GenerateRandomUlong();
+        public List<ulong> needConfirmation = new List<ulong>();
 
-        private TcpTransport _transport;
         private Session _session;
 
-        public List<ulong> needConfirmation = new List<ulong>();
+        //private ulong sessionId = GenerateRandomUlong();
+        private TcpTransport _transport;
 
         public MtProtoSender(TcpTransport transport, Session session)
         {
@@ -34,35 +58,23 @@ namespace TLSharp.Core.Network
             _transport = transport;
         }
 
-        private int GenerateSequence(bool confirmed)
+        public byte[] Receive(TeleSharp.TL.TLMethod request)
         {
-            return confirmed ? _session.Sequence++ * 2 + 1 : _session.Sequence * 2;
-        }
-
-        public async Task Send(TeleSharp.TL.TLMethod request)
-        {
-            // TODO: refactor
-            if (needConfirmation.Any())
+            while (!request.ConfirmReceived)
             {
-                var ackRequest = new AckRequest(needConfirmation);
-                using (var memory = new MemoryStream())
-                using (var writer = new BinaryWriter(memory))
+                var result = DecodeMessage((_transport.Receieve()).Body);
+
+                using (var messageStream = new MemoryStream(result.Item1, false))
+                using (var messageReader = new BinaryReader(messageStream))
                 {
-                    ackRequest.SerializeBody(writer);
-                    await Send(memory.ToArray(), ackRequest);
-                    needConfirmation.Clear();
+                    processMessage(result.Item2, result.Item3, messageReader, request);
                 }
             }
 
-            using (var memory = new MemoryStream())
-            using (var writer = new BinaryWriter(memory))
-            {
-                request.SerializeBody(writer);
-                await Send(memory.ToArray(), request);
-            }
+            return null;
         }
 
-        public async Task Send(byte[] packet, TeleSharp.TL.TLMethod request)
+        public void Send(byte[] packet, TeleSharp.TL.TLMethod request)
         {
             request.MessageId = _session.GetNewMessageId();
 
@@ -92,9 +104,45 @@ namespace TLSharp.Core.Network
                     writer.Write(msgKey);
                     writer.Write(ciphertext);
 
-                    await _transport.Send(ciphertextPacket.GetBuffer());
+                    _transport.Send(ciphertextPacket.GetBuffer());
                 }
             }
+        }
+
+        public void Send(TeleSharp.TL.TLMethod request)
+        {
+            // TODO: refactor
+            //if (needConfirmation.Any())
+            //{
+            //    var ackRequest = new AckRequest(needConfirmation);
+            //    using (var memory = new MemoryStream())
+            //    using (var writer = new BinaryWriter(memory))
+            //    {
+            //        ackRequest.SerializeBody(writer);
+            //        Send(memory.ToArray(), ackRequest);
+            //        needConfirmation.Clear();
+            //    }
+            //}
+
+            using (var memory = new MemoryStream())
+            using (var writer = new BinaryWriter(memory))
+            {
+                request.SerializeBody(writer);
+                Send(memory.ToArray(), request);
+            }
+        }
+
+        public void SendPingAsync()
+        {
+            var pingRequest = new PingRequest();
+            using (var memory = new MemoryStream())
+            using (var writer = new BinaryWriter(memory))
+            {
+                pingRequest.SerializeBody(writer);
+                Send(memory.ToArray(), pingRequest);
+            }
+
+            Receive(pingRequest);
         }
 
         private Tuple<byte[], ulong, int> DecodeMessage(byte[] body)
@@ -129,122 +177,138 @@ namespace TLSharp.Core.Network
             return new Tuple<byte[], ulong, int>(message, remoteMessageId, remoteSequence);
         }
 
-        public async Task<byte[]> Receive(TeleSharp.TL.TLMethod request)
+        private int GenerateSequence(bool confirmed)
         {
-            while (!request.ConfirmReceived)
-            {
-                var result = DecodeMessage((await _transport.Receieve()).Body);
+            return confirmed ? _session.Sequence++ * 2 + 1 : _session.Sequence * 2;
+        }
 
-                using (var messageStream = new MemoryStream(result.Item1, false))
-                using (var messageReader = new BinaryReader(messageStream))
+        private bool HandleBadMsgNotification(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            uint code = messageReader.ReadUInt32();
+            ulong requestId = messageReader.ReadUInt64();
+            int requestSequence = messageReader.ReadInt32();
+            int errorCode = messageReader.ReadInt32();
+
+            switch (errorCode)
+            {
+                case 16:
+                    throw new InvalidOperationException("msg_id too low (most likely, client time is wrong; it would be worthwhile to synchronize it using msg_id notifications and re-send the original message with the “correct” msg_id or wrap it in a container with a new msg_id if the original message had waited too long on the client to be transmitted)");
+                case 17:
+                    throw new InvalidOperationException("msg_id too high (similar to the previous case, the client time has to be synchronized, and the message re-sent with the correct msg_id)");
+                case 18:
+                    throw new InvalidOperationException("incorrect two lower order msg_id bits (the server expects client message msg_id to be divisible by 4)");
+                case 19:
+                    throw new InvalidOperationException("container msg_id is the same as msg_id of a previously received message (this must never happen)");
+                case 20:
+                    throw new InvalidOperationException("message too old, and it cannot be verified whether the server has received a message with this msg_id or not");
+                case 32:
+                    throw new InvalidOperationException("msg_seqno too low (the server has already received a message with a lower msg_id but with either a higher or an equal and odd seqno)");
+                case 33:
+                    throw new InvalidOperationException(" msg_seqno too high (similarly, there is a message with a higher msg_id but with either a lower or an equal and odd seqno)");
+                case 34:
+                    throw new InvalidOperationException("an even msg_seqno expected (irrelevant message), but odd received");
+                case 35:
+                    throw new InvalidOperationException("odd msg_seqno expected (relevant message), but even received");
+                case 48:
+                    throw new InvalidOperationException("incorrect server salt (in this case, the bad_server_salt response is received with the correct salt, and the message is to be re-sent with it)");
+                case 64:
+                    throw new InvalidOperationException("invalid container");
+            }
+            throw new NotImplementedException("This should never happens");
+            /*
+			logger.debug("bad_msg_notification: msgid {0}, seq {1}, errorcode {2}", requestId, requestSequence,
+						 errorCode);
+			*/
+            /*
+			if (!runningRequests.ContainsKey(requestId))
+			{
+				logger.debug("bad msg notification on unknown request");
+				return true;
+			}
+			*/
+
+            //OnBrokenSessionEvent();
+            //MTProtoRequest request = runningRequests[requestId];
+            //request.OnException(new MTProtoBadMessageException(errorCode));
+
+            return true;
+        }
+
+        private bool HandleBadServerSalt(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
+        {
+            uint code = messageReader.ReadUInt32();
+            ulong badMsgId = messageReader.ReadUInt64();
+            int badMsgSeqNo = messageReader.ReadInt32();
+            int errorCode = messageReader.ReadInt32();
+            ulong newSalt = messageReader.ReadUInt64();
+
+            //logger.debug("bad_server_salt: msgid {0}, seq {1}, errorcode {2}, newsalt {3}", badMsgId, badMsgSeqNo, errorCode, newSalt);
+
+            _session.Salt = newSalt;
+
+            //resend
+            Send(request);
+            /*
+            if(!runningRequests.ContainsKey(badMsgId)) {
+                logger.debug("bad server salt on unknown message");
+                return true;
+            }
+            */
+
+            //MTProtoRequest request = runningRequests[badMsgId];
+            //request.OnException(new MTProtoBadServerSaltException(salt));
+
+            return true;
+        }
+
+        private bool HandleContainer(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
+        {
+            uint code = messageReader.ReadUInt32();
+            int size = messageReader.ReadInt32();
+            for (int i = 0; i < size; i++)
+            {
+                ulong innerMessageId = messageReader.ReadUInt64();
+                int innerSequence = messageReader.ReadInt32();
+                int innerLength = messageReader.ReadInt32();
+                long beginPosition = messageReader.BaseStream.Position;
+                try
                 {
-                    processMessage(result.Item2, result.Item3, messageReader, request);
+                    if (!processMessage(innerMessageId, sequence, messageReader, request))
+                    {
+                        messageReader.BaseStream.Position = beginPosition + innerLength;
+                    }
+                }
+                catch (Exception e)
+                {
+                    //	logger.error("failed to process message in contailer: {0}", e);
+                    messageReader.BaseStream.Position = beginPosition + innerLength;
                 }
             }
 
-            return null;
-        }
-
-        public async Task SendPingAsync()
-        {
-            var pingRequest = new PingRequest();
-            using (var memory = new MemoryStream())
-            using (var writer = new BinaryWriter(memory))
-            {
-                pingRequest.SerializeBody(writer);
-                await Send(memory.ToArray(), pingRequest);
-            }
-
-            await Receive(pingRequest);
-        }
-
-        private bool processMessage(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
-        {
-            // TODO: check salt
-            // TODO: check sessionid
-            // TODO: check seqno
-
-            //logger.debug("processMessage: msg_id {0}, sequence {1}, data {2}", BitConverter.ToString(((MemoryStream)messageReader.BaseStream).GetBuffer(), (int) messageReader.BaseStream.Position, (int) (messageReader.BaseStream.Length - messageReader.BaseStream.Position)).Replace("-","").ToLower());
-            needConfirmation.Add(messageId);
-
-            uint code = messageReader.ReadUInt32();
-            messageReader.BaseStream.Position -= 4;
-            switch (code)
-            {
-                case 0x73f1f8dc: // container
-                                 //logger.debug("MSG container");
-                    return HandleContainer(messageId, sequence, messageReader, request);
-
-                case 0x7abe77ec: // ping
-                                 //logger.debug("MSG ping");
-                    return HandlePing(messageId, sequence, messageReader);
-
-                case 0x347773c5: // pong
-                                 //logger.debug("MSG pong");
-                    return HandlePong(messageId, sequence, messageReader, request);
-
-                case 0xae500895: // future_salts
-                                 //logger.debug("MSG future_salts");
-                    return HandleFutureSalts(messageId, sequence, messageReader);
-
-                case 0x9ec20908: // new_session_created
-                                 //logger.debug("MSG new_session_created");
-                    return HandleNewSessionCreated(messageId, sequence, messageReader);
-
-                case 0x62d6b459: // msgs_ack
-                                 //logger.debug("MSG msds_ack");
-                    return HandleMsgsAck(messageId, sequence, messageReader);
-
-                case 0xedab447b: // bad_server_salt
-                                 //logger.debug("MSG bad_server_salt");
-                    return HandleBadServerSalt(messageId, sequence, messageReader, request);
-
-                case 0xa7eff811: // bad_msg_notification
-                                 //logger.debug("MSG bad_msg_notification");
-                    return HandleBadMsgNotification(messageId, sequence, messageReader);
-
-                case 0x276d3ec6: // msg_detailed_info
-                                 //logger.debug("MSG msg_detailed_info");
-                    return HandleMsgDetailedInfo(messageId, sequence, messageReader);
-
-                case 0xf35c6d01: // rpc_result
-                                 //logger.debug("MSG rpc_result");
-                    return HandleRpcResult(messageId, sequence, messageReader, request);
-
-                case 0x3072cfa1: // gzip_packed
-                                 //logger.debug("MSG gzip_packed");
-                    return HandleGzipPacked(messageId, sequence, messageReader, request);
-
-                case 0xe317af7e:
-                case 0xd3f45784:
-                case 0x2b2fbd4e:
-                case 0x78d4dec1:
-                case 0x725b04c3:
-                case 0x74ae4240:
-                    return HandleUpdate(messageId, sequence, messageReader);
-
-                default:
-                    //logger.debug("unknown message: {0}", code);
-                    return false;
-            }
-        }
-
-        private bool HandleUpdate(ulong messageId, int sequence, BinaryReader messageReader)
-        {
             return false;
+        }
 
+        private bool HandleFutureSalts(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            uint code = messageReader.ReadUInt32();
+            ulong requestId = messageReader.ReadUInt64();
+
+            messageReader.BaseStream.Position -= 12;
+
+            throw new NotImplementedException("Handle future server salts function isn't implemented.");
             /*
-			try
+			if (!runningRequests.ContainsKey(requestId))
 			{
-				UpdatesEvent(TL.Parse<Updates>(messageReader));
-				return true;
-			}
-			catch (Exception e)
-			{
-				logger.warning("update processing exception: {0}", e);
+				logger.info("future salts on unknown request");
 				return false;
 			}
 			*/
+
+            //	MTProtoRequest request = runningRequests[requestId];
+            //	runningRequests.Remove(requestId);
+            //	request.OnResponse(messageReader);
+
+            return true;
         }
 
         private bool HandleGzipPacked(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
@@ -258,6 +322,39 @@ namespace TLSharp.Core.Network
             }
 
             return true;
+        }
+
+        private bool HandleMsgDetailedInfo(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            return false;
+        }
+
+        private bool HandleMsgsAck(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            return false;
+        }
+
+        private bool HandleNewSessionCreated(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            return false;
+        }
+
+        private bool HandlePing(ulong messageId, int sequence, BinaryReader messageReader)
+        {
+            return false;
+        }
+
+        private bool HandlePong(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
+        {
+            uint code = messageReader.ReadUInt32();
+            ulong msgId = messageReader.ReadUInt64();
+
+            if (msgId == (ulong)request.MessageId)
+            {
+                request.ConfirmReceived = true;
+            }
+
+            return false;
         }
 
         private bool HandleRpcResult(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
@@ -362,165 +459,8 @@ namespace TLSharp.Core.Network
             return false;
         }
 
-        private bool HandleMsgDetailedInfo(ulong messageId, int sequence, BinaryReader messageReader)
+        private bool HandleUpdate(ulong messageId, int sequence, BinaryReader messageReader)
         {
-            return false;
-        }
-
-        private bool HandleBadMsgNotification(ulong messageId, int sequence, BinaryReader messageReader)
-        {
-            uint code = messageReader.ReadUInt32();
-            ulong requestId = messageReader.ReadUInt64();
-            int requestSequence = messageReader.ReadInt32();
-            int errorCode = messageReader.ReadInt32();
-
-            switch (errorCode)
-            {
-                case 16:
-                    throw new InvalidOperationException("msg_id too low (most likely, client time is wrong; it would be worthwhile to synchronize it using msg_id notifications and re-send the original message with the “correct” msg_id or wrap it in a container with a new msg_id if the original message had waited too long on the client to be transmitted)");
-                case 17:
-                    throw new InvalidOperationException("msg_id too high (similar to the previous case, the client time has to be synchronized, and the message re-sent with the correct msg_id)");
-                case 18:
-                    throw new InvalidOperationException("incorrect two lower order msg_id bits (the server expects client message msg_id to be divisible by 4)");
-                case 19:
-                    throw new InvalidOperationException("container msg_id is the same as msg_id of a previously received message (this must never happen)");
-                case 20:
-                    throw new InvalidOperationException("message too old, and it cannot be verified whether the server has received a message with this msg_id or not");
-                case 32:
-                    throw new InvalidOperationException("msg_seqno too low (the server has already received a message with a lower msg_id but with either a higher or an equal and odd seqno)");
-                case 33:
-                    throw new InvalidOperationException(" msg_seqno too high (similarly, there is a message with a higher msg_id but with either a lower or an equal and odd seqno)");
-                case 34:
-                    throw new InvalidOperationException("an even msg_seqno expected (irrelevant message), but odd received");
-                case 35:
-                    throw new InvalidOperationException("odd msg_seqno expected (relevant message), but even received");
-                case 48:
-                    throw new InvalidOperationException("incorrect server salt (in this case, the bad_server_salt response is received with the correct salt, and the message is to be re-sent with it)");
-                case 64:
-                    throw new InvalidOperationException("invalid container");
-            }
-            throw new NotImplementedException("This should never happens");
-            /*
-			logger.debug("bad_msg_notification: msgid {0}, seq {1}, errorcode {2}", requestId, requestSequence,
-						 errorCode);
-			*/
-            /*
-			if (!runningRequests.ContainsKey(requestId))
-			{
-				logger.debug("bad msg notification on unknown request");
-				return true;
-			}
-			*/
-
-            //OnBrokenSessionEvent();
-            //MTProtoRequest request = runningRequests[requestId];
-            //request.OnException(new MTProtoBadMessageException(errorCode));
-
-            return true;
-        }
-
-        private bool HandleBadServerSalt(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
-        {
-            uint code = messageReader.ReadUInt32();
-            ulong badMsgId = messageReader.ReadUInt64();
-            int badMsgSeqNo = messageReader.ReadInt32();
-            int errorCode = messageReader.ReadInt32();
-            ulong newSalt = messageReader.ReadUInt64();
-
-            //logger.debug("bad_server_salt: msgid {0}, seq {1}, errorcode {2}, newsalt {3}", badMsgId, badMsgSeqNo, errorCode, newSalt);
-
-            _session.Salt = newSalt;
-
-            //resend
-            Send(request);
-            /*
-            if(!runningRequests.ContainsKey(badMsgId)) {
-                logger.debug("bad server salt on unknown message");
-                return true;
-            }
-            */
-
-            //MTProtoRequest request = runningRequests[badMsgId];
-            //request.OnException(new MTProtoBadServerSaltException(salt));
-
-            return true;
-        }
-
-        private bool HandleMsgsAck(ulong messageId, int sequence, BinaryReader messageReader)
-        {
-            return false;
-        }
-
-        private bool HandleNewSessionCreated(ulong messageId, int sequence, BinaryReader messageReader)
-        {
-            return false;
-        }
-
-        private bool HandleFutureSalts(ulong messageId, int sequence, BinaryReader messageReader)
-        {
-            uint code = messageReader.ReadUInt32();
-            ulong requestId = messageReader.ReadUInt64();
-
-            messageReader.BaseStream.Position -= 12;
-
-            throw new NotImplementedException("Handle future server salts function isn't implemented.");
-            /*
-			if (!runningRequests.ContainsKey(requestId))
-			{
-				logger.info("future salts on unknown request");
-				return false;
-			}
-			*/
-
-            //	MTProtoRequest request = runningRequests[requestId];
-            //	runningRequests.Remove(requestId);
-            //	request.OnResponse(messageReader);
-
-            return true;
-        }
-
-        private bool HandlePong(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
-        {
-            uint code = messageReader.ReadUInt32();
-            ulong msgId = messageReader.ReadUInt64();
-
-            if (msgId == (ulong)request.MessageId)
-            {
-                request.ConfirmReceived = true;
-            }
-
-            return false;
-        }
-
-        private bool HandlePing(ulong messageId, int sequence, BinaryReader messageReader)
-        {
-            return false;
-        }
-
-        private bool HandleContainer(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
-        {
-            uint code = messageReader.ReadUInt32();
-            int size = messageReader.ReadInt32();
-            for (int i = 0; i < size; i++)
-            {
-                ulong innerMessageId = messageReader.ReadUInt64();
-                int innerSequence = messageReader.ReadInt32();
-                int innerLength = messageReader.ReadInt32();
-                long beginPosition = messageReader.BaseStream.Position;
-                try
-                {
-                    if (!processMessage(innerMessageId, sequence, messageReader, request))
-                    {
-                        messageReader.BaseStream.Position = beginPosition + innerLength;
-                    }
-                }
-                catch (Exception e)
-                {
-                    //	logger.error("failed to process message in contailer: {0}", e);
-                    messageReader.BaseStream.Position = beginPosition + innerLength;
-                }
-            }
-
             return false;
         }
 
@@ -528,38 +468,76 @@ namespace TLSharp.Core.Network
         {
             return new MemoryStream(new byte[len], 0, len, true, true);
         }
-    }
 
-    public class FloodException : Exception
-    {
-        public TimeSpan TimeToWait { get; private set; }
-
-        internal FloodException(TimeSpan timeToWait)
-            : base($"Flood prevention. Telegram now requires your program to do requests again only after {timeToWait.TotalSeconds} seconds have passed ({nameof(TimeToWait)} property)." +
-                    " If you think the culprit of this problem may lie in TLSharp's implementation, open a Github issue please.")
+        private bool processMessage(ulong messageId, int sequence, BinaryReader messageReader, TeleSharp.TL.TLMethod request)
         {
-            TimeToWait = timeToWait;
-        }
-    }
+            // TODO: check salt
+            // TODO: check sessionid
+            // TODO: check seqno
 
-    public abstract class DataCenterMigrationException : Exception
-    {
-        public int DC { get; private set; }
+            //logger.debug("processMessage: msg_id {0}, sequence {1}, data {2}", BitConverter.ToString(((MemoryStream)messageReader.BaseStream).GetBuffer(), (int) messageReader.BaseStream.Position, (int) (messageReader.BaseStream.Length - messageReader.BaseStream.Position)).Replace("-","").ToLower());
+            needConfirmation.Add(messageId);
 
-        private const string REPORT_MESSAGE =
-            " See: https://github.com/sochix/TLSharp#i-get-a-xxxmigrationexception-or-a-migrate_x-error";
+            uint code = messageReader.ReadUInt32();
+            messageReader.BaseStream.Position -= 4;
+            switch (code)
+            {
+                case 0x73f1f8dc: // container
+                                 //logger.debug("MSG container");
+                    return HandleContainer(messageId, sequence, messageReader, request);
 
-        protected DataCenterMigrationException(string msg, int dc) : base(msg + REPORT_MESSAGE)
-        {
-            DC = dc;
-        }
-    }
+                case 0x7abe77ec: // ping
+                                 //logger.debug("MSG ping");
+                    return HandlePing(messageId, sequence, messageReader);
 
-    internal class PhoneMigrationException : DataCenterMigrationException
-    {
-        internal PhoneMigrationException(int dc)
-            : base($"Phone number registered to a different DC: {dc}.", dc)
-        {
+                case 0x347773c5: // pong
+                                 //logger.debug("MSG pong");
+                    return HandlePong(messageId, sequence, messageReader, request);
+
+                case 0xae500895: // future_salts
+                                 //logger.debug("MSG future_salts");
+                    return HandleFutureSalts(messageId, sequence, messageReader);
+
+                case 0x9ec20908: // new_session_created
+                                 //logger.debug("MSG new_session_created");
+                    return HandleNewSessionCreated(messageId, sequence, messageReader);
+
+                case 0x62d6b459: // msgs_ack
+                                 //logger.debug("MSG msds_ack");
+                    return HandleMsgsAck(messageId, sequence, messageReader);
+
+                case 0xedab447b: // bad_server_salt
+                                 //logger.debug("MSG bad_server_salt");
+                    return HandleBadServerSalt(messageId, sequence, messageReader, request);
+
+                case 0xa7eff811: // bad_msg_notification
+                                 //logger.debug("MSG bad_msg_notification");
+                    return HandleBadMsgNotification(messageId, sequence, messageReader);
+
+                case 0x276d3ec6: // msg_detailed_info
+                                 //logger.debug("MSG msg_detailed_info");
+                    return HandleMsgDetailedInfo(messageId, sequence, messageReader);
+
+                case 0xf35c6d01: // rpc_result
+                                 //logger.debug("MSG rpc_result");
+                    return HandleRpcResult(messageId, sequence, messageReader, request);
+
+                case 0x3072cfa1: // gzip_packed
+                                 //logger.debug("MSG gzip_packed");
+                    return HandleGzipPacked(messageId, sequence, messageReader, request);
+
+                case 0xe317af7e:
+                case 0xd3f45784:
+                case 0x2b2fbd4e:
+                case 0x78d4dec1:
+                case 0x725b04c3:
+                case 0x74ae4240:
+                    return HandleUpdate(messageId, sequence, messageReader);
+
+                default:
+                    //logger.debug("unknown message: {0}", code);
+                    return false;
+            }
         }
     }
 
@@ -571,18 +549,26 @@ namespace TLSharp.Core.Network
         }
     }
 
-    internal class UserMigrationException : DataCenterMigrationException
-    {
-        internal UserMigrationException(int dc)
-            : base($"User located on a different DC: {dc}.", dc)
-        {
-        }
-    }
-
     internal class NetworkMigrationException : DataCenterMigrationException
     {
         internal NetworkMigrationException(int dc)
             : base($"Network located on a different DC: {dc}.", dc)
+        {
+        }
+    }
+
+    internal class PhoneMigrationException : DataCenterMigrationException
+    {
+        internal PhoneMigrationException(int dc)
+            : base($"Phone number registered to a different DC: {dc}.", dc)
+        {
+        }
+    }
+
+    internal class UserMigrationException : DataCenterMigrationException
+    {
+        internal UserMigrationException(int dc)
+            : base($"User located on a different DC: {dc}.", dc)
         {
         }
     }

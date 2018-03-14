@@ -3,5 +3,7 @@
     public class AppUserRoles
     {
         public const string USER = "USER";
+
+        public const string ADMIN = "ADMIN";
     }
 }

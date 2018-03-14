@@ -12,10 +12,12 @@ namespace TLSharp.Core.Requests
         {
         }
 
-        public override void SerializeBody(BinaryWriter writer)
+        public override int Constructor
         {
-            writer.Write(Constructor);
-            writer.Write(Helpers.GenerateRandomLong());
+            get
+            {
+                return 0x7abe77ec;
+            }
         }
 
         public override void DeserializeBody(BinaryReader reader)
@@ -28,12 +30,10 @@ namespace TLSharp.Core.Requests
             throw new NotImplementedException();
         }
 
-        public override int Constructor
+        public override void SerializeBody(BinaryWriter writer)
         {
-            get
-            {
-                return 0x7abe77ec;
-            }
+            writer.Write(Constructor);
+            writer.Write(Helpers.GenerateRandomLong());
         }
     }
 }

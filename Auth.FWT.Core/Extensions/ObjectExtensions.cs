@@ -6,5 +6,10 @@
         {
             return that == null;
         }
+
+        public static bool IsNotNull<T>(this T that) where T : class
+        {
+            return that != null;
+        }
     }
 }

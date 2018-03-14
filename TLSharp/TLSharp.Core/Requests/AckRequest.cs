@@ -14,16 +14,17 @@ namespace TLSharp.Core.Requests
             _msgs = msgs;
         }
 
-        public override void SerializeBody(BinaryWriter writer)
+        public override bool Confirmed => false;
+
+        public override int Constructor
         {
-            writer.Write(0x62d6b459); // msgs_ack
-            writer.Write(0x1cb5c415); // Vector
-            writer.Write(_msgs.Count);
-            foreach (ulong messageId in _msgs)
+            get
             {
-                writer.Write(messageId);
+                return 0x62d6b459;
             }
         }
+
+        public override bool Responded { get; }
 
         public override void DeserializeBody(BinaryReader reader)
         {
@@ -35,14 +36,14 @@ namespace TLSharp.Core.Requests
             throw new NotImplementedException();
         }
 
-        public override bool Confirmed => false;
-        public override bool Responded { get; }
-
-        public override int Constructor
+        public override void SerializeBody(BinaryWriter writer)
         {
-            get
+            writer.Write(0x62d6b459); // msgs_ack
+            writer.Write(0x1cb5c415); // Vector
+            writer.Write(_msgs.Count);
+            foreach (ulong messageId in _msgs)
             {
-                return 0x62d6b459;
+                writer.Write(messageId);
             }
         }
     }

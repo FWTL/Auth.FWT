@@ -2,47 +2,27 @@
 
 namespace TLSharp.Core.MTProto.Crypto
 {
-    public class FactorizedPair
-    {
-        private readonly BigInteger p;
-        private readonly BigInteger q;
-
-        public FactorizedPair(BigInteger p, BigInteger q)
-        {
-            this.p = p;
-            this.q = q;
-        }
-
-        public FactorizedPair(long p, long q)
-        {
-            this.p = BigInteger.ValueOf(p);
-            this.q = BigInteger.ValueOf(q);
-        }
-
-        public BigInteger Min
-        {
-            get
-            {
-                return p.Min(q);
-            }
-        }
-
-        public BigInteger Max
-        {
-            get
-            {
-                return p.Max(q);
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("P: {0}, Q: {1}", p, q);
-        }
-    }
     public class Factorizator
     {
         public static Random random = new Random();
+
+        public static FactorizedPair Factorize(BigInteger pq)
+        {
+            if (pq.BitLength < 64)
+            {
+                long pqlong = pq.LongValue;
+                long divisor = findSmallMultiplierLopatin(pqlong);
+                return new FactorizedPair(BigInteger.ValueOf(divisor), BigInteger.ValueOf(pqlong / divisor));
+            }
+            else
+            {
+                // TODO: port pollard factorization
+                throw new InvalidOperationException("pq too long; TODO: port the pollard algo");
+                // logger.error("pq too long; TODO: port the pollard algo");
+                // return null;
+            }
+        }
+
         public static long findSmallMultiplierLopatin(long what)
         {
             long g = 0;
@@ -109,30 +89,52 @@ namespace TLSharp.Core.MTProto.Crypto
                 {
                     a -= b;
                 }
-                else {
+                else
+                {
                     b -= a;
                 }
             }
             return b == 0 ? a : b;
         }
+    }
 
-        public static FactorizedPair Factorize(BigInteger pq)
+    public class FactorizedPair
+    {
+        private readonly BigInteger p;
+
+        private readonly BigInteger q;
+
+        public FactorizedPair(BigInteger p, BigInteger q)
         {
-            if (pq.BitLength < 64)
+            this.p = p;
+            this.q = q;
+        }
+
+        public FactorizedPair(long p, long q)
+        {
+            this.p = BigInteger.ValueOf(p);
+            this.q = BigInteger.ValueOf(q);
+        }
+
+        public BigInteger Max
+        {
+            get
             {
-                long pqlong = pq.LongValue;
-                long divisor = findSmallMultiplierLopatin(pqlong);
-                return new FactorizedPair(BigInteger.ValueOf(divisor), BigInteger.ValueOf(pqlong / divisor));
-            }
-            else {
-                // TODO: port pollard factorization
-                throw new InvalidOperationException("pq too long; TODO: port the pollard algo");
-                // logger.error("pq too long; TODO: port the pollard algo");
-                // return null;
+                return p.Max(q);
             }
         }
 
+        public BigInteger Min
+        {
+            get
+            {
+                return p.Min(q);
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("P: {0}, Q: {1}", p, q);
+        }
     }
-
-
 }

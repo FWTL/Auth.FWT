@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using TeleSharp.TL;
 using TeleSharp.TL.Upload;
 
@@ -12,6 +11,23 @@ namespace TLSharp.Core.Utils
 {
     public static class UploadHelper
     {
+        //public static TLAbsInputFile UploadFile(this TelegramClient client, string name, StreamReader reader)
+        //{
+        //    const long tenMb = 10 * 1024 * 1024;
+        //    return await UploadFile(name, reader, client, reader.BaseStream.Length >= tenMb);
+        //}
+        private static byte[] GetFile(StreamReader reader)
+        {
+            var file = new byte[reader.BaseStream.Length];
+
+            using (reader)
+            {
+                reader.BaseStream.Read(file, 0, (int)reader.BaseStream.Length);
+            }
+
+            return file;
+        }
+
         private static string GetFileHash(byte[] data)
         {
             string md5_checksum;
@@ -27,24 +43,6 @@ namespace TLSharp.Core.Utils
             }
 
             return md5_checksum;
-        }
-
-        public static async Task<TLAbsInputFile> UploadFile(this TelegramClient client, string name, StreamReader reader)
-        {
-            const long tenMb = 10 * 1024 * 1024;
-            return await UploadFile(name, reader, client, reader.BaseStream.Length >= tenMb);
-        }
-
-        private static byte[] GetFile(StreamReader reader)
-        {
-            var file = new byte[reader.BaseStream.Length];
-
-            using (reader)
-            {
-                reader.BaseStream.Read(file, 0, (int)reader.BaseStream.Length);
-            }
-
-            return file;
         }
 
         private static Queue<byte[]> GetFileParts(byte[] file)
@@ -74,62 +72,6 @@ namespace TLSharp.Core.Utils
             }
 
             return fileParts;
-        }
-
-        private static async Task<TLAbsInputFile> UploadFile(string name, StreamReader reader,
-            TelegramClient client, bool isBigFileUpload)
-        {
-            var file = GetFile(reader);
-            var fileParts = GetFileParts(file);
-
-            int partNumber = 0;
-            int partsCount = fileParts.Count;
-            long file_id = BitConverter.ToInt64(Helpers.GenerateRandomBytes(8), 0);
-            while (fileParts.Count != 0)
-            {
-                var part = fileParts.Dequeue();
-
-                if (isBigFileUpload)
-                {
-                    await client.SendRequestAsync<bool>(new TLRequestSaveBigFilePart
-                    {
-                        FileId = file_id,
-                        FilePart = partNumber,
-                        Bytes = part,
-                        FileTotalParts = partsCount
-                    });
-                }
-                else
-                {
-                    await client.SendRequestAsync<bool>(new TLRequestSaveFilePart
-                    {
-                        FileId = file_id,
-                        FilePart = partNumber,
-                        Bytes = part
-                    });
-                }
-                partNumber++;
-            }
-
-            if (isBigFileUpload)
-            {
-                return new TLInputFileBig
-                {
-                    Id = file_id,
-                    Name = name,
-                    Parts = partsCount
-                };
-            }
-            else
-            {
-                return new TLInputFile
-                {
-                    Id = file_id,
-                    Name = name,
-                    Parts = partsCount,
-                    Md5Checksum = GetFileHash(file)
-                };
-            }
         }
     }
 }

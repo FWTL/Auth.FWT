@@ -13,7 +13,7 @@ namespace Auth.FWT.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201802091635384_Init"; }
+            get { return "201803121446189_Init"; }
         }
         
         string IMigrationMetadata.Source
