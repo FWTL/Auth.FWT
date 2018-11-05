@@ -1,5 +1,6 @@
 ﻿namespace FWT.Database
 {
+    using FWT.Database.Configuration;
     using Microsoft.EntityFrameworkCore;
 
     public class TelegramDatabaseContext : DbContext
@@ -19,7 +20,7 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.ApplyConfiguration(new HierarchyDeltaConfiguration());
+            modelBuilder.ApplyConfiguration(new TelegramSessionConfiguration());
         }
     }
 }

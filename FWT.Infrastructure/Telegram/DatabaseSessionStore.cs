@@ -1,37 +1,58 @@
-﻿using FWT.Core.Services.Dapper;
+﻿using Dapper;
+using FWT.Core.Entities;
+using FWT.Core.Extensions;
+using FWT.Core.Services.Dapper;
 using OpenTl.ClientApi;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using static FWT.Core.Entities.TelegramSessionMap;
 
 namespace FWT.Infrastructure.Telegram
 {
     public class DatabaseSessionStore : ISessionStore
     {
+        private readonly IDatabaseConnector _database;
+        private int _userId;
+
         public DatabaseSessionStore(IDatabaseConnector database)
         {
-
+            _database = database;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public byte[] Load()
         {
-            throw new NotImplementedException();
+            return _database.Execute(conn =>
+            {
+                return conn.QueryFirst<byte[]>($"SELECT {Session} FROM {TelegramSessionMap.TelegramSession} WHERE {UserId} = @UserId", new { UserId = _userId });
+            });
         }
 
-        public Task Save(byte[] session)
+        public async Task Save(byte[] session)
         {
-            throw new NotImplementedException();
+            await _database.ExecuteAsync(conn =>
+            {
+                return conn.QueryAsync<byte[]>($@"
+                IF EXISTS ( SELECT 1 FROM {TelegramSessionMap.TelegramSession} WHERE {UserId} = @UserId)
+                BEGIN
+                  INSERT INTO {TelegramSessionMap.TelegramSession} ({UserId},{Session})
+                  VALUES (@UserId,@Session)
+                END
+                	ELSE
+                BEGIN
+                  UPDATE {TelegramSessionMap.TelegramSession}
+                  SET {Session} = @Session
+                  WHERE {UserId} = @UserId
+                END);
+            ", new { UserId = _userId, session });
+            });
         }
 
         public void SetSessionTag(string sessionTag)
         {
-            throw new NotImplementedException();
+            _userId = sessionTag.To<int>();
         }
     }
 }

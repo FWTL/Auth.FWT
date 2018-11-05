@@ -2,6 +2,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FWT.Core.CQRS;
+using FWT.Database;
 using FWT.Infrastructure.CQRS;
 using FWT.Infrastructure.Dapper;
 using FWT.Infrastructure.Unique;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using System;
+using FWT.Core.Extensions;
 
 namespace FWT.AuthServer
 {
@@ -18,10 +20,33 @@ namespace FWT.AuthServer
     {
         public static void RegisterCredentials(ContainerBuilder builder)
         {
+            builder.Register(b =>
+            {
+                var configuration = b.Resolve<IConfiguration>();
+                var credentials = new TelegramDatabaseCredentials();
+                credentials.BuildConnectionString(
+                    configuration["Auth:Sql:Url"],
+                    configuration["Auth:Sql:Port"].To<int>(),
+                    configuration["Auth:Sql:Catalog"],
+                    configuration["Auth:Sql:User"],
+                    configuration["Auth:Sql:Password"]);
+
+                return credentials;
+            }).SingleInstance();
         }
 
         public static void OverrideWithLocalCredentials(ContainerBuilder builder)
         {
+            builder.Register(b =>
+            {
+                var configuration = b.Resolve<IConfiguration>();
+                var credentials = new TelegramDatabaseCredentials();
+                credentials.BuildLocalConnectionString(
+                        configuration["Auth:Sql:Url"],
+                        configuration["Auth:Sql:Catalog"]);
+
+                return credentials;
+            }).SingleInstance();
         }
 
         public static IContainer RegisterDependencies(IServiceCollection services, IHostingEnvironment env, IConfiguration rootConfiguration)
@@ -32,7 +57,7 @@ namespace FWT.AuthServer
             builder.Populate(services);
             RegisterCredentials(builder);
 
-            if (env.EnvironmentName == "Local")
+            if (env.IsDevelopment())
             {
                 OverrideWithLocalCredentials(builder);
             }

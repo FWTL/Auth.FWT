@@ -2,6 +2,7 @@
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using FluentValidation;
+using FWT.Database;
 using FWT.Infrastructure.Configuration;
 using FWT.Infrastructure.Filters;
 using FWT.Infrastructure.Swagger;
@@ -27,8 +28,11 @@ namespace FWT.AuthServer
             .AddEnvironmentVariables();
             IConfigurationRoot configBuild = configuration.Build();
 
-            configuration.Add(new AzureSecretsVaultSource(configBuild["AzureKeyVault:App:BaseUrl"], configBuild["AzureKeyVault:App:ClientId"], configBuild["AzureKeyVault:App:SecretId"]));
-            _configuration = configuration.Build();
+            if (!hostingEnvironment.IsDevelopment())
+            {
+                configuration.Add(new AzureSecretsVaultSource(configBuild["AzureKeyVault:App:BaseUrl"], configBuild["AzureKeyVault:App:ClientId"], configBuild["AzureKeyVault:App:SecretId"]));
+                _configuration = configuration.Build();
+            }
 
             configuration.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true);
             _configuration = configuration.Build();
@@ -61,6 +65,8 @@ namespace FWT.AuthServer
                 options.CustomSchemaIds(type => type.FullName);
                 options.DescribeAllEnumsAsStrings();
             });
+
+            services.AddDbContext<TelegramDatabaseContext>();
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);
             return new AutofacServiceProvider(applicationContainer);
