@@ -1,10 +1,9 @@
 ﻿using Dapper;
-using FWT.Core.Entities;
 using FWT.Core.Extensions;
 using FWT.Core.Services.Dapper;
 using OpenTl.ClientApi;
 using System.Threading.Tasks;
-using static FWT.Core.Entities.TelegramSessionMap;
+using static FWT.Core.Entities.Maps.TelegramSessionMap;
 
 namespace FWT.Infrastructure.Telegram
 {
@@ -26,7 +25,7 @@ namespace FWT.Infrastructure.Telegram
         {
             return _database.Execute(conn =>
             {
-                return conn.QueryFirst<byte[]>($"SELECT {Session} FROM {TelegramSessionMap.TelegramSession} WHERE {UserId} = @UserId", new { UserId = _userId });
+                return conn.QueryFirst<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {UserId} = @UserId", new { UserId = _userId });
             });
         }
 
@@ -35,14 +34,14 @@ namespace FWT.Infrastructure.Telegram
             await _database.ExecuteAsync(conn =>
             {
                 return conn.QueryAsync<byte[]>($@"
-                IF EXISTS ( SELECT 1 FROM {TelegramSessionMap.TelegramSession} WHERE {UserId} = @UserId)
+                IF EXISTS ( SELECT 1 FROM {TelegramSession} WHERE {UserId} = @UserId)
                 BEGIN
-                  INSERT INTO {TelegramSessionMap.TelegramSession} ({UserId},{Session})
+                  INSERT INTO {TelegramSession} ({UserId},{Session})
                   VALUES (@UserId,@Session)
                 END
                 	ELSE
                 BEGIN
-                  UPDATE {TelegramSessionMap.TelegramSession}
+                  UPDATE {TelegramSession}
                   SET {Session} = @Session
                   WHERE {UserId} = @UserId
                 END);
