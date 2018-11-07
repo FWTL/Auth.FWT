@@ -279,3 +279,4 @@ __pycache__/
 /Auth.FWT.API/Web.DEVELOPMENT.config
 /QueueReceiver/appSettings.config
 /QueueReceiver/appConnectionStrings.config
+/FWT.AuthServer/appsettings.Development.json
