@@ -24,7 +24,7 @@ namespace FWT.Infrastructure.Telegram
         {
             return _database.Execute(conn =>
             {
-                return conn.QueryFirstOrDefault<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {HashId} = @HashId", new { HashId = _hashId });
+                return conn.QueryFirstOrDefault<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {HashId} = @{HashId}", new { HashId = _hashId });
             });
         }
 
