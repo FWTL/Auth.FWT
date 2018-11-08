@@ -5,6 +5,7 @@ using FWT.Core.Services.Telegram;
 using FWT.Infrastructure.Validation;
 using NodaTime;
 using OpenTl.ClientApi;
+using OpenTl.Schema.Auth;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -12,17 +13,17 @@ namespace FWT.AuthServer.Controllers.Account
 {
     public class SendCode
     {
-        public class Command : ICommand
+        public class Query : IQuery
         {
-            public Command(string phoneNumber)
+            public Query(string phoneNumber)
             {
                 PhoneNumber = $"+{Regex.Match(phoneNumber, @"\d+").Value}";
             }
 
-            public string PhoneNumber { get; private set; }
+            public string PhoneNumber { get; }
         }
 
-        public class Handler : ICommandHandler<Command>
+        public class Handler : IQueryHandler<Query, string>
         {
             private readonly IClock _clock;
             private readonly ITelegramService _telegramService;
@@ -33,15 +34,16 @@ namespace FWT.AuthServer.Controllers.Account
                 _telegramService = telegramService;
             }
 
-            public async Task ExecuteAsync(Command command)
+            public async Task<string> HandleAsync(Query query)
             {
-                string hashedPhoneId = HashHelper.GetHash(command.PhoneNumber);
+                string hashedPhoneId = HashHelper.GetHash(query.PhoneNumber);
                 IClientApi client = await _telegramService.Build(hashedPhoneId);
-                await client.AuthService.SendCodeAsync(command.PhoneNumber);
+                ISentCode result = await client.AuthService.SendCodeAsync(query.PhoneNumber);
+                return result.PhoneCodeHash;
             }
         }
 
-        public class Validator : AppAbstractValidation<Command>
+        public class Validator : AppAbstractValidation<Query>
         {
             public Validator()
             {

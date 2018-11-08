@@ -12,6 +12,7 @@ using FWT.Infrastructure.Telegram;
 using FWT.Infrastructure.Unique;
 using FWT.Infrastructure.Validation;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -132,6 +133,11 @@ namespace FWT.AuthServer
             builder.Register<IClock>(b =>
             {
                 return SystemClock.Instance;
+            }).SingleInstance();
+
+            builder.Register<IMemoryCache>(b =>
+            {
+                return new MemoryCache(new MemoryCacheOptions());
             }).SingleInstance();
 
             builder.RegisterType<DapperConnector>().AsImplementedInterfaces().InstancePerLifetimeScope();

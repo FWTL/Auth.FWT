@@ -20,9 +20,16 @@ namespace FWT.AuthServer.Controllers
 
         [HttpPost]
         [Route("Sendcode")]
-        public async Task SendCode(string phoneNumber)
+        public async Task<string> SendCode(string phoneNumber)
         {
-            await _commandDispatcher.DispatchAsync(new SendCode.Command(phoneNumber));
+            return await _queryDispatcher.DispatchAsync<SendCode.Query, string>(new SendCode.Query(phoneNumber));
+        }
+
+        [HttpPost]
+        [Route("SignIn")]
+        public async Task<string> SignIn(string phoneNumber, string sentCode, string code)
+        {
+            return await _queryDispatcher.DispatchAsync<SignIn.Query, string>(new SignIn.Query(phoneNumber, sentCode, code));
         }
     }
 }

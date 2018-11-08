@@ -11,14 +11,14 @@ namespace FWT.Infrastructure.Telegram
     {
         private readonly IDatabaseConnector _database;
         private readonly TelegramSettings _settings;
-        private readonly MemoryCache _memoryCache;
+        private readonly IMemoryCache _cache;
         private static readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(60);
 
-        public TelegramService(IDatabaseConnector database, TelegramSettings settings)
+        public TelegramService(IDatabaseConnector database, TelegramSettings settings, IMemoryCache cache)
         {
             _database = database;
             _settings = settings;
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _cache = cache;
         }
 
         private IFactorySettings BuildSettings(string hash)
@@ -46,13 +46,13 @@ namespace FWT.Infrastructure.Telegram
 
         public async Task<IClientApi> Build(string hash)
         {
-            if (_memoryCache.TryGetValue(hash, out IClientApi clientApi))
+            if (_cache.TryGetValue(hash, out IClientApi clientApi))
             {
                 return clientApi;
             }
 
-            var client = await ClientFactory.BuildClientAsync(BuildSettings(hash));
-            _memoryCache.Set(hash, clientApi, new MemoryCacheEntryOptions().SetSlidingExpiration(SlidingExpiration));
+            IClientApi client = await ClientFactory.BuildClientAsync(BuildSettings(hash));
+            _cache.Set(hash, client, new MemoryCacheEntryOptions().SetSlidingExpiration(SlidingExpiration));
 
             return client;
         }

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using FWT.Core.Extensions;
 using FWT.Core.Services.Dapper;
 using OpenTl.ClientApi;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace FWT.Infrastructure.Telegram
         {
             return _database.Execute(conn =>
             {
-                return conn.QueryFirstOrDefault<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {HashId} = @Hash", new { HashId = _hashId });
+                return conn.QueryFirstOrDefault<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {HashId} = @HashId", new { HashId = _hashId });
             });
         }
 
@@ -34,18 +33,18 @@ namespace FWT.Infrastructure.Telegram
             await _database.ExecuteAsync(conn =>
             {
                 return conn.ExecuteAsync($@"
-                IF EXISTS ( SELECT 1 FROM {TelegramSession} WHERE {HashId} = @HashId)
+                IF NOT EXISTS ( SELECT 1 FROM {TelegramSession} WHERE {HashId} = @{HashId})
                 BEGIN
                   INSERT INTO {TelegramSession} ({HashId},{Session})
-                  VALUES (@UserId,@Session)
+                  VALUES (@{HashId},@{Session})
                 END
                 	ELSE
                 BEGIN
                   UPDATE {TelegramSession}
-                  SET {Session} = @Session
-                  WHERE {HashId} = @HashId
-                END);
-            ", new { HashId = _hashId, session });
+                  SET {Session} = @{Session}
+                  WHERE {HashId} = @{HashId}
+                END;
+            ", new { HashId = _hashId, Session = session });
             });
         }
 
