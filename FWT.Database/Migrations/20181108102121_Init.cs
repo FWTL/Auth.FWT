@@ -11,12 +11,12 @@ namespace FWT.Database.Migrations
                 name: "TelegramSession",
                 columns: table => new
                 {
-                    UserId = table.Column<long>(nullable: false),
+                    HashId = table.Column<string>(nullable: false),
                     Session = table.Column<byte[]>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TelegramSession", x => x.UserId);
+                    table.PrimaryKey("PK_TelegramSession", x => x.HashId);
                 });
         }
 

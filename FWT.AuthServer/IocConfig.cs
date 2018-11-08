@@ -8,6 +8,7 @@ using FWT.Core.Services.Telegram;
 using FWT.Database;
 using FWT.Infrastructure.CQRS;
 using FWT.Infrastructure.Dapper;
+using FWT.Infrastructure.Telegram;
 using FWT.Infrastructure.Unique;
 using FWT.Infrastructure.Validation;
 using Microsoft.AspNetCore.Hosting;
@@ -60,7 +61,7 @@ namespace FWT.AuthServer
                     AppId = configuration["Telegram:Settings:AppId"].To<int>(),
                     ServerAddress = configuration["Telegram:Settings:ServerAddress"],
                     ServerPort = configuration["Telegram:Settings:ServerPort"].To<int>(),
-                    ServerPublicKey = configuration["Telegram:Settings:"]
+                    ServerPublicKey = configuration["Telegram:Settings:ServerPublicKey"]
                 };
 
                 return settings;
@@ -135,6 +136,7 @@ namespace FWT.AuthServer
 
             builder.RegisterType<DapperConnector>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<GuidService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<TelegramService>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             return builder.Build();
         }

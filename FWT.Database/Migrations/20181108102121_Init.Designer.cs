@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FWT.Database.Migrations
 {
     [DbContext(typeof(TelegramDatabaseContext))]
-    [Migration("20181105111403_Init")]
+    [Migration("20181108102121_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,12 +23,12 @@ namespace FWT.Database.Migrations
 
             modelBuilder.Entity("FWT.Core.Entities.TelegramSession", b =>
                 {
-                    b.Property<long>("UserId");
+                    b.Property<string>("HashId");
 
                     b.Property<byte[]>("Session")
                         .IsRequired();
 
-                    b.HasKey("UserId");
+                    b.HasKey("HashId");
 
                     b.ToTable("TelegramSession");
                 });

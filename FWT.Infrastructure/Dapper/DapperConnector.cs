@@ -1,4 +1,6 @@
 using FWT.Core.Services.Dapper;
+using FWT.Core.Sql;
+using FWT.Database;
 using FWT.Infrastructure.Sql;
 using System;
 using System.Data;
@@ -9,9 +11,9 @@ namespace FWT.Infrastructure.Dapper
 {
     public class DapperConnector : IDatabaseConnector
     {
-        private readonly DatabaseCredentials _databaseConnection;
+        private readonly IDatabaseCredentials _databaseConnection;
 
-        public DapperConnector(DatabaseCredentials databaseConnection)
+        public DapperConnector(TelegramDatabaseCredentials databaseConnection)
         {
             _databaseConnection = databaseConnection;
         }

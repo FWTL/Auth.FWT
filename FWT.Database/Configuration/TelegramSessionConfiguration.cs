@@ -8,8 +8,8 @@
     {
         public void Configure(EntityTypeBuilder<TelegramSession> builder)
         {
-            builder.HasKey(x => x.UserId);
-            builder.Property(x => x.UserId).ValueGeneratedNever();
+            builder.HasKey(x => x.HashId);
+            builder.Property(x => x.HashId).IsRequired().ValueGeneratedNever();
             builder.Property(b => b.Session).IsRequired();
         }
     }

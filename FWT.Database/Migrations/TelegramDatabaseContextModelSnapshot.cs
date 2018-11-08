@@ -21,12 +21,12 @@ namespace FWT.Database.Migrations
 
             modelBuilder.Entity("FWT.Core.Entities.TelegramSession", b =>
                 {
-                    b.Property<long>("UserId");
+                    b.Property<string>("HashId");
 
                     b.Property<byte[]>("Session")
                         .IsRequired();
 
-                    b.HasKey("UserId");
+                    b.HasKey("HashId");
 
                     b.ToTable("TelegramSession");
                 });

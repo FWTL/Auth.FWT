@@ -1,14 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FWT.Core.Entities
+﻿namespace FWT.Core.Entities
 {
-    public class TelegramSession
+    public class TelegramSession 
     {
-        [Key]
-        public long UserId { get; set; }
+        public string HashId { get; set; }
 
         public byte[] Session { get; set; }
     }
-
-   
 }

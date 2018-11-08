@@ -10,7 +10,7 @@ namespace FWT.Infrastructure.Telegram
     public class DatabaseSessionStore : ISessionStore
     {
         private readonly IDatabaseConnector _database;
-        private int _userId;
+        private string _hashId;
 
         public DatabaseSessionStore(IDatabaseConnector database)
         {
@@ -25,7 +25,7 @@ namespace FWT.Infrastructure.Telegram
         {
             return _database.Execute(conn =>
             {
-                return conn.QueryFirst<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {UserId} = @UserId", new { UserId = _userId });
+                return conn.QueryFirstOrDefault<byte[]>($"SELECT {Session} FROM {TelegramSession} WHERE {HashId} = @Hash", new { HashId = _hashId });
             });
         }
 
@@ -33,25 +33,25 @@ namespace FWT.Infrastructure.Telegram
         {
             await _database.ExecuteAsync(conn =>
             {
-                return conn.QueryAsync<byte[]>($@"
-                IF EXISTS ( SELECT 1 FROM {TelegramSession} WHERE {UserId} = @UserId)
+                return conn.ExecuteAsync($@"
+                IF EXISTS ( SELECT 1 FROM {TelegramSession} WHERE {HashId} = @HashId)
                 BEGIN
-                  INSERT INTO {TelegramSession} ({UserId},{Session})
+                  INSERT INTO {TelegramSession} ({HashId},{Session})
                   VALUES (@UserId,@Session)
                 END
                 	ELSE
                 BEGIN
                   UPDATE {TelegramSession}
                   SET {Session} = @Session
-                  WHERE {UserId} = @UserId
+                  WHERE {HashId} = @HashId
                 END);
-            ", new { UserId = _userId, session });
+            ", new { HashId = _hashId, session });
             });
         }
 
         public void SetSessionTag(string sessionTag)
         {
-            _userId = sessionTag.To<int>();
+            _hashId = sessionTag;
         }
     }
 }
