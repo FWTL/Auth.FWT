@@ -1,8 +1,8 @@
-﻿using FWT.Core.Helpers;
-using FWT.Core.Services.Dapper;
+﻿using FWT.Core.Services.Dapper;
 using FWT.Core.Services.Telegram;
+using Microsoft.Extensions.Caching.Memory;
 using OpenTl.ClientApi;
-using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
 
 namespace FWT.Infrastructure.Telegram
@@ -11,9 +11,10 @@ namespace FWT.Infrastructure.Telegram
     {
         private readonly IDatabaseConnector _database;
         private readonly TelegramSettings _settings;
-        private readonly IDatabase _cache;
+        private readonly IMemoryCache _cache;
+        private static readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(60);
 
-        public TelegramService(IDatabaseConnector database, TelegramSettings settings, IDatabase cache)
+        public TelegramService(IDatabaseConnector database, TelegramSettings settings, IMemoryCache cache)
         {
             _database = database;
             _settings = settings;
@@ -45,14 +46,13 @@ namespace FWT.Infrastructure.Telegram
 
         public async Task<IClientApi> Build(string hash)
         {
-            RedisValue redisResult = _cache.StringGet(hash);
-            if (redisResult.HasValue)
+            if (_cache.TryGetValue(hash, out IClientApi clientApi))
             {
-                ObjectHelper.FromByteArray<IClientApi>(redisResult);
+                return clientApi;
             }
 
             IClientApi client = await ClientFactory.BuildClientAsync(BuildSettings(hash));
-            _cache.StringSet(hash, ObjectHelper.ToByteArray(client));
+            _cache.Set(hash, client, new MemoryCacheEntryOptions().SetSlidingExpiration(SlidingExpiration));
 
             return client;
         }

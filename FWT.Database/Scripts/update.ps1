@@ -8,9 +8,9 @@ if(!($buildPath)){
 }
 else
 {
-    $buildPath = Join-Path $buildPath 'FWT.AuthServer'
+    $buildPath = Join-Path $buildPath 'FWT.Api'
 }
 
 $Env:ASPNETCORE_ENVIRONMENT = $configuration
 Set-Location $buildPath
-dotnet ef database update --startup-project ../FWT.AuthServer --verbose
+dotnet ef database update --startup-project ../FWT.Api --verbose

@@ -14,4 +14,4 @@ else
 
 $Env:ASPNETCORE_ENVIRONMENT = $configuration
 Set-Location $buildPath
-dotnet ef migrations add $migration --startup-project ../FWT.AuthServer --verbose
+dotnet ef migrations add $migration --startup-project ../FWT.Api --verbose

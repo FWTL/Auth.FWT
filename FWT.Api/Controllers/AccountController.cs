@@ -1,9 +1,9 @@
-﻿using FWT.AuthServer.Controllers.Account;
+﻿using FWT.Api.Controllers.Account;
 using FWT.Core.CQRS;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace FWT.AuthServer.Controllers
+namespace FWT.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

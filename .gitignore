@@ -281,3 +281,4 @@ __pycache__/
 /QueueReceiver/appConnectionStrings.config
 /FWT.AuthServer/appsettings.Development.json
 /AzureSetup/azureauth.properties
+/FWT.Api/appsettings.Development.json

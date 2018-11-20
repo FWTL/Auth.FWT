@@ -2,6 +2,7 @@
 using FWT.Core.CQRS;
 using FWT.Core.Helpers;
 using FWT.Core.Services.Telegram;
+using FWT.Infrastructure.Telegram;
 using FWT.Infrastructure.Validation;
 using NodaTime;
 using OpenTl.ClientApi;
@@ -9,7 +10,7 @@ using OpenTl.Schema.Auth;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace FWT.AuthServer.Controllers.Account
+namespace FWT.Api.Controllers.Account
 {
     public class SendCode
     {
@@ -38,7 +39,11 @@ namespace FWT.AuthServer.Controllers.Account
             {
                 string hashedPhoneId = HashHelper.GetHash(query.PhoneNumber);
                 IClientApi client = await _telegramService.Build(hashedPhoneId);
-                ISentCode result = await client.AuthService.SendCodeAsync(query.PhoneNumber);
+                ISentCode result = await TelegramRequest.Handle(() =>
+                {
+                    return client.AuthService.SendCodeAsync(query.PhoneNumber);
+                });
+
                 return result.PhoneCodeHash;
             }
         }

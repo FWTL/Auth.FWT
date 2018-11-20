@@ -12,7 +12,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace FWT.AuthServer.Controllers.Account
+namespace FWT.Api.Controllers.Account
 {
     public class SignIn
     {

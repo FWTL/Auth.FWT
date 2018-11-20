@@ -19,7 +19,7 @@ using NodaTime;
 using StackExchange.Redis;
 using System;
 
-namespace FWT.AuthServer
+namespace FWT.Api
 {
     public class IocConfig
     {

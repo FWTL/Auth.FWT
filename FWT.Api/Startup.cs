@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 
-namespace FWT.AuthServer
+namespace FWT.Api
 {
     public class Startup
     {
@@ -54,7 +54,7 @@ namespace FWT.AuthServer
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "FWT.AuthServer", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "FWT.Api", Version = "v1" });
                 c.MapType<Guid>(() => new Schema() { Type = "string", Format = "text", Description = "GUID" });
 
                 c.OperationFilter<AuthorizeOperationFilter>();
@@ -77,7 +77,7 @@ namespace FWT.AuthServer
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FWT.AuthServer");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FWT.Api");
                 c.DisplayRequestDuration();
             });
 

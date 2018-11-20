@@ -10,14 +10,16 @@ namespace FWT.Infrastructure.Swagger
     {
         public void Apply(Operation operation, OperationFilterContext context)
         {
-            var hasAuthAttribute = context.ApiDescription.ControllerAttributes().Union(context.ApiDescription.ActionAttributes()).OfType<AuthorizeAttribute>().Any();
-            if (hasAuthAttribute)
+            var hasAuthorize = context.ApiDescription.ControllerAttributes().OfType<AuthorizeAttribute>().Any() || context.ApiDescription.ActionAttributes().OfType<AuthorizeAttribute>().Any();
+
+            if (hasAuthorize)
             {
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
-                operation.Security.Add(new Dictionary<string, IEnumerable<string>>
-                {
-                    {"Bearer", new string[] { }},
-                });
+                operation.Responses.Add("401", new Response { Description = "Unauthorized" });
+                operation.Responses.Add("403", new Response { Description = "Forbidden" });
+
+                operation.Security = new List<IDictionary<string, IEnumerable<string>>> {
+                    new Dictionary<string, IEnumerable<string>> {{"oauth2", new[] {"swagger"}}}
+                };
             }
         }
     }
