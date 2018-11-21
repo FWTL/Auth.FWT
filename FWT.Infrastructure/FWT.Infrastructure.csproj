@@ -12,22 +12,22 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
-    <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="FluentValidation" Version="8.0.100" />
+    <PackageReference Include="IdentityServer4" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.3" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.3.0" />
-    <PackageReference Include="NLog" Version="4.5.10" />
-    <PackageReference Include="OpenTl.ClientApi" Version="0.6.92" />
-    <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.1" />
+    <PackageReference Include="NLog" Version="4.5.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FWT.Core\FWT.Core.csproj" />
-    <ProjectReference Include="..\FWT.Database\FWT.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Handlers\" />
   </ItemGroup>
 
 </Project>
