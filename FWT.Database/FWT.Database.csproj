@@ -12,4 +12,8 @@
     <ProjectReference Include="..\FWT.Core\FWT.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
 </Project>
