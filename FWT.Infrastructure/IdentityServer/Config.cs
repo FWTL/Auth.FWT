@@ -1,5 +1,4 @@
-﻿using IdentityServer4;
-using IdentityServer4.Models;
+﻿using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
@@ -31,26 +30,17 @@ namespace FWT.Infrastructure.IdentityServer
                 new Client
                 {
                     ClientId = "app",
-                    ClientName = "Application",
-                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-
-                    RequireConsent = false,
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     ClientSecrets =
                     {
-                        new Secret("secret".Sha256())
+                        new Secret(configuration["Auth:Clients:App:Secret"].Sha256())
                     },
-
-                    RedirectUris = { $"{configuration["Auth:Url"]}/signin-oidc" },
-                    PostLogoutRedirectUris = { $"{configuration["Auth:Url"]}/signout-callback-oidc" },
 
                     AllowedScopes =
                     {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
                         "api"
                     },
-                    AllowOfflineAccess = true
                 },
             };
         }
