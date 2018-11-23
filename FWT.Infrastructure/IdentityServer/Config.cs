@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace FWT.Infrastructure.IdentityServer
 {
@@ -31,12 +32,25 @@ namespace FWT.Infrastructure.IdentityServer
                 {
                     ClientId = "app",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AccessTokenLifetime = 3600 * 24 * 30,
 
                     ClientSecrets =
                     {
                         new Secret(configuration["Auth:Clients:App:Secret"].Sha256())
                     },
 
+                    AllowedScopes =
+                    {
+                        "api"
+                    },
+                },
+
+                new Client
+                {
+                    ClientId = "swagger",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    Claims = new List<Claim>() { new Claim("PhoneHash", "123") },
+                    RequireClientSecret = false,
                     AllowedScopes =
                     {
                         "api"
