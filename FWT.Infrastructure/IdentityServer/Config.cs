@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityModel;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -21,6 +22,9 @@ namespace FWT.Infrastructure.IdentityServer
             return new List<ApiResource>
             {
                 new ApiResource("api", "FWT.API")
+                {
+                    UserClaims = new List<string>() { JwtClaimTypes.Profile }
+                }
             };
         }
 
@@ -33,6 +37,8 @@ namespace FWT.Infrastructure.IdentityServer
                     ClientId = "app",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AccessTokenLifetime = 3600 * 24 * 30,
+                    AlwaysSendClientClaims = true,
+                    AlwaysIncludeUserClaimsInIdToken = true,
 
                     ClientSecrets =
                     {

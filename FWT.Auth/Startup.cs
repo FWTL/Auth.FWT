@@ -70,7 +70,9 @@ namespace FWT.Auth
                 .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryApiResources(Config.GetApiResources())
-                .AddInMemoryClients(Config.GetClients(_configuration));
+                .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                .AddInMemoryClients(Config.GetClients(_configuration))
+                .AddCustomTokenRequestValidator<TokenRequestValidator>();
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);
             return new AutofacServiceProvider(applicationContainer);

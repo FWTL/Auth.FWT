@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FWT.Core.CQRS;
 using FWT.Infrastructure.CQRS;
+using FWT.Infrastructure.IdentityServer;
 using FWT.Infrastructure.Unique;
 using FWT.Infrastructure.Validation;
 using Microsoft.AspNetCore.Hosting;
@@ -63,6 +64,7 @@ namespace FWT.Auth
             }).SingleInstance();
 
             builder.RegisterType<GuidService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            //builder.RegisterType<TelegramProfileService>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             return builder.Build();
         }
