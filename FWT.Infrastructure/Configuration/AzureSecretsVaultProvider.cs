@@ -19,7 +19,7 @@ namespace FWT.Infrastructure.Configuration
 
         public override void Load()
         {
-            var parser = new AzureSecretParser(_baseUrl, _clientId, _clientSecret);
+            var parser = new AzureKeyVault(_baseUrl, _clientId, _clientSecret);
             Task<IDictionary<string, string>> t = parser.ParseAsync();
             t.Wait();
             Data = t.Result;

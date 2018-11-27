@@ -1,4 +1,6 @@
-﻿using IdentityServer4.Validation;
+﻿using FWT.Core;
+using FWT.Core.Extensions;
+using IdentityServer4.Validation;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -8,8 +10,12 @@ namespace FWT.Infrastructure.IdentityServer
     {
         public Task ValidateAsync(CustomTokenRequestValidationContext context)
         {
-            string phoneHashId = context.Result.ValidatedRequest.Raw["PhoneHashId"];
-            context.Result.ValidatedRequest.ClientClaims.Add(new Claim("PhoneHashId", phoneHashId));
+            string phoneHashId = context.Result.ValidatedRequest.Raw["PhoneHasshId"];
+            if (phoneHashId.IsNotNull())
+            {
+                context.Result.ValidatedRequest.ClientClaims.Add(new Claim(Const.PHONE_HASH_ID, phoneHashId));
+            }
+
             return Task.CompletedTask;
         }
     }

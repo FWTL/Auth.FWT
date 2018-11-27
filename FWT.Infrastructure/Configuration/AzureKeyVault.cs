@@ -1,6 +1,8 @@
-﻿using Microsoft.Azure.KeyVault;
+﻿using FWT.Core.Services.KeyVault;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Rest.Azure;
 using System;
 using System.Collections.Generic;
@@ -8,17 +10,28 @@ using System.Threading.Tasks;
 
 namespace FWT.Infrastructure.Configuration
 {
-    public class AzureSecretParser
+    public class AzureKeyVault : IAzureKeyVault
     {
         private readonly string _baseUrl;
         private readonly string _clientId;
         private readonly string _clientSecret;
 
-        public AzureSecretParser(string baseUrl, string clientId, string clientSecret)
+        public AzureKeyVault(string baseUrl, string clientId, string clientSecret)
         {
             _baseUrl = baseUrl;
             _clientId = clientId;
             _clientSecret = clientSecret;
+        }
+
+        public async Task<RsaSecurityKey> GetRsaKey(string keyId)
+        {
+            var dict = new Dictionary<string, string>();
+            using (var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback((authority, resource, scope)
+            => GetTokenAsync(_clientId, _clientSecret, authority, resource, scope))))
+            {
+                KeyBundle key = await keyVaultClient.GetKeyAsync(keyId);
+                return new RsaSecurityKey(key.Key.ToRSA());
+            }
         }
 
         public async Task<IDictionary<string, string>> ParseAsync()

@@ -66,13 +66,22 @@ namespace FWT.Auth
                 options.DescribeAllEnumsAsStrings();
             });
 
-            services.AddIdentityServer()
+            var identityServerBuilder = services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryClients(Config.GetClients(_configuration))
                 .AddCustomTokenRequestValidator<TokenRequestValidator>();
+
+            if (_hostingEnvironment.IsDevelopment())
+            {
+                identityServerBuilder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                identityServerBuilder.AddSigningCredential(rsaKey: null);
+            }
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);
             return new AutofacServiceProvider(applicationContainer);
