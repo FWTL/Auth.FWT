@@ -12,7 +12,7 @@ namespace AzureSetup
         private static async Task Dev()
         {
             Console.WriteLine("START");
-            var options = new Options("auth2711dev");
+            var options = new Options("auth2811dev");
             options.ASPNETCORE_ENVIRONMENT = "Staging";
 
             var azure = Util.Auth();
@@ -24,7 +24,7 @@ namespace AzureSetup
                 var appPlanFactory = new AzureAppServices(azure, options);
 
                 var resourceGroup = await resourceGroupFactory.CreateOrGetAsync(options.NAME, Region.EuropeNorth);
-                var configVault = await vaultFactory.CreateOrGetAsync("config-" + options.NAME, resourceGroup, "650b5c4d-c28c-46f3-ae5d-397216471737");
+                var configVault = await vaultFactory.CreateOrGetAsync("config-" + options.NAME, resourceGroup, options.READ_AD_APP_OBJECT_ID);
                 var plan = await appPlanFactory.CreateOrGetPlan(options.NAME, resourceGroup, PricingTier.BasicB1);
 
                 await appPlanFactory.CreateOrGetWebApp("auth-" + options.NAME, resourceGroup, plan, new Dictionary<string, string>

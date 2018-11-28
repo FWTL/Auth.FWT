@@ -18,6 +18,7 @@ namespace AzureSetup
         public string AD_APP_SECRET { get; set; } = ConfigurationManager.AppSettings["AD_APP_SECRET"];
 
         public string READ_AD_APP_APPLICATIONID { get; set; } = ConfigurationManager.AppSettings["READ_AD_APP_APPLICATIONID"];
+        public string READ_AD_APP_OBJECT_ID { get; set; } = ConfigurationManager.AppSettings["READ_AD_APP_OBJECT_ID"];
         public string READ_AD_APP_SECRET { get; set; } = ConfigurationManager.AppSettings["READ_AD_APP_SECRET"];
 
         public string ASPNETCORE_ENVIRONMENT { get; set; } = "Development";

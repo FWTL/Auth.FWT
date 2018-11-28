@@ -39,12 +39,11 @@ namespace AzureSetup
                 .DefineAccessPolicy()
                     .ForServicePrincipal("AG Setup")
                     .AllowSecretPermissions(SecretPermissions.Get, SecretPermissions.List, SecretPermissions.Set)
-                    .AllowKeyPermissions(KeyPermissions.Create, KeyPermissions.Get)
+                    .AllowCertificatePermissions(CertificatePermissions.Import, CertificatePermissions.Get)
                     .Attach()
                 .DefineAccessPolicy()
                     .ForObjectId(principalObjectId)
-                    .AllowSecretPermissions(SecretPermissions.Get)
-                    .AllowKeyPermissions(KeyPermissions.Get)
+                    .AllowSecretPermissions(SecretPermissions.Get, SecretPermissions.List)
                     .Attach()
                 .CreateAsync();
         }

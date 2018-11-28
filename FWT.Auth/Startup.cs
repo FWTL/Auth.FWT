@@ -10,10 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Threading.Tasks;
 
 namespace FWT.Auth
 {
@@ -28,16 +26,16 @@ namespace FWT.Auth
             .SetBasePath(hostingEnvironment.ContentRootPath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables();
-            IConfigurationRoot configBuild = configuration.Build();
-
-            if (!hostingEnvironment.IsDevelopment())
-            {
-                configuration.Add(new AzureSecretsVaultSource(configBuild["AzureKeyVault:App:BaseUrl"], configBuild["AzureKeyVault:App:ClientId"], configBuild["AzureKeyVault:App:SecretId"]));
-                _configuration = configuration.Build();
-            }
+            _configuration = configuration.Build();
 
             configuration.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true);
             _configuration = configuration.Build();
+
+            if (!hostingEnvironment.IsDevelopment())
+            {
+                configuration.Add(new AzureSecretsVaultSource(_configuration["AzureKeyVault:App:BaseUrl"], _configuration["AzureKeyVault:App:ClientId"], _configuration["AzureKeyVault:App:SecretId"]));
+                _configuration = configuration.Build();
+            }
 
             _hostingEnvironment = hostingEnvironment;
         }
@@ -81,11 +79,12 @@ namespace FWT.Auth
             }
             else
             {
-                var keyVault = new AzureKeyVault(_configuration["AzureKeyVault:App:BaseUrl"], _configuration["AzureKeyVault:App:ClientId"], _configuration["AzureKeyVault:App:SecretId"]);
-                Task<RsaSecurityKey> task = keyVault.GetRsaKeyAsync("RsaKey");
-                task.Wait();
-
-                identityServerBuilder.AddSigningCredential(task.Result);
+                identityServerBuilder.AddSigningCredentialFromAzureKeyVault(
+                    _configuration["AzureKeyVault:App:BaseUrl"],
+                    _configuration["AzureKeyVault:App:ClientId"],
+                    _configuration["AzureKeyVault:App:SecretId"],
+                    "SigningCert",
+                    30);
             }
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Configurations>Debug;Release;Setup</Configurations>
+    <Configurations>Debug;Release;Setup;Staging</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +25,15 @@
   <ItemGroup>
     <ProjectReference Include="..\FWT.Core\FWT.Core.csproj" />
     <ProjectReference Include="..\FWT.Infrastructure\FWT.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.Staging.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
