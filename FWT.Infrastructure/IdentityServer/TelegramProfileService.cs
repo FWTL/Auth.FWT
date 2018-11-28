@@ -10,7 +10,7 @@ namespace FWT.Infrastructure.IdentityServer
     {
         public Task ValidateAsync(CustomTokenRequestValidationContext context)
         {
-            string phoneHashId = context.Result.ValidatedRequest.Raw["PhoneHasshId"];
+            string phoneHashId = context.Result.ValidatedRequest.Raw[Const.PHONE_HASH_ID];
             if (phoneHashId.IsNotNull())
             {
                 context.Result.ValidatedRequest.ClientClaims.Add(new Claim(Const.PHONE_HASH_ID, phoneHashId));

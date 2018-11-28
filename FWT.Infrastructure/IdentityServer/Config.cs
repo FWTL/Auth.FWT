@@ -38,7 +38,7 @@ namespace FWT.Infrastructure.IdentityServer
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AccessTokenLifetime = 3600 * 24 * 30,
                     AlwaysSendClientClaims = true,
-                    AlwaysIncludeUserClaimsInIdToken = true,
+                    ClientClaimsPrefix = "",
 
                     ClientSecrets =
                     {

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.KeyVault.Models;
+using Microsoft.Azure.KeyVault.WebKey;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.KeyVault.Fluent;
 using Microsoft.Azure.Management.KeyVault.Fluent.Models;
@@ -37,7 +39,7 @@ namespace AzureSetup
                 .DefineAccessPolicy()
                     .ForServicePrincipal("AG Setup")
                     .AllowSecretPermissions(SecretPermissions.Get, SecretPermissions.List, SecretPermissions.Set)
-                    .AllowKeyPermissions(KeyPermissions.Create,KeyPermissions.Get)
+                    .AllowKeyPermissions(KeyPermissions.Create, KeyPermissions.Get)
                     .Attach()
                 .DefineAccessPolicy()
                     .ForObjectId(principalObjectId)
@@ -63,6 +65,44 @@ namespace AzureSetup
             {
                 await _keyVaultClient.CreateCertificateAsync($"https://{keyVaultName}.vault.azure.net", key);
             }
+        }
+
+        public async Task AddKey(string keyVaultName, string key)
+        {
+            Console.WriteLine($"AzureKeyVault.AddKey {key}");
+            try
+            {
+                var rsaKey = await _keyVaultClient.GetKeyAsync(key);
+                if (rsaKey != null)
+                {
+                    return;
+                }
+            }
+            catch { }
+
+            var keyBundle = GetKeyBundle();
+            await _keyVaultClient.CreateKeyAsync($"https://{keyVaultName}.vault.azure.net", key, new NewKeyParameters()
+            {
+                Kty = keyBundle.Key.Kty,
+                Attributes = keyBundle.Attributes
+            });
+        }
+
+        public KeyBundle GetKeyBundle()
+        {
+            var defaultKeyBundle = new KeyBundle
+            {
+                Key = new JsonWebKey()
+                {
+                    Kty = JsonWebKeyType.Rsa,
+                },
+                Attributes = new KeyAttributes()
+                {
+                    Enabled = true,
+                },
+            };
+
+            return defaultKeyBundle;
         }
     }
 }

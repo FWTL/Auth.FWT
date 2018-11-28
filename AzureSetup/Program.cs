@@ -36,7 +36,7 @@ namespace AzureSetup
                 });
 
                 await vaultFactory.AddSecretToVault($"config-{options.NAME}", "Auth-Clients-App-Secret", Util.CreateRandomPassword(20));
-                await vaultFactory.AddCertificate($"config-{options.NAME}", "Auth-Clients-App-Cert");
+                await vaultFactory.AddKey($"config-{options.NAME}", "RsaKey");
 
                 options.WriteToFile();
             }

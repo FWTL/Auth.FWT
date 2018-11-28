@@ -23,7 +23,7 @@ namespace FWT.Infrastructure.Configuration
             _clientSecret = clientSecret;
         }
 
-        public async Task<RsaSecurityKey> GetRsaKey(string keyId)
+        public async Task<RsaSecurityKey> GetRsaKeyAsync(string keyId)
         {
             var dict = new Dictionary<string, string>();
             using (var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback((authority, resource, scope)

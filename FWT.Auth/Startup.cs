@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Threading.Tasks;
 
 namespace FWT.Auth
 {
@@ -67,7 +69,6 @@ namespace FWT.Auth
             });
 
             var identityServerBuilder = services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
@@ -80,7 +81,11 @@ namespace FWT.Auth
             }
             else
             {
-                identityServerBuilder.AddSigningCredential(rsaKey: null);
+                var keyVault = new AzureKeyVault(_configuration["AzureKeyVault:App:BaseUrl"], _configuration["AzureKeyVault:App:ClientId"], _configuration["AzureKeyVault:App:SecretId"]);
+                Task<RsaSecurityKey> task = keyVault.GetRsaKeyAsync("RsaKey");
+                task.Wait();
+
+                identityServerBuilder.AddSigningCredential(task.Result);
             }
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);
