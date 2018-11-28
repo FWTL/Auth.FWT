@@ -284,3 +284,4 @@ __pycache__/
 /FWT.Api/appsettings.Development.json
 /FWT.Auth/appsettings.Development.json
 /AzureSetup/App.config
+/AzureSetup/appSettings.config
