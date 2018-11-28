@@ -1,6 +1,4 @@
 ﻿using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Azure.KeyVault.WebKey;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.KeyVault.Fluent;
 using Microsoft.Azure.Management.KeyVault.Fluent.Models;
@@ -44,6 +42,7 @@ namespace AzureSetup
                 .DefineAccessPolicy()
                     .ForObjectId(principalObjectId)
                     .AllowSecretPermissions(SecretPermissions.Get, SecretPermissions.List)
+                    .AllowCertificatePermissions(CertificatePermissions.Get, CertificatePermissions.List)
                     .Attach()
                 .CreateAsync();
         }
@@ -66,42 +65,8 @@ namespace AzureSetup
             }
         }
 
-        public async Task AddKey(string keyVaultName, string key)
+        public async Task AddCert(string keyVaultName, string certName, string certPassword)
         {
-            Console.WriteLine($"AzureKeyVault.AddKey {key}");
-            try
-            {
-                var rsaKey = await _keyVaultClient.GetKeyAsync(key);
-                if (rsaKey != null)
-                {
-                    return;
-                }
-            }
-            catch { }
-
-            var keyBundle = GetKeyBundle();
-            await _keyVaultClient.CreateKeyAsync($"https://{keyVaultName}.vault.azure.net", key, new NewKeyParameters()
-            {
-                Kty = keyBundle.Key.Kty,
-                Attributes = keyBundle.Attributes
-            });
-        }
-
-        public KeyBundle GetKeyBundle()
-        {
-            var defaultKeyBundle = new KeyBundle
-            {
-                Key = new JsonWebKey()
-                {
-                    Kty = JsonWebKeyType.Rsa,
-                },
-                Attributes = new KeyAttributes()
-                {
-                    Enabled = true,
-                },
-            };
-
-            return defaultKeyBundle;
         }
     }
 }
