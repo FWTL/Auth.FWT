@@ -4,10 +4,8 @@ using FluentValidation;
 using FWTL.Core.CQRS;
 using FWTL.Infrastructure.Validation;
 
-
 namespace FWTL.Infrastructure.CQRS
 {
-    
     public class CommandDispatcher : ICommandDispatcher
     {
         private readonly IComponentContext _context;

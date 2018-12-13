@@ -4,8 +4,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FWTL.Infrastructure.Swagger
 {
-   
-
     public class SwaggerExcludeFilter : ISchemaFilter
     {
         public void Apply(Swashbuckle.AspNetCore.Swagger.Schema schema, SchemaFilterContext context)

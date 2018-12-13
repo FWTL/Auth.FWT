@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace FWTL.Auth
 {
-  
-
     public class Program
     {
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

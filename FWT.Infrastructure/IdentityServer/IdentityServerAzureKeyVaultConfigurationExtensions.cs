@@ -8,8 +8,6 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace FWTL.Infrastructure.IdentityServer
 {
-    
-
     public static class IdentityServerAzureKeyVaultConfigurationExtensions
     {
         public static IIdentityServerBuilder AddSigningCredentialFromAzureKeyVault(this IIdentityServerBuilder builder, string vault, string certificateName)

@@ -6,8 +6,6 @@ using FWTL.Infrastructure.Validation;
 
 namespace FWTL.Infrastructure.CQRS
 {
-    
-
     public class QueryDispatcher : IQueryDispatcher
     {
         private readonly IComponentContext _context;

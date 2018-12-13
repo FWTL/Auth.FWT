@@ -2,10 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-
 namespace FWTL.Infrastructure.Configuration
 {
-   
     public class AzureSecretsVaultProvider : ConfigurationProvider
     {
         private readonly string _baseUrl;

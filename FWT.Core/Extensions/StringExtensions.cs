@@ -3,8 +3,6 @@ using System.Globalization;
 
 namespace FWTL.Core.Extensions
 {
-   
-
     public static class StringExtensions
     {
         public static T To<T>(this string source)

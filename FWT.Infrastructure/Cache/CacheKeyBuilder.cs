@@ -5,8 +5,6 @@ using System.Reflection;
 
 namespace FWTL.Infrastructure.Cache
 {
-    
-
     public static class CacheKeyBuilder
     {
         public static string Build<TKey, TModel>(TModel model)

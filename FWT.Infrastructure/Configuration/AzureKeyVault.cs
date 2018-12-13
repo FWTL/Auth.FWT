@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
@@ -9,8 +8,6 @@ using Microsoft.Rest.Azure;
 
 namespace FWTL.Infrastructure.Configuration
 {
-    
-
     public class AzureKeyVault
     {
         private readonly string _baseUrl;

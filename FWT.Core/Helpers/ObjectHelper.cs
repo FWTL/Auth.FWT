@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-
 namespace FWTL.Core.Helpers
 {
-  
     public static class ObjectHelper
     {
         public static T FromByteArray<T>(byte[] data) where T : class

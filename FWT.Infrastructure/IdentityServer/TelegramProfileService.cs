@@ -6,8 +6,6 @@ using IdentityServer4.Validation;
 
 namespace FWTL.Infrastructure.IdentityServer
 {
-   
-
     public class TokenRequestValidator : ICustomTokenRequestValidator
     {
         public Task ValidateAsync(CustomTokenRequestValidationContext context)

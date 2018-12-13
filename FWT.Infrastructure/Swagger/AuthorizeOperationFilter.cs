@@ -6,8 +6,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FWTL.Infrastructure.Swagger
 {
-  
-
     public class AuthorizeOperationFilter : IOperationFilter
     {
         public void Apply(Operation operation, OperationFilterContext context)

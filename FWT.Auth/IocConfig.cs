@@ -13,8 +13,6 @@ using NodaTime;
 
 namespace FWTL.Auth
 {
-    
-
     public class IocConfig
     {
         public static void OverrideWithLocalCredentials(ContainerBuilder builder)

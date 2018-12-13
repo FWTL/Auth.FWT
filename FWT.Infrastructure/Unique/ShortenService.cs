@@ -4,8 +4,6 @@ using HashidsNet;
 
 namespace FWTL.Infrastructure.Hash
 {
-    
-
     public class ShortenService : IShortenService
     {
         private readonly Dictionary<string, Hashids> _hashIds = new Dictionary<string, Hashids>();

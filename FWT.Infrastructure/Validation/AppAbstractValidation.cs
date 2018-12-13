@@ -3,8 +3,6 @@ using FluentValidation.Results;
 
 namespace FWTL.Infrastructure.Validation
 {
-   
-
     public abstract class AppAbstractValidation<TModel> : AbstractValidator<TModel>
     {
         public override ValidationResult Validate(ValidationContext<TModel> context)

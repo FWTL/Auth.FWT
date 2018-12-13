@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FWTL.Infrastructure.Filters
 {
-   
-
     public sealed class ApiExceptionAttribute : ExceptionFilterAttribute
     {
         private readonly ILogger _logger;

@@ -3,8 +3,6 @@ using FWTL.Core.Services.Logging;
 
 namespace FWTL.Infrastructure.Logging
 {
-    
-
     public class NLogLogger : ILogger
     {
         private static readonly Lazy<NLogLogger> LazyLogger = new Lazy<NLogLogger>(() => new NLogLogger());

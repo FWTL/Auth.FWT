@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-
 namespace FWTL.Infrastructure.Configuration
 {
-    
     public class AzureSecretsVaultSource : IConfigurationSource
     {
         private readonly string _baseUrl;

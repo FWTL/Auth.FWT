@@ -2,10 +2,8 @@
 using System.Linq;
 using FluentValidation;
 
-
 namespace FWTL.Infrastructure.Models
 {
-  
     public class ValidationResultModel
     {
         public ValidationResultModel(ValidationException validationException)

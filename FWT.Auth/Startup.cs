@@ -15,8 +15,6 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace FWTL.Auth
 {
-
-
     public class Startup
     {
         private readonly IHostingEnvironment _hostingEnvironment;

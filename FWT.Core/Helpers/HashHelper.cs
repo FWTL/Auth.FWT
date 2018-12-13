@@ -3,8 +3,6 @@ using System.Security.Cryptography;
 
 namespace FWTL.Core.Helpers
 {
-   
-
     public static class HashHelper
     {
         public static string GetHash(string input)

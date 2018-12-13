@@ -7,11 +7,8 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace FWTL.Infrastructure.IdentityServer
 {
-   
-
     public class AzureKeyVaultValidationKeysStore : IValidationKeysStore
     {
         private readonly IMemoryCache _cache;

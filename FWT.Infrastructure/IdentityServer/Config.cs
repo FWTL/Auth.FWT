@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace FWTL.Infrastructure.IdentityServer
 {
-  
-
     public static class Config
     {
         public static IEnumerable<ApiResource> GetApiResources()

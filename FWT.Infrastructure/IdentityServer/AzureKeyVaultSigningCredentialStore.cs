@@ -6,10 +6,8 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace FWTL.Infrastructure.IdentityServer
 {
-  
     public class AzureKeyVaultSigningCredentialStore : ISigningCredentialStore
     {
         private readonly IMemoryCache _cache;
