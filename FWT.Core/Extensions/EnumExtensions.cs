@@ -1,9 +1,12 @@
+
 using System;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace FWT.Core.Extensions
+namespace FWTL.Core.Extensions
 {
+  
+
     public static class EnumExtensions
     {
         public static string GetDescription(this Enum value)

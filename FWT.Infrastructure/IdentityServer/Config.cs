@@ -1,22 +1,15 @@
-﻿using IdentityModel;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using IdentityModel;
 using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Security.Claims;
 
-namespace FWT.Infrastructure.IdentityServer
+namespace FWTL.Infrastructure.IdentityServer
 {
+  
+
     public static class Config
     {
-        public static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            return new List<IdentityResource>
-            {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-            };
-        }
-
         public static IEnumerable<ApiResource> GetApiResources()
         {
             return new List<ApiResource>
@@ -62,6 +55,15 @@ namespace FWT.Infrastructure.IdentityServer
                         "api"
                     },
                 },
+            };
+        }
+
+        public static IEnumerable<IdentityResource> GetIdentityResources()
+        {
+            return new List<IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
             };
         }
     }

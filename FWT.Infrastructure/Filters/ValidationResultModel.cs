@@ -1,9 +1,11 @@
-﻿using FluentValidation;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using FluentValidation;
 
-namespace FWT.Infrastructure.Models
+
+namespace FWTL.Infrastructure.Models
 {
+  
     public class ValidationResultModel
     {
         public ValidationResultModel(ValidationException validationException)

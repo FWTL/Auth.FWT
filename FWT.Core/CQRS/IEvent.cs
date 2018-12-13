@@ -1,4 +1,4 @@
-﻿namespace FWT.Core.CQRS
+﻿namespace FWTL.Core.CQRS
 {
     public interface IEvent
     {

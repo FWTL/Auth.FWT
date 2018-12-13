@@ -1,4 +1,4 @@
-﻿namespace FWT.Infrastructure.Models
+﻿namespace FWTL.Infrastructure.Models
 {
     public class ValidationError
     {

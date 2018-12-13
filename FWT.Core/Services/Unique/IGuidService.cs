@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace FWT.Core.Services.Unique
+
+namespace FWTL.Core.Services.Unique
 {
+   
     public interface IGuidService
     {
         Guid New();

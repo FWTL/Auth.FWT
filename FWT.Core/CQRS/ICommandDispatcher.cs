@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 
-namespace FWT.Core.CQRS
+
+namespace FWTL.Core.CQRS
 {
+  
     public interface ICommandDispatcher
     {
         Task<TResult> DispatchAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand;

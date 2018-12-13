@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace FWT.Core.Helpers
+namespace FWTL.Core.Helpers
 {
+   
+
     public static class HashHelper
     {
         public static string GetHash(string input)

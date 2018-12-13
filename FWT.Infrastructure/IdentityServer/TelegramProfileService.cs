@@ -1,11 +1,13 @@
-﻿using FWT.Core;
-using FWT.Core.Extensions;
-using IdentityServer4.Validation;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using FWTL.Core;
+using FWTL.Core.Extensions;
+using IdentityServer4.Validation;
 
-namespace FWT.Infrastructure.IdentityServer
+namespace FWTL.Infrastructure.IdentityServer
 {
+   
+
     public class TokenRequestValidator : ICustomTokenRequestValidator
     {
         public Task ValidateAsync(CustomTokenRequestValidationContext context)

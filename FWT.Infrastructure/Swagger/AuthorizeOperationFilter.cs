@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace FWT.Infrastructure.Swagger
+namespace FWTL.Infrastructure.Swagger
 {
+  
+
     public class AuthorizeOperationFilter : IOperationFilter
     {
         public void Apply(Operation operation, OperationFilterContext context)

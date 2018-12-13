@@ -1,15 +1,17 @@
-﻿using FluentValidation;
+﻿using System;
+using System.IO;
+using System.Text;
+using FluentValidation;
+using FWTL.Core.Services.Logging;
+using FWTL.Infrastructure.Models;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FWT.Core.Services.Logging;
-using FWT.Infrastructure.Models;
-using System;
-using System.IO;
-using System.Text;
 
-namespace FWT.Infrastructure.Filters
+namespace FWTL.Infrastructure.Filters
 {
+   
+
     public sealed class ApiExceptionAttribute : ExceptionFilterAttribute
     {
         private readonly ILogger _logger;

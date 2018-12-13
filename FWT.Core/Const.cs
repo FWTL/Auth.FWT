@@ -1,4 +1,4 @@
-﻿namespace FWT.Core
+﻿namespace FWTL.Core
 {
     public static class Const
     {

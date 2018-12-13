@@ -1,4 +1,4 @@
-﻿namespace FWT.Core.Services.Redis
+﻿namespace FWTL.Core.Services.Redis
 {
     public interface IRedisCredentialsBase
     {

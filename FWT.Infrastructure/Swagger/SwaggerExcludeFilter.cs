@@ -1,9 +1,11 @@
-﻿using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace FWT.Infrastructure.Swagger
+namespace FWTL.Infrastructure.Swagger
 {
+   
+
     public class SwaggerExcludeFilter : ISchemaFilter
     {
         public void Apply(Swashbuckle.AspNetCore.Swagger.Schema schema, SchemaFilterContext context)

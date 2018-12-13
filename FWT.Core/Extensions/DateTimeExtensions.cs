@@ -1,8 +1,10 @@
-﻿using NodaTime;
-using System;
+﻿using System;
+using NodaTime;
 
-namespace FWT.Core.Extensions
+namespace FWTL.Core.Extensions
 {
+  
+
     public static class DateTimeExtensions
     {
         public static DateTime UtcNow(this IClock clock)

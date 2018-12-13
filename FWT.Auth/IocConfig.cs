@@ -1,31 +1,33 @@
-﻿using Auth.FWT.Infrastructure.Logging;
+﻿using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using FWT.Core.CQRS;
-using FWT.Infrastructure.CQRS;
-using FWT.Infrastructure.Unique;
-using FWT.Infrastructure.Validation;
+using FWTL.Core.CQRS;
+using FWTL.Infrastructure.CQRS;
+using FWTL.Infrastructure.Logging;
+using FWTL.Infrastructure.Unique;
+using FWTL.Infrastructure.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using System;
 
-namespace FWT.Auth
+namespace FWTL.Auth
 {
+    
+
     public class IocConfig
     {
-        public static void RegisterCredentials(ContainerBuilder builder)
+        public static void OverrideWithLocalCredentials(ContainerBuilder builder)
         {
         }
 
-        public static void OverrideWithLocalCredentials(ContainerBuilder builder)
+        public static void RegisterCredentials(ContainerBuilder builder)
         {
         }
 
         public static IContainer RegisterDependencies(IServiceCollection services, IHostingEnvironment env, IConfiguration rootConfiguration)
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly assemblies = typeof(Program).Assembly;
 
             var builder = new ContainerBuilder();
             builder.Populate(services);

@@ -1,9 +1,11 @@
-﻿using HashidsNet;
-using FWT.Core.Services.Hash;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FWTL.Core.Services.Hash;
+using HashidsNet;
 
-namespace FWT.Infrastructure.Hash
+namespace FWTL.Infrastructure.Hash
 {
+    
+
     public class ShortenService : IShortenService
     {
         private readonly Dictionary<string, Hashids> _hashIds = new Dictionary<string, Hashids>();

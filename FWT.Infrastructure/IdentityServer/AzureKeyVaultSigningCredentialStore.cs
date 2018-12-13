@@ -1,19 +1,24 @@
-﻿using IdentityServer4.Stores;
+﻿using System;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using IdentityServer4.Stores;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
-namespace FWT.Infrastructure.IdentityServer
+
+namespace FWTL.Infrastructure.IdentityServer
 {
+  
     public class AzureKeyVaultSigningCredentialStore : ISigningCredentialStore
     {
         private readonly IMemoryCache _cache;
-        private readonly KeyVaultClient _keyVaultClient;
-        private readonly string _vault;
+
         private readonly string _certificateName;
+
+        private readonly KeyVaultClient _keyVaultClient;
+
+        private readonly string _vault;
 
         public AzureKeyVaultSigningCredentialStore(IMemoryCache memoryCache, KeyVaultClient keyVaultClient, string vault, string certificateName)
         {

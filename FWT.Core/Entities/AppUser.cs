@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace FWT.Core.Entities
+
+namespace FWTL.Core.Entities
 {
+    
     public class AppUser : IdentityUser
     {
     }

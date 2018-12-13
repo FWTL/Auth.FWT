@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FWT.Core\FWT.Core.csproj" />
+    <ProjectReference Include="..\FWT.Core\FWTL.Core.csproj" />
   </ItemGroup>
 
 </Project>

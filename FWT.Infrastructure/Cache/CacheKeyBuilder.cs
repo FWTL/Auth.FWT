@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace FWT.Infrastructure.Cache
+namespace FWTL.Infrastructure.Cache
 {
+    
+
     public static class CacheKeyBuilder
     {
         public static string Build<TKey, TModel>(TModel model)

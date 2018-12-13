@@ -1,4 +1,4 @@
-﻿namespace FWT.Core.Sql
+﻿namespace FWTL.Core.Sql
 {
     public interface IDatabaseCredentials
     {

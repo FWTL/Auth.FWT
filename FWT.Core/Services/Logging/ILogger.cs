@@ -1,7 +1,9 @@
 using System;
 
-namespace FWT.Core.Services.Logging
+namespace FWTL.Core.Services.Logging
 {
+    
+
     public interface ILogger
     {
         void Debug(Exception exception, string message = null, params object[] args);

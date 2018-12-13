@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWT.Auth", "FWT.Auth\FWT.Auth.csproj", "{546B9F3C-7B07-4F9D-91DB-67C7059B501F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWTL.Auth", "FWT.Auth\FWTL.Auth.csproj", "{546B9F3C-7B07-4F9D-91DB-67C7059B501F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWT.Core", "FWT.Core\FWT.Core.csproj", "{15ACBF8D-5971-4A2E-8967-6A0B583A06C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWTL.Core", "FWT.Core\FWTL.Core.csproj", "{15ACBF8D-5971-4A2E-8967-6A0B583A06C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWT.Infrastructure", "FWT.Infrastructure\FWT.Infrastructure.csproj", "{FF97523F-0CC6-41FA-AD9D-7E5C350E8113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FWTL.Infrastructure", "FWT.Infrastructure\FWTL.Infrastructure.csproj", "{FF97523F-0CC6-41FA-AD9D-7E5C350E8113}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

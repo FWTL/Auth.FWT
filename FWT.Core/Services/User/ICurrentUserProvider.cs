@@ -1,4 +1,4 @@
-﻿namespace FWT.Core.Services.User
+﻿namespace FWTL.Core.Services.User
 {
     public interface ICurrentUserProvider
     {

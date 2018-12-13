@@ -1,8 +1,10 @@
-﻿using FWT.Core.Services.Unique;
-using System;
+﻿using System;
+using FWTL.Core.Services.Unique;
 
-namespace FWT.Infrastructure.Unique
+namespace FWTL.Infrastructure.Unique
 {
+   
+
     public class GuidService : IGuidService
     {
         public Guid New()

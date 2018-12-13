@@ -1,7 +1,7 @@
-﻿namespace FWT.Services.Sql
-{
-    using FWT.Core.Sql;
+﻿using FWTL.Core.Sql;
 
+namespace FWTL.Services.Sql
+{
     public abstract class DatabaseCredentialsBase : IDatabaseCredentials
     {
         protected DatabaseCredentialsBase()

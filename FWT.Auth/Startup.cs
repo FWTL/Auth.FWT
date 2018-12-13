@@ -1,23 +1,26 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using FluentValidation;
-using FWT.Infrastructure.Configuration;
-using FWT.Infrastructure.Filters;
-using FWT.Infrastructure.IdentityServer;
-using FWT.Infrastructure.Swagger;
+using FWTL.Infrastructure.Configuration;
+using FWTL.Infrastructure.Filters;
+using FWTL.Infrastructure.IdentityServer;
+using FWTL.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
 
-namespace FWT.Auth
+namespace FWTL.Auth
 {
+
+
     public class Startup
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+
         private IConfigurationRoot _configuration;
 
         public Startup(IHostingEnvironment hostingEnvironment)
@@ -38,6 +41,24 @@ namespace FWT.Auth
             }
 
             _hostingEnvironment = hostingEnvironment;
+        }
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseIdentityServer();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FWT.Auth");
+                c.DisplayRequestDuration();
+            });
+
+            app.UseMvc(routes =>
+            {
+            });
+
+            ValidatorOptions.LanguageManager.Enabled = false;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -89,24 +110,6 @@ namespace FWT.Auth
 
             IContainer applicationContainer = IocConfig.RegisterDependencies(services, _hostingEnvironment, _configuration);
             return new AutofacServiceProvider(applicationContainer);
-        }
-
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            app.UseIdentityServer();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FWT.Auth");
-                c.DisplayRequestDuration();
-            });
-
-            app.UseMvc(routes =>
-            {
-            });
-
-            ValidatorOptions.LanguageManager.Enabled = false;
         }
     }
 }
