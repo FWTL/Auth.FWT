@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Handlers\**" />
     <Compile Remove="User\**" />
+    <EmbeddedResource Remove="Handlers\**" />
     <EmbeddedResource Remove="User\**" />
+    <None Remove="Handlers\**" />
     <None Remove="User\**" />
   </ItemGroup>
 
@@ -26,10 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FWT.Core\FWT.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Handlers\" />
   </ItemGroup>
 
 </Project>
