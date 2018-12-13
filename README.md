@@ -1,0 +1,2 @@
+# Auth
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/31d1ded0e1d04233964829787c691e07)](https://app.codacy.com/app/FWTL/Auth?utm_source=github.com&utm_medium=referral&utm_content=FWTL/Auth&utm_campaign=Badge_Grade_Settings)
