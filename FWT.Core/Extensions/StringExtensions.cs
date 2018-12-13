@@ -13,7 +13,7 @@ namespace FWT.Core.Extensions
         public static T? ToEnum<T>(this string source) where T : struct
         {
             T value;
-            if (Enum.TryParse(source.ToUpper(), out value))
+            if (Enum.TryParse(source.ToUpper(CultureInfo.InvariantCulture), out value))
             {
                 return value;
             }
