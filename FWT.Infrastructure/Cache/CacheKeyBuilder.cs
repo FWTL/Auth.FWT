@@ -20,17 +20,13 @@ namespace FWT.Infrastructure.Cache
             return $"{name}." + string.Join(".", values);
         }
 
-        public static string Build<TKey, TModel>(TModel model, params Expression<Func<TModel,object>>[] properties)
+        public static string Build<TKey, TModel>(TModel model, params Expression<Func<TModel, object>>[] properties)
         {
             var name = typeof(TKey).Name;
             List<string> values = new List<string>();
             foreach (var property in properties)
             {
-                try
-                {
-                    values.Add(property.Compile()(model).ToString());
-                }
-                catch { };
+                values.Add(property.Compile()(model).ToString());
             }
 
             return $"{name}." + string.Join(".", values);

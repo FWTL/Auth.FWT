@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace FWT.Core.Helpers
 {
-    public class HashHelper
+    public static class HashHelper
     {
         public static string GetHash(string input)
         {

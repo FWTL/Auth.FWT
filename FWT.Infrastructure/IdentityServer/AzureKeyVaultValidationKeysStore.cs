@@ -40,7 +40,7 @@ namespace FWT.Infrastructure.IdentityServer
                 if (certificateItem.Attributes.Enabled.HasValue && certificateItem.Attributes.Enabled.Value)
                 {
                     var certificateVersionBundle = await _keyVaultClient.GetCertificateAsync(certificateItem.Identifier.Identifier);
-                    var certificateVersionSecurityKey = await GetSecurityKeyFromSecretAsync(_keyVaultClient, certificateVersionBundle.SecretIdentifier.Identifier);
+                    var certificateVersionSecurityKey = await GetSecurityKeyFromSecretAsync(_keyVaultClient, certificateVersionBundle.SecretIdentifier.Identifier).ConfigureAwait(false);
 
                     validationKeys.Add(certificateVersionSecurityKey);
                 }
