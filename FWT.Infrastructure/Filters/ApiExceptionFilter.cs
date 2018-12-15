@@ -2,11 +2,11 @@
 using System.IO;
 using System.Text;
 using FluentValidation;
-using FWTL.Core.Services.Logging;
 using FWTL.Infrastructure.Models;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Serilog;
 
 namespace FWTL.Infrastructure.Filters
 {

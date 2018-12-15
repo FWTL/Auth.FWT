@@ -3,13 +3,13 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FWTL.Core.CQRS;
 using FWTL.Infrastructure.CQRS;
-using FWTL.Infrastructure.Logging;
 using FWTL.Infrastructure.Unique;
 using FWTL.Infrastructure.Validation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using Serilog;
 
 namespace FWTL.Auth
 {
@@ -55,7 +55,14 @@ namespace FWTL.Auth
             builder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(IReadCacheHandler<,>)).InstancePerLifetimeScope();
             builder.RegisterAssemblyTypes(assemblies).AsClosedTypesOf(typeof(IWriteCacheHandler<,>)).InstancePerLifetimeScope();
 
-            builder.Register(b => NLogLogger.Instance).SingleInstance();
+            builder.Register<ILogger>(b =>
+            {
+                return new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error)
+                .CreateLogger();
+            });
 
             builder.Register<IClock>(b =>
             {
