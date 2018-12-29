@@ -21,6 +21,7 @@ namespace FWTL.Infrastructure.IdentityServer
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration)
         {
+
             return new List<Client>
             {
                 new Client
