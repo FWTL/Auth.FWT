@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
@@ -23,13 +24,13 @@ namespace FWTL.Auth
 
         public Startup(IHostingEnvironment hostingEnvironment)
         {
+            Debug.WriteLine(hostingEnvironment.EnvironmentName);
+
             var configuration = new ConfigurationBuilder()
             .SetBasePath(hostingEnvironment.ContentRootPath)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true)
             .AddEnvironmentVariables();
-            _configuration = configuration.Build();
-
-            configuration.AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true);
             _configuration = configuration.Build();
 
             if (!hostingEnvironment.IsDevelopment())
