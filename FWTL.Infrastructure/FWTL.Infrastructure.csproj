@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FWTL.Infrastructure.Common" Version="1.0.8" />
+    <PackageReference Include="FWTL.Infrastructure.Common" Version="1.0.10" />
     <PackageReference Include="IdentityServer4" Version="2.3.2" />
   </ItemGroup>
 
