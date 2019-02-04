@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  fwtl.auth:
+    image: ${DOCKER_REGISTRY-}fwtlauth
+    build:
+      context: .
+      dockerfile: Dockerfile
