@@ -6,12 +6,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - CONFIGURATION=Debug
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - CONFIGURATION=Release
-      - USER_SECRETS_ID=836b9b8b-fd89-4aff-9286-809bda60998f
     ports:
       - "5000:80"
     volumes:
-      - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
+      - $APPDATA/Microsoft/UserSecrets/a9bc6788-be8c-4fc4-acd7-b9fde6b20819:/root/.microsoft/usersecrets/a9bc6788-be8c-4fc4-acd7-b9fde6b20819
       # - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
